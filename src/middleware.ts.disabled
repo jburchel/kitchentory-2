@@ -7,6 +7,8 @@ const isPublicRoute = createRouteMatcher([
   '/auth/sign-in(.*)',
   '/auth/sign-up(.*)', 
   '/auth/forgot-password(.*)',
+  '/onboarding(.*)',
+  '/dashboard(.*)',
   '/api/webhooks(.*)',
   '/api/public(.*)',
 ])
@@ -15,10 +17,7 @@ const isApiRoute = createRouteMatcher(['/api(.*)'])
 const isDashboardRoute = createRouteMatcher(['/dashboard(.*)'])
 const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)'])
 
-export default clerkMiddleware((auth, req) => {
-  // Temporarily disable all middleware logic for debugging
-  return NextResponse.next()
-})
+export default clerkMiddleware()
 
 export const config = {
   matcher: [

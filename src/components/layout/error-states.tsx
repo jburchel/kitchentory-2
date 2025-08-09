@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { AlertTriangle, RefreshCw, Home, WifiOff, Database, Bug } from "lucide-react"
+import { AlertTriangle, RefreshCw, Home, WifiOff, Database, Bug, Package } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"

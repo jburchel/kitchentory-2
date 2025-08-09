@@ -1,18 +1,11 @@
 {
   "version": 2,
-  "name": "kitchentory",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
   "regions": ["iad1"],
   "env": {
     "NODE_ENV": "production"
   },
   "functions": {
-    "src/pages/api/**/*.ts": {
+    "src/app/api/**/*.ts": {
       "maxDuration": 30
     }
   },

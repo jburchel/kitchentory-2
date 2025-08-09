@@ -171,11 +171,11 @@ export const getUserActivityFeed = query({
         .filter(q => q.eq(q.field('userId'), args.userId))
         .order('desc')
 
-      if (args.limit) {
-        query = query.take(args.limit)
-      }
-
       activities = await query.collect()
+      
+      if (args.limit) {
+        activities = activities.slice(0, args.limit)
+      }
     } else {
       // Get activities across all user's households
       const memberships = await ctx.db
@@ -192,12 +192,9 @@ export const getUserActivityFeed = query({
             .filter(q => q.eq(q.field('userId'), args.userId))
             .order('desc')
 
-          if (args.limit) {
-            // Limit per household, then we'll sort and limit globally
-            query = query.take(args.limit)
-          }
-
-          return await query.collect()
+          const householdActivities = await query.collect()
+          
+          return args.limit ? householdActivities.slice(0, args.limit) : householdActivities
         })
       )
 

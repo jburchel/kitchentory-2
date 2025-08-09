@@ -294,7 +294,7 @@ export const canManageUser = query({
         
         return {
           canManage: false,
-          reason: 'Insufficient permissions to update this member\\'s permissions',
+          reason: 'Insufficient permissions to update this member\'s permissions',
         }
 
       default:

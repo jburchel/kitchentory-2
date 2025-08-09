@@ -38,7 +38,7 @@ export default function OnboardingPage() {
 
   // Check if user has already completed onboarding
   useEffect(() => {
-    const hasCompletedOnboarding = (sessionClaims as any)?.metadata?.onboardingCompleted
+    const hasCompletedOnboarding = (sessionClaims as any)?.publicMetadata?.onboardingCompleted
     if (hasCompletedOnboarding) {
       router.replace('/dashboard')
     }
