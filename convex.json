@@ -1,0 +1,10 @@
+{
+  "functions": "./convex",
+  "node": {
+    "18": {
+      "externalPackages": [
+        "sharp"
+      ]
+    }
+  }
+}

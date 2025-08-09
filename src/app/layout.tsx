@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { ClerkProvider } from '@/components/providers/ClerkProvider'
+import { ConvexProvider } from '@/components/providers/ConvexProvider'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -25,7 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen bg-gray-50 font-sans antialiased">
-        <div id="root">{children}</div>
+        <ClerkProvider>
+          <ConvexProvider>
+            <AuthProvider>
+              <div id="root">{children}</div>
+            </AuthProvider>
+          </ConvexProvider>
+        </ClerkProvider>
       </body>
     </html>
   )
