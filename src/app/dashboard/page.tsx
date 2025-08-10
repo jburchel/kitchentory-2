@@ -26,12 +26,9 @@ export default function DashboardPage() {
         <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            {/* Welcome Card - Brand compliant using CSS variables */}
-            <Card className="p-6 border-2" style={{
-              background: 'hsl(var(--color-success-bg))',
-              borderColor: 'hsl(var(--color-success-border))'
-            }}>
-              <h2 className="text-xl font-semibold mb-3" style={{ color: 'hsl(var(--color-success))' }}>
+            {/* Welcome Card - Brand compliant with utility classes */}
+            <Card className="p-6 border-2 bg-success border-success">
+              <h2 className="text-xl font-semibold mb-3 text-success">
                 Welcome!
               </h2>
               <p className="text-foreground">
@@ -46,40 +43,25 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start min-h-[44px]"
-                  style={{
-                    backgroundColor: 'hsl(var(--color-category-produce) / 0.1)',
-                    borderColor: 'hsl(var(--color-category-produce) / 0.3)',
-                    color: 'hsl(var(--color-category-produce))'
-                  }}
+                  className="w-full justify-start min-h-[44px] text-category-produce border-green-200 bg-green-50 hover:bg-green-100"
                 >
-                  <ProduceIcon className="w-5 h-5 mr-3" />
+                  <ProduceIcon className="w-5 h-5 mr-3 text-category-produce" />
                   Add New Item
                 </Button>
                 
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start min-h-[44px]"
-                  style={{
-                    backgroundColor: 'hsl(var(--color-category-beverages) / 0.1)',
-                    borderColor: 'hsl(var(--color-category-beverages) / 0.3)',
-                    color: 'hsl(var(--color-category-beverages))'
-                  }}
+                  className="w-full justify-start min-h-[44px] text-category-beverages border-cyan-200 bg-cyan-50 hover:bg-cyan-100"
                 >
-                  <BeveragesIcon className="w-5 h-5 mr-3" />
+                  <BeveragesIcon className="w-5 h-5 mr-3 text-category-beverages" />
                   Create Shopping List
                 </Button>
                 
                 <Button 
                   variant="outline" 
-                  className="w-full justify-start min-h-[44px]"
-                  style={{
-                    backgroundColor: 'hsl(var(--color-category-protein) / 0.1)',
-                    borderColor: 'hsl(var(--color-category-protein) / 0.3)',
-                    color: 'hsl(var(--color-category-protein))'
-                  }}
+                  className="w-full justify-start min-h-[44px] text-category-protein border-purple-200 bg-purple-50 hover:bg-purple-100"
                 >
-                  <ProteinIcon className="w-5 h-5 mr-3" />
+                  <ProteinIcon className="w-5 h-5 mr-3 text-category-protein" />
                   Manage Categories
                 </Button>
               </div>
@@ -128,14 +110,18 @@ export default function DashboardPage() {
               ].map((category, index) => (
                 <Card key={index} className="p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
                   <div 
-                    className="w-12 h-12 mx-auto mb-2 rounded-lg flex items-center justify-center"
-                    style={{
-                      backgroundColor: `hsl(var(${category.bgVar}) / 0.15)`
-                    }}
+                    className={`w-12 h-12 mx-auto mb-2 rounded-lg flex items-center justify-center ${
+                      category.name === 'Produce' ? 'bg-green-100' :
+                      category.name === 'Protein' ? 'bg-purple-100' :
+                      'bg-cyan-100'
+                    }`}
                   >
                     <category.icon 
-                      className="w-6 h-6" 
-                      style={{ color: `hsl(var(${category.colorVar}))` }}
+                      className={`w-6 h-6 ${
+                        category.name === 'Produce' ? 'text-category-produce' :
+                        category.name === 'Protein' ? 'text-category-protein' :
+                        'text-category-beverages'
+                      }`}
                     />
                   </div>
                   <p className="text-xs font-medium text-foreground">{category.name}</p>
