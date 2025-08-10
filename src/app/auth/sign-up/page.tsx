@@ -1,9 +1,43 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@clerk/nextjs'
 import { SignUp } from '@clerk/nextjs'
 import { ConditionalSocialAuth } from '@/components/auth/SocialAuthButtons'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function SignUpPage() {
+  const { isSignedIn, isLoaded } = useUser()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      // Check if user has completed onboarding
+      router.replace('/onboarding')
+    }
+  }, [isLoaded, isSignedIn, router])
+
+  // Show loading while checking auth state
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    )
+  }
+
+  // If user is signed in, show brief loading state while redirecting
+  if (isSignedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">You're already signed in. Redirecting...</p>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">

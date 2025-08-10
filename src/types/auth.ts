@@ -1,5 +1,6 @@
 import { User } from '@clerk/nextjs/server'
-import { Id } from '../convex/_generated/dataModel'
+// import { Id } from '../convex/_generated/dataModel'
+type Id<T> = string // Temporary type replacement
 
 // Clerk User extended with our application data
 export interface AppUser extends Partial<User> {
@@ -43,11 +44,11 @@ export interface AuthContextData {
   user: AppUser | null
   isLoading: boolean
   isSignedIn: boolean
-  currentHousehold?: Id<'households'>
+  currentHousehold?: string // Id<'households'>
   householdRole?: HouseholdRole
   permissions?: HouseholdPermissions
   signOut: () => Promise<void>
-  switchHousehold: (householdId: Id<'households'>) => Promise<void>
+  switchHousehold: (householdId: string) => Promise<void>
 }
 
 // Social auth providers

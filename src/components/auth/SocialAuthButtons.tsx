@@ -1,7 +1,7 @@
 'use client'
 
 import { useSignIn, useSignUp } from '@clerk/nextjs'
-import { Button } from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useState } from 'react'
 

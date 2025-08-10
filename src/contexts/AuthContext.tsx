@@ -2,10 +2,10 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useUser, useAuth } from '@clerk/nextjs'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+// import { useQuery, useMutation } from 'convex/react'
+// import { api } from "@/convex/_generated/api"
 import { AuthContextData, AppUser } from '@/types/auth'
-import { Id } from '../../convex/_generated/dataModel'
+// import { Id } from "@/convex/_generated/dataModel"
 
 const AuthContext = createContext<AuthContextData | null>(null)
 
@@ -24,53 +24,51 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const { user: clerkUser, isLoaded: userLoaded } = useUser()
   const { signOut: clerkSignOut, isLoaded: authLoaded } = useAuth()
-  const [currentHousehold, setCurrentHousehold] = useState<Id<'households'> | undefined>()
+  const [currentHousehold, setCurrentHousehold] = useState<string | undefined>()
 
-  // Query user data from Convex
-  const convexUser = useQuery(
-    api.users.getUserByClerkId,
-    clerkUser ? { clerkId: clerkUser.id } : 'skip'
-  )
+  // Temporarily disable Convex queries for build
+  // const convexUser = useQuery(
+  //   api.users.getUserByClerkId,
+  //   clerkUser ? { clerkId: clerkUser.id } : 'skip'
+  // )
 
-  // Query user with households
-  const userWithHouseholds = useQuery(
-    api.users.getUserWithHouseholds,
-    clerkUser ? { clerkId: clerkUser.id } : 'skip'
-  )
+  // const userWithHouseholds = useQuery(
+  //   api.users.getUserWithHouseholds,
+  //   clerkUser ? { clerkId: clerkUser.id } : 'skip'
+  // )
 
-  // Mutation to create or update user
-  const createOrUpdateUser = useMutation(api.users.createOrUpdateUser)
+  // const createOrUpdateUser = useMutation(api.users.createOrUpdateUser)
 
-  // Sync Clerk user with Convex on login
-  useEffect(() => {
-    if (clerkUser && userLoaded && !convexUser) {
-      createOrUpdateUser({
-        clerkId: clerkUser.id,
-        email: clerkUser.emailAddresses[0]?.emailAddress || '',
-        firstName: clerkUser.firstName || undefined,
-        lastName: clerkUser.lastName || undefined,
-        imageUrl: clerkUser.imageUrl,
-        phoneNumber: clerkUser.phoneNumbers[0]?.phoneNumber || undefined,
-      }).catch((error) => {
-        console.error('Failed to sync user:', error)
-      })
-    }
-  }, [clerkUser, userLoaded, convexUser, createOrUpdateUser])
+  // Sync Clerk user with Convex on login (temporarily disabled)
+  // useEffect(() => {
+  //   if (clerkUser && userLoaded && !convexUser) {
+  //     createOrUpdateUser({
+  //       clerkId: clerkUser.id,
+  //       email: clerkUser.emailAddresses[0]?.emailAddress || '',
+  //       firstName: clerkUser.firstName || undefined,
+  //       lastName: clerkUser.lastName || undefined,
+  //       imageUrl: clerkUser.imageUrl,
+  //       phoneNumber: clerkUser.phoneNumbers[0]?.phoneNumber || undefined,
+  //     }).catch((error) => {
+  //       console.error('Failed to sync user:', error)
+  //     })
+  //   }
+  // }, [clerkUser, userLoaded, convexUser, createOrUpdateUser])
 
-  // Set default household if user has households
-  useEffect(() => {
-    if (userWithHouseholds?.households && userWithHouseholds.households.length > 0 && !currentHousehold) {
-      // Set first household as default
-      setCurrentHousehold(userWithHouseholds.households[0].householdId)
-    }
-  }, [userWithHouseholds, currentHousehold])
+  // Set default household if user has households (temporarily disabled)
+  // useEffect(() => {
+  //   if (userWithHouseholds?.households && userWithHouseholds.households.length > 0 && !currentHousehold) {
+  //     // Set first household as default
+  //     setCurrentHousehold(userWithHouseholds.households[0].householdId)
+  //   }
+  // }, [userWithHouseholds, currentHousehold])
 
   const signOut = async () => {
     setCurrentHousehold(undefined)
     await clerkSignOut()
   }
 
-  const switchHousehold = async (householdId: Id<'households'>) => {
+  const switchHousehold = async (householdId: string) => {
     setCurrentHousehold(householdId)
   }
 
@@ -88,18 +86,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     : null
 
-  // Get current household membership
-  const currentMembership = userWithHouseholds?.households?.find(
-    (h) => h.householdId === currentHousehold
-  )
+  // Get current household membership (temporarily disabled)
+  // const currentMembership = userWithHouseholds?.households?.find(
+  //   (h) => h.householdId === currentHousehold
+  // )
 
   const contextValue: AuthContextData = {
     user: appUser,
     isLoading: !userLoaded || !authLoaded,
     isSignedIn: !!clerkUser,
     currentHousehold,
-    householdRole: currentMembership?.role,
-    permissions: currentMembership?.permissions,
+    householdRole: undefined, // currentMembership?.role,
+    permissions: undefined, // currentMembership?.permissions,
     signOut,
     switchHousehold,
   }

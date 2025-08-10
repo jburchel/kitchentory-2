@@ -25,17 +25,16 @@ const config: Config = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
+          50: '#ECFDF5',   // Emerald 50
+          100: '#D1FAE5',  // Emerald 100
+          200: '#A7F3D0',  // Emerald 200
+          300: '#6EE7B7',  // Emerald 300
+          400: '#34D399',  // Emerald 400
+          500: '#10B981',  // PRIMARY BRAND - Emerald 600
+          600: '#059669',  // Emerald 700
+          700: '#047857',  // Emerald 800
+          800: '#065F46',  // Emerald 900
+          900: '#064E3B',  // Emerald 950
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -61,42 +60,42 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Kitchen-themed colors
-        sage: {
-          50: '#f6f7f4',
-          100: '#e8eae3',
-          200: '#d2d6c8',
-          300: '#b5bca4',
-          400: '#94a081',
-          500: '#7a8666',
-          600: '#5f6a4f',
-          700: '#4c5541',
-          800: '#3f4837',
-          900: '#363d2f',
+        // Food Category Colors - Brand Compliant
+        category: {
+          produce: 'hsl(var(--color-category-produce))',     // Green 500 - Fruits & Vegetables
+          protein: 'hsl(var(--color-category-protein))',     // Purple 500 - Proteins  
+          dairy: 'hsl(var(--color-category-dairy))',         // Blue 500 - Dairy
+          grains: 'hsl(var(--color-category-grains))',       // Yellow 500 - Grains & Bread
+          beverages: 'hsl(var(--color-category-beverages))', // Cyan 500 - Beverages
+          frozen: 'hsl(var(--color-category-frozen))',       // Sky 500 - Frozen Foods
+          pantry: 'hsl(var(--color-category-pantry))',       // Orange 500 - Pantry Staples
+          household: 'hsl(var(--color-category-household))', // Lime 500 - Household Items
         },
-        mint: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
+        // Semantic Colors - Brand Compliant
+        success: {
+          DEFAULT: 'hsl(var(--color-success))',
+          bg: 'hsl(var(--color-success-bg))',
+          border: 'hsl(var(--color-success-border))',
         },
-        cream: {
-          50: '#fefdf8',
-          100: '#fefcf0',
-          200: '#fdf6d8',
-          300: '#fbedb5',
-          400: '#f8df89',
-          500: '#f4cc5c',
-          600: '#eab540',
-          700: '#c69632',
-          800: '#a1772e',
-          900: '#85612a',
+        warning: {
+          DEFAULT: 'hsl(var(--color-warning))',
+          bg: 'hsl(var(--color-warning-bg))',
+          border: 'hsl(var(--color-warning-border))',
+        },
+        error: {
+          DEFAULT: 'hsl(var(--color-error))',
+          bg: 'hsl(var(--color-error-bg))',
+          border: 'hsl(var(--color-error-border))',
+        },
+        info: {
+          DEFAULT: 'hsl(var(--color-info))',
+          bg: 'hsl(var(--color-info-bg))',
+          border: 'hsl(var(--color-info-border))',
+        },
+        // Surface & Background
+        surface: {
+          DEFAULT: 'hsl(var(--surface))',
+          elevated: 'hsl(var(--surface-elevated))',
         },
       },
       fontFamily: {
@@ -127,6 +126,59 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    
+    // Brand utilities
+    function({ addUtilities }) {
+      const newUtilities = {
+        // Gradient backgrounds
+        '.bg-brand-gradient': {
+          background: 'var(--gradient-primary)',
+        },
+        '.bg-surface-gradient': {
+          background: 'var(--gradient-surface)',
+        },
+        
+        // Focus styles for accessibility
+        '.focus-brand': {
+          '&:focus-visible': {
+            outline: '2px solid hsl(var(--ring))',
+            outlineOffset: '2px',
+          }
+        },
+        
+        // Touch targets (44x44px minimum)
+        '.touch-target': {
+          minHeight: '44px',
+          minWidth: '44px',
+        },
+      }
+      
+      addUtilities(newUtilities)
+    },
+    
+    // Accessibility support
+    function({ addBase }) {
+      addBase({
+        // Respect reduced motion preferences
+        '@media (prefers-reduced-motion: reduce)': {
+          '*': {
+            animationDuration: '0.01ms !important',
+            animationIterationCount: '1 !important',
+            transitionDuration: '0.01ms !important',
+            scrollBehavior: 'auto !important',
+          },
+        },
+        // High contrast mode support
+        '@media (prefers-contrast: high)': {
+          '.focus-brand:focus-visible': {
+            outline: '3px solid hsl(var(--foreground))',
+            outlineOffset: '1px',
+          },
+        },
+      })
+    }
+  ],
 }
 export default config

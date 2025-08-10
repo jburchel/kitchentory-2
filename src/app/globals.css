@@ -2,58 +2,169 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 
+ * Kitchentory Brand CSS Variables
+ * Light/Dark mode color system with WCAG AA compliance
+ */
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 142 76% 36%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142 76% 36%;
-    --radius: 0.5rem;
-
-    /* Kitchen theme colors */
-    --sage: 106 24% 53%;
-    --sage-foreground: 0 0% 100%;
-    --mint: 174 72% 56%;
-    --mint-foreground: 0 0% 100%;
-    --cream: 45 78% 66%;
-    --cream-foreground: 240 10% 3.9%;
+    /* Light Mode Brand Colors */
+    --primary: 158 64% 52%;           /* #10B981 - Emerald 600 */
+    --primary-foreground: 0 0% 100%;  /* White text on primary */
+    
+    /* Background Colors */
+    --background: 0 0% 100%;          /* #FFFFFF */
+    --foreground: 222 84% 5%;         /* #111827 - Gray 900 */
+    --surface: 210 40% 98%;           /* #F9FAFB - Gray 50 */
+    --surface-elevated: 0 0% 100%;    /* #FFFFFF */
+    
+    /* Card Colors */
+    --card: 0 0% 100%;                /* #FFFFFF */
+    --card-foreground: 222 84% 5%;    /* #111827 - Gray 900 */
+    
+    /* Border & Input Colors */
+    --border: 214 32% 91%;            /* #E5E7EB - Gray 200 */
+    --input: 214 32% 91%;             /* #E5E7EB - Gray 200 */
+    --ring: 158 64% 52%;              /* #10B981 - Primary green */
+    
+    /* Secondary Colors */
+    --secondary: 210 40% 96%;         /* #F3F4F6 - Gray 100 */
+    --secondary-foreground: 222 84% 5%; /* #111827 - Gray 900 */
+    
+    /* Muted Colors */
+    --muted: 210 40% 96%;             /* #F3F4F6 - Gray 100 */
+    --muted-foreground: 215 16% 47%;  /* #6B7280 - Gray 500 */
+    
+    /* Accent Colors */
+    --accent: 210 40% 96%;            /* #F3F4F6 - Gray 100 */
+    --accent-foreground: 222 84% 5%;  /* #111827 - Gray 900 */
+    
+    /* Destructive Colors */
+    --destructive: 0 84% 60%;         /* #EF4444 - Red 500 */
+    --destructive-foreground: 0 0% 98%; /* #FAFAFA */
+    
+    /* Popover Colors */
+    --popover: 0 0% 100%;             /* #FFFFFF */
+    --popover-foreground: 222 84% 5%; /* #111827 - Gray 900 */
+    
+    /* Text Hierarchy */
+    --text-primary: 222 84% 5%;       /* #111827 - Gray 900 */
+    --text-secondary: 215 25% 27%;    /* #4B5563 - Gray 600 */
+    --text-muted: 215 16% 47%;        /* #6B7280 - Gray 500 */
+    --text-disabled: 220 13% 69%;     /* #9CA3AF - Gray 400 */
+    
+    /* Semantic Colors - Light Mode */
+    --color-success: 158 64% 52%;     /* #10B981 - Emerald 600 */
+    --color-success-bg: 155 100% 94%; /* #D1FAE5 - Emerald 100 */
+    --color-success-border: 154 75% 87%; /* #A7F3D0 - Emerald 200 */
+    
+    --color-warning: 43 96% 56%;      /* #F59E0B - Yellow 500 */
+    --color-warning-bg: 48 100% 88%;  /* #FEF3C7 - Yellow 100 */
+    --color-warning-border: 48 95% 76%; /* #FDE68A - Yellow 200 */
+    
+    --color-error: 0 84% 60%;         /* #EF4444 - Red 500 */
+    --color-error-bg: 0 100% 94%;     /* #FEE2E2 - Red 100 */
+    --color-error-border: 0 93% 87%;  /* #FECACA - Red 200 */
+    
+    --color-info: 221 83% 53%;        /* #3B82F6 - Blue 500 */
+    --color-info-bg: 214 100% 92%;    /* #DBEAFE - Blue 100 */
+    --color-info-border: 213 97% 87%; /* #BFDBFE - Blue 200 */
+    
+    /* Food Category Colors - Brand Specification */
+    --color-category-produce: 142 71% 45%;    /* #22C55E - Green 500 */
+    --color-category-protein: 271 81% 56%;    /* #A855F7 - Purple 500 */
+    --color-category-dairy: 221 83% 53%;      /* #3B82F6 - Blue 500 */
+    --color-category-grains: 45 93% 47%;      /* #EAB308 - Yellow 500 */
+    --color-category-beverages: 187 100% 42%; /* #06B6D4 - Cyan 500 */
+    --color-category-frozen: 199 89% 48%;     /* #0EA5E9 - Sky 500 */
+    --color-category-pantry: 20 91% 48%;      /* #F97316 - Orange 500 */
+    --color-category-household: 82 69% 45%;   /* #84CC16 - Lime 500 */
+    
+    /* Brand Gradients */
+    --gradient-primary: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    --gradient-surface: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    
+    /* Border Radius */
+    --radius: 0.75rem; /* 12px */
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 142 76% 36%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142 76% 36%;
+    /* Dark Mode Brand Colors */
+    --primary: 160 84% 39%;           /* #059669 - Emerald 700 */
+    --primary-foreground: 156 73% 17%; /* #065F46 - Emerald 800 */
+    
+    /* Background Colors */
+    --background: 224 71% 4%;         /* #0F172A - Slate 900 */
+    --foreground: 210 40% 98%;        /* #F8FAFC - Slate 50 */
+    --surface: 215 28% 17%;           /* #1E293B - Slate 800 */
+    --surface-elevated: 217 33% 22%;  /* #334155 - Slate 700 */
+    
+    /* Card Colors */
+    --card: 215 28% 17%;              /* #1E293B - Slate 800 */
+    --card-foreground: 210 40% 98%;   /* #F8FAFC - Slate 50 */
+    
+    /* Border & Input Colors */
+    --border: 217 33% 22%;            /* #334155 - Slate 700 */
+    --input: 217 33% 22%;             /* #334155 - Slate 700 */
+    --ring: 158 64% 52%;              /* #34D399 - Emerald 400 */
+    
+    /* Secondary Colors */
+    --secondary: 215 28% 17%;         /* #1E293B - Slate 800 */
+    --secondary-foreground: 210 40% 98%; /* #F8FAFC - Slate 50 */
+    
+    /* Muted Colors */
+    --muted: 217 33% 22%;             /* #334155 - Slate 700 */
+    --muted-foreground: 215 20% 65%;  /* #94A3B8 - Slate 400 */
+    
+    /* Accent Colors */
+    --accent: 217 33% 22%;            /* #334155 - Slate 700 */
+    --accent-foreground: 210 40% 98%; /* #F8FAFC - Slate 50 */
+    
+    /* Destructive Colors */
+    --destructive: 0 63% 31%;         /* #991B1B - Red 800 */
+    --destructive-foreground: 210 40% 98%; /* #F8FAFC */
+    
+    /* Popover Colors */
+    --popover: 224 71% 4%;            /* #0F172A - Slate 900 */
+    --popover-foreground: 210 40% 98%; /* #F8FAFC - Slate 50 */
+    
+    /* Text Hierarchy - Dark Mode */
+    --text-primary: 210 40% 98%;      /* #F8FAFC - Slate 50 */
+    --text-secondary: 214 32% 91%;    /* #E2E8F0 - Slate 200 */
+    --text-muted: 215 20% 65%;        /* #94A3B8 - Slate 400 */
+    --text-disabled: 215 16% 47%;     /* #64748B - Slate 500 */
+    
+    /* Semantic Colors - Dark Mode */
+    --color-success: 142 77% 73%;     /* #6EE7B7 - Emerald 300 */
+    --color-success-bg: 154 54% 23%;  /* #064E3B - Emerald 900 */
+    --color-success-border: 156 73% 17%; /* #065F46 - Emerald 800 */
+    
+    --color-warning: 48 100% 67%;     /* #FCD34D - Yellow 300 */
+    --color-warning-bg: 45 92% 22%;   /* #78350F - Yellow 900 */
+    --color-warning-border: 42 87% 55%; /* #D97706 - Yellow 600 */
+    
+    --color-error: 0 91% 71%;         /* #FCA5A5 - Red 300 */
+    --color-error-bg: 0 63% 31%;      /* #7F1D1D - Red 900 */
+    --color-error-border: 0 84% 37%;  /* #B91C1C - Red 700 */
+    
+    --color-info: 213 93% 68%;        /* #60A5FA - Blue 400 */
+    --color-info-bg: 221 39% 11%;     /* #1E3A8A - Blue 900 */
+    --color-info-border: 221 83% 25%; /* #1E40AF - Blue 800 */
+    
+    /* Food Category Colors - Dark Mode Adjustments */
+    --color-category-produce: 142 77% 73%;    /* #6EE7B7 - Emerald 300 */
+    --color-category-protein: 271 91% 65%;    /* #C084FC - Purple 400 */
+    --color-category-dairy: 213 93% 68%;      /* #60A5FA - Blue 400 */
+    --color-category-grains: 48 100% 67%;     /* #FCD34D - Yellow 300 */
+    --color-category-beverages: 187 92% 69%;  /* #22D3EE - Cyan 400 */
+    --color-category-frozen: 199 95% 74%;     /* #38BDF8 - Sky 400 */
+    --color-category-pantry: 20 95% 64%;      /* #FB923C - Orange 400 */
+    --color-category-household: 82 85% 67%;   /* #A3E635 - Lime 400 */
+    
+    /* Brand Gradients - Dark Mode */
+    --gradient-primary: linear-gradient(135deg, #065F46 0%, #047857 100%);
+    --gradient-surface: linear-gradient(135deg, #374151 0%, #4B5563 100%);
   }
 }
 
@@ -61,13 +172,71 @@
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+  
+  /* Typography - Inter font family */
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'sans-serif';
+  }
+}
+
+@layer components {
+  /* Utility classes for easy implementation */
+  .bg-brand-gradient {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-surface-gradient {
+    background: var(--gradient-surface);
+  }
+  
+  .text-brand {
+    color: hsl(var(--primary));
+  }
+  
+  .border-brand {
+    border-color: hsl(var(--primary));
+  }
+  
+  /* Category color utilities */
+  .text-category-produce { color: hsl(var(--color-category-produce)); }
+  .text-category-protein { color: hsl(var(--color-category-protein)); }
+  .text-category-dairy { color: hsl(var(--color-category-dairy)); }
+  .text-category-grains { color: hsl(var(--color-category-grains)); }
+  .text-category-beverages { color: hsl(var(--color-category-beverages)); }
+  .text-category-frozen { color: hsl(var(--color-category-frozen)); }
+  .text-category-pantry { color: hsl(var(--color-category-pantry)); }
+  .text-category-household { color: hsl(var(--color-category-household)); }
+  
+  /* Semantic color utilities */
+  .text-success { color: hsl(var(--color-success)); }
+  .text-warning { color: hsl(var(--color-warning)); }
+  .text-error { color: hsl(var(--color-error)); }
+  .text-info { color: hsl(var(--color-info)); }
+  
+  .bg-success { background-color: hsl(var(--color-success-bg)); }
+  .bg-warning { background-color: hsl(var(--color-warning-bg)); }
+  .bg-error { background-color: hsl(var(--color-error-bg)); }
+  .bg-info { background-color: hsl(var(--color-info-bg)); }
+  
+  .border-success { border-color: hsl(var(--color-success-border)); }
+  .border-warning { border-color: hsl(var(--color-warning-border)); }
+  .border-error { border-color: hsl(var(--color-error-border)); }
+  .border-info { border-color: hsl(var(--color-info-border)); }
+  
+  /* Text hierarchy utilities */
+  .text-primary { color: hsl(var(--text-primary)); }
+  .text-secondary { color: hsl(var(--text-secondary)); }
+  .text-muted { color: hsl(var(--text-muted)); }
+  .text-disabled { color: hsl(var(--text-disabled)); }
 }
 
 @layer utilities {
+  /* Mobile safe area utilities */
   .mobile-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -76,17 +245,6 @@
     height: calc(100vh - env(safe-area-inset-bottom));
   }
 
-  /* Focus styles for better accessibility */
-  .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
-  }
-
-  /* Smooth transitions */
-  .transition-smooth {
-    @apply transition-all duration-200 ease-in-out;
-  }
-
-  /* Safe area utilities for mobile */
   .safe-area-inset-top {
     padding-top: env(safe-area-inset-top);
   }
@@ -101,6 +259,21 @@
 
   .safe-area-inset-right {
     padding-right: env(safe-area-inset-right);
+  }
+
+  /* Focus styles for accessibility */
+  .focus-brand:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-200 ease-in-out;
   }
 
   /* Custom scrollbar */
@@ -129,14 +302,24 @@
 
   /* High contrast mode support */
   @media (prefers-contrast: high) {
+    .focus-brand:focus-visible {
+      outline: 3px solid hsl(var(--foreground));
+      outline-offset: 1px;
+    }
+    
     .high-contrast {
       border-width: 2px;
       border-color: currentColor;
     }
   }
-
+  
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {
+    .bg-brand-gradient,
+    .bg-surface-gradient {
+      background: hsl(var(--primary));
+    }
+    
     * {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;

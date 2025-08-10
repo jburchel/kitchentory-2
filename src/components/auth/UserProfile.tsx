@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useProfile } from '@/hooks/useAuth'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { UserAvatar } from './UserButton'

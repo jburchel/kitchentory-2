@@ -3,9 +3,9 @@
 import * as React from "react"
 import { Calendar, Package, AlertTriangle, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/button"
 
 export interface InventoryItem {
   id: string

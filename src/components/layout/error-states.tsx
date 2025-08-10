@@ -3,8 +3,8 @@
 import * as React from "react"
 import { AlertTriangle, RefreshCw, Home, WifiOff, Database, Bug, Package } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/Button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface ErrorStateProps {
   title?: string

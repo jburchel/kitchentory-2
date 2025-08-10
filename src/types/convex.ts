@@ -1,6 +1,6 @@
 // TypeScript types for enhanced Convex schemas
 
-import type { Doc, Id } from '../../convex/_generated/dataModel'
+import type { Doc, Id } from "@/convex/_generated/dataModel"
 
 // Enhanced User types
 export interface UserProfile extends Doc<'users'> {

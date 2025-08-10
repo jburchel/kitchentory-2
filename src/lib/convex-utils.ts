@@ -1,4 +1,4 @@
-import type { Id } from '../../convex/_generated/dataModel'
+import type { Id } from "@/convex/_generated/dataModel"
 
 /**
  * Type-safe ID conversion utility for Convex IDs

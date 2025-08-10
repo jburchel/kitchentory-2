@@ -3,7 +3,7 @@
 import { useAuth as useClerkAuth, useUser } from '@clerk/nextjs'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useMutation } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+import { api } from "@/convex/_generated/api"
 import { AuthError, AuthResult } from '@/types/auth'
 import { useState, useCallback } from 'react'
 

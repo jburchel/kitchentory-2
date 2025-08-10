@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Package, Home, Search, Plus, User, Bell, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/Button"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 const navigation = [

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Package, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Card, CardContent, CardHeader } from "@/components/ui/Card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 
