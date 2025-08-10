@@ -244,22 +244,11 @@ export function ShoppingListDashboard() {
 
       {activeTab === 'create' && (
         <div>
-          {householdId ? (
-            <CreateListForm
-              householdId={householdId}
-              onSuccess={handleCreateSuccess}
-              onCancel={() => setActiveTab('overview')}
-            />
-          ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-lg">
-              <div className="text-4xl mb-4">🏠</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No household found</h3>
-              <p className="text-gray-600 mb-4">You need to create or join a household first to manage shopping lists</p>
-              <Button onClick={() => window.location.href = '/onboarding'}>
-                Set Up Household
-              </Button>
-            </div>
-          )}
+          <CreateListForm
+            householdId={householdId || 'demo-household'}
+            onSuccess={handleCreateSuccess}
+            onCancel={() => setActiveTab('overview')}
+          />
         </div>
       )}
     </div>

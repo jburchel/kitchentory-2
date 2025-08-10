@@ -90,7 +90,7 @@ export function useShopping(householdId?: string) {
 
   // Transform Convex data to match our interface
   const transformedLists = useMemo(() => {
-    if (getShoppingListsQuery) {
+    if (getShoppingListsQuery && Array.isArray(getShoppingListsQuery)) {
       return getShoppingListsQuery.map((list: any): ShoppingList => ({
         id: list._id,
         name: list.name,
@@ -122,8 +122,9 @@ export function useShopping(householdId?: string) {
         storeLayout: [] // Will be implemented later with store layouts
       }))
     }
-    return shoppingLists || mockShoppingLists // Fallback to mock data
-  }, [getShoppingListsQuery, shoppingLists]);
+    // Always show mock data when no householdId or no real data
+    return householdId ? [] : mockShoppingLists;
+  }, [getShoppingListsQuery, householdId]);
 
   const createShoppingList = useCallback(async (data: Omit<ShoppingList, 'id' | 'createdAt' | 'updatedAt' | 'items' | 'totalEstimatedCost' | 'completedItemsCount'>) => {
     setLoading(true);
@@ -338,7 +339,7 @@ export function useShopping(householdId?: string) {
 
   return {
     shoppingLists: transformedLists,
-    loading: loading || getShoppingListsQuery === undefined,
+    loading: loading || (householdId && getShoppingListsQuery === undefined),
     error,
     stats,
     createShoppingList,
