@@ -33,6 +33,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       label: 'Shopping Lists',
       icon: BeveragesIcon,
       active: pathname.startsWith('/shopping-lists')
+    },
+    {
+      href: '/alerts',
+      label: 'Alerts',
+      icon: ProduceIcon, // Using ProduceIcon temporarily - could use a bell icon
+      active: pathname.startsWith('/alerts')
     }
   ]
 

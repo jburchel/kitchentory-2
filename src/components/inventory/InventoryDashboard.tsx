@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { AlertDashboard } from '@/components/alerts/AlertDashboard'
 import { 
   Package, 
   Plus, 
@@ -324,117 +325,7 @@ export function InventoryDashboard({ householdId, className }: InventoryDashboar
         </TabsContent>
 
         <TabsContent value="alerts" className="space-y-4">
-          {/* Expired Items */}
-          {stats.expiredItems.length > 0 && (
-            <Card className="border-red-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-red-600">
-                  <AlertTriangle className="w-5 h-5" />
-                  Expired Items ({stats.expiredItems.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {stats.expiredItems.map(item => (
-                    <div key={item.id} className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Expired {formatDistanceToNow(item.expirationDate!)} ago • {item.quantity} {item.unit}
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Expiring Soon */}
-          {stats.expiringSoonItems.length > 0 && (
-            <Card className="border-amber-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-600">
-                  <Clock className="w-5 h-5" />
-                  Expiring Soon ({stats.expiringSoonItems.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {stats.expiringSoonItems.map(item => (
-                    <div key={item.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Expires in {formatDistanceToNow(item.expirationDate!)} • {item.quantity} {item.unit}
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEditItem(item)}
-                      >
-                        Update
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Low Stock */}
-          {stats.lowStockItems.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Low Stock ({stats.lowStockItems.length})
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {stats.lowStockItems.map(item => (
-                    <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Only {item.quantity} {item.unit} remaining
-                        </p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 5)}
-                      >
-                        Restock
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {stats.expiredItems.length === 0 && stats.expiringSoonItems.length === 0 && stats.lowStockItems.length === 0 && (
-            <Card>
-              <CardContent className="py-12">
-                <div className="text-center text-muted-foreground">
-                  <Package className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-medium mb-2">All Good!</h3>
-                  <p className="text-sm">No items need immediate attention.</p>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          <AlertDashboard />
         </TabsContent>
 
         <TabsContent value="analytics">
