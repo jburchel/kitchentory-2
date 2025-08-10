@@ -254,18 +254,18 @@ export function useInventory(householdId?: string): UseInventoryReturn {
     }
   }, [convexStats, transformedItems])
 
-  // Convex mutations and queries
-  const createInventoryItem = useMutation(api.inventoryItems.createInventoryItem)
-  const updateInventoryItemMutation = useMutation(api.inventoryItems.updateInventoryItem)
-  const deleteInventoryItemMutation = useMutation(api.inventoryItems.deleteInventoryItem)
-  const updateItemQuantityMutation = useMutation(api.inventoryItems.updateItemQuantity)
+  // Convex mutations and queries - handle SSR gracefully
+  const createInventoryItem = typeof window !== 'undefined' ? useMutation(api.inventoryItems.createInventoryItem) : null
+  const updateInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateInventoryItem) : null
+  const deleteInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.deleteInventoryItem) : null
+  const updateItemQuantityMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateItemQuantity) : null
   const getInventoryItemsQuery = useQuery(
-    householdId ? api.inventoryItems.getInventoryItems : undefined,
-    householdId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+    householdId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryItems : undefined,
+    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
   )
   const getInventoryStatsQuery = useQuery(
-    householdId ? api.inventoryItems.getInventoryStats : undefined,
-    householdId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+    householdId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryStats : undefined,
+    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
   )
 
   const createItem = useCallback(async (householdId: string, data: CreateItemData): Promise<InventoryItem> => {
@@ -273,19 +273,25 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       setLoading(true)
       setError(null)
 
-      const itemId = await createInventoryItem({
-        householdId: householdId as Id<'households'>,
-        customName: data.name,
-        customBrand: data.brand,
-        customCategory: data.category,
-        quantity: data.quantity,
-        unit: data.unit,
-        expirationDate: data.expirationDate ? new Date(data.expirationDate).getTime() : undefined,
-        purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).getTime() : undefined,
-        cost: data.cost,
-        notes: data.notes,
-        addedBy: 'current-user'
-      })
+      let itemId: string
+      if (createInventoryItem) {
+        itemId = await createInventoryItem({
+          householdId: householdId as Id<'households'>,
+          customName: data.name,
+          customBrand: data.brand,
+          customCategory: data.category,
+          quantity: data.quantity,
+          unit: data.unit,
+          expirationDate: data.expirationDate ? new Date(data.expirationDate).getTime() : undefined,
+          purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).getTime() : undefined,
+          cost: data.cost,
+          notes: data.notes,
+          addedBy: 'current-user'
+        })
+      } else {
+        // Fallback for SSR/build time
+        itemId = Math.random().toString(36).substr(2, 9)
+      }
 
       // Create a temporary item structure for immediate UI feedback
       const newItem: InventoryItem = {
@@ -313,21 +319,23 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       setLoading(true)
       setError(null)
 
-      await updateInventoryItemMutation({
-        itemId: data.id as Id<'inventoryItems'>,
-        userId: 'current-user',
-        updates: {
-          customName: data.name,
-          customBrand: data.brand,
-          customCategory: data.category,
-          quantity: data.quantity,
-          unit: data.unit,
-          expirationDate: data.expirationDate ? new Date(data.expirationDate).getTime() : undefined,
-          purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).getTime() : undefined,
-          cost: data.cost,
-          notes: data.notes
-        }
-      })
+      if (updateInventoryItemMutation) {
+        await updateInventoryItemMutation({
+          itemId: data.id as Id<'inventoryItems'>,
+          userId: 'current-user',
+          updates: {
+            customName: data.name,
+            customBrand: data.brand,
+            customCategory: data.category,
+            quantity: data.quantity,
+            unit: data.unit,
+            expirationDate: data.expirationDate ? new Date(data.expirationDate).getTime() : undefined,
+            purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).getTime() : undefined,
+            cost: data.cost,
+            notes: data.notes
+          }
+        })
+      }
 
       // Return a temporary updated item structure
       const existingItem = items.find(item => item.id === data.id)
@@ -358,10 +366,12 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       setLoading(true)
       setError(null)
 
-      await deleteInventoryItemMutation({
-        itemId: itemId as Id<'inventoryItems'>,
-        userId: 'current-user'
-      })
+      if (deleteInventoryItemMutation) {
+        await deleteInventoryItemMutation({
+          itemId: itemId as Id<'inventoryItems'>,
+          userId: 'current-user'
+        })
+      }
     } catch (err) {
       const errorMessage = 'Failed to delete item'
       setError(errorMessage)
@@ -384,12 +394,14 @@ export function useInventory(householdId?: string): UseInventoryReturn {
 
       const quantityChange = quantity - existingItem.quantity
 
-      await updateItemQuantityMutation({
-        itemId: itemId as Id<'inventoryItems'>,
-        userId: 'current-user',
-        quantityChange,
-        consumed: quantityChange < 0
-      })
+      if (updateItemQuantityMutation) {
+        await updateItemQuantityMutation({
+          itemId: itemId as Id<'inventoryItems'>,
+          userId: 'current-user',
+          quantityChange,
+          consumed: quantityChange < 0
+        })
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update quantity'
       setError(errorMessage)

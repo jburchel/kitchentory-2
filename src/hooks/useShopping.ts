@@ -74,18 +74,18 @@ export function useShopping(householdId?: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Convex mutations and queries
-  const createShoppingListMutation = useMutation(api.shoppingLists.createShoppingList)
+  // Convex mutations and queries - handle SSR gracefully
+  const createShoppingListMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.createShoppingList) : null
   const getShoppingListsQuery = useQuery(
-    householdId ? api.shoppingLists.getShoppingLists : undefined,
-    householdId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+    householdId && typeof window !== 'undefined' ? api.shoppingLists.getShoppingLists : undefined,
+    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
   )
-  const addItemToListMutation = useMutation(api.shoppingLists.addItemToList)
-  const updateShoppingItemMutation = useMutation(api.shoppingLists.updateShoppingItem)
-  const deleteShoppingItemMutation = useMutation(api.shoppingLists.deleteShoppingItem)
+  const addItemToListMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.addItemToList) : null
+  const updateShoppingItemMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.updateShoppingItem) : null
+  const deleteShoppingItemMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.deleteShoppingItem) : null
   const generateSmartSuggestionsMutation = useQuery(
-    householdId ? api.shoppingLists.generateSmartSuggestions : undefined,
-    householdId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+    householdId && typeof window !== 'undefined' ? api.shoppingLists.generateSmartSuggestions : undefined,
+    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
   )
 
   // Transform Convex data to match our interface
@@ -128,25 +128,39 @@ export function useShopping(householdId?: string) {
   const createShoppingList = useCallback(async (data: Omit<ShoppingList, 'id' | 'createdAt' | 'updatedAt' | 'items' | 'totalEstimatedCost' | 'completedItemsCount'>) => {
     setLoading(true);
     try {
-      const listId = await createShoppingListMutation({
-        name: data.name,
-        description: data.description,
-        householdId: data.householdId as Id<'households'>,
-        createdBy: data.createdBy,
-        shareWithMembers: data.sharedWith
-      })
+      if (createShoppingListMutation) {
+        const listId = await createShoppingListMutation({
+          name: data.name,
+          description: data.description,
+          householdId: data.householdId as Id<'households'>,
+          createdBy: data.createdBy,
+          shareWithMembers: data.sharedWith
+        })
 
-      const newList: ShoppingList = {
-        ...data,
-        id: listId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        items: [],
-        totalEstimatedCost: 0,
-        completedItemsCount: 0,
-      };
-      setError(null);
-      return newList;
+        const newList: ShoppingList = {
+          ...data,
+          id: listId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          items: [],
+          totalEstimatedCost: 0,
+          completedItemsCount: 0,
+        };
+        setError(null);
+        return newList;
+      } else {
+        // Fallback for SSR/build time
+        const newList: ShoppingList = {
+          ...data,
+          id: Date.now().toString(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          items: [],
+          totalEstimatedCost: 0,
+          completedItemsCount: 0,
+        };
+        return newList;
+      }
     } catch (err) {
       setError('Failed to create shopping list');
       throw err;
@@ -158,17 +172,19 @@ export function useShopping(householdId?: string) {
   const addItemToList = useCallback(async (listId: string, item: Omit<ShoppingItem, 'id' | 'addedAt' | 'completed'>) => {
     setLoading(true);
     try {
-      const itemId = await addItemToListMutation({
-        listId: listId as Id<'shoppingLists'>,
-        name: item.name,
-        category: item.category,
-        quantity: item.quantity,
-        unit: item.unit,
-        priority: item.priority,
-        estimatedCost: item.estimatedPrice,
-        brand: item.brand,
-        addedBy: item.addedBy
-      })
+      if (addItemToListMutation) {
+        const itemId = await addItemToListMutation({
+          listId: listId as Id<'shoppingLists'>,
+          name: item.name,
+          category: item.category,
+          quantity: item.quantity,
+          unit: item.unit,
+          priority: item.priority,
+          estimatedCost: item.estimatedPrice,
+          brand: item.brand,
+          addedBy: item.addedBy
+        })
+      }
       
       setError(null);
     } catch (err) {
@@ -182,18 +198,20 @@ export function useShopping(householdId?: string) {
   const toggleItemCompletion = useCallback(async (listId: string, itemId: string) => {
     setLoading(true);
     try {
-      // Find current item to determine new status
-      const list = transformedLists.find(l => l.id === listId)
-      const item = list?.items.find(i => i.id === itemId)
-      const newStatus = item?.completed ? 'pending' : 'purchased'
+      if (updateShoppingItemMutation) {
+        // Find current item to determine new status
+        const list = transformedLists.find(l => l.id === listId)
+        const item = list?.items.find(i => i.id === itemId)
+        const newStatus = item?.completed ? 'pending' : 'purchased'
 
-      await updateShoppingItemMutation({
-        itemId: itemId as Id<'shoppingListItems'>,
-        userId: 'current-user',
-        updates: {
-          status: newStatus as any
-        }
-      })
+        await updateShoppingItemMutation({
+          itemId: itemId as Id<'shoppingListItems'>,
+          userId: 'current-user',
+          updates: {
+            status: newStatus as any
+          }
+        })
+      }
       
       setError(null);
     } catch (err) {
@@ -207,10 +225,12 @@ export function useShopping(householdId?: string) {
   const deleteItem = useCallback(async (listId: string, itemId: string) => {
     setLoading(true);
     try {
-      await deleteShoppingItemMutation({
-        itemId: itemId as Id<'shoppingListItems'>,
-        userId: 'current-user'
-      })
+      if (deleteShoppingItemMutation) {
+        await deleteShoppingItemMutation({
+          itemId: itemId as Id<'shoppingListItems'>,
+          userId: 'current-user'
+        })
+      }
       
       setError(null);
     } catch (err) {
