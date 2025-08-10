@@ -7,8 +7,8 @@ import { useMutation } from 'convex/react'
 // import { api } from "@/../convex/_generated/api"
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { CheckCircle, Home, Users, ArrowRight } from 'lucide-react'
 
