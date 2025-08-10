@@ -460,8 +460,10 @@ export function useOnboarding(): UseOnboardingReturn {
       if (state.profile.data.firstName !== user.firstName || 
           state.profile.data.lastName !== user.lastName) {
         await user.update({
-          firstName: state.profile.data.firstName,
-          lastName: state.profile.data.lastName,
+          unsafeMetadata: {
+            firstName: state.profile.data.firstName,
+            lastName: state.profile.data.lastName,
+          }
         });
       }
 

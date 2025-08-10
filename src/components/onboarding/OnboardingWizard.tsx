@@ -125,6 +125,11 @@ export function OnboardingWizard() {
             data={state.invitations.data}
             errors={state.invitations.validation.errors}
             onChange={(invitations) => {
+              // Handle the case where invitations might be undefined or null
+              if (!invitations || !Array.isArray(invitations)) {
+                return;
+              }
+              
               // This is a bit of a hack - ideally we'd have a cleaner way to set all invitations
               const currentInvitations = [...state.invitations.data];
               invitations.forEach((invitation, index) => {
