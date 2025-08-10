@@ -9,13 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 interface CreateListFormProps {
+  householdId: string;
   onSuccess?: (listId: string) => void;
   onCancel?: () => void;
 }
 
-export function CreateListForm({ onSuccess, onCancel }: CreateListFormProps) {
+export function CreateListForm({ householdId, onSuccess, onCancel }: CreateListFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { createShoppingList } = useShopping();
+  const { createShoppingList } = useShopping(householdId);
   
   const form = useForm<CreateShoppingListData>({
     resolver: zodResolver(createShoppingListSchema),
@@ -32,7 +33,7 @@ export function CreateListForm({ onSuccess, onCancel }: CreateListFormProps) {
     try {
       const newList = await createShoppingList({
         ...data,
-        householdId: 'current-household', // TODO: Get from context
+        householdId: householdId,
         createdBy: 'current-user', // TODO: Get from auth
         isShared: false,
         sharedWith: [],

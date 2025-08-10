@@ -10,6 +10,10 @@ import { Card } from '@/components/ui/card';
 export function ShoppingListDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'lists' | 'create'>('overview');
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
+  
+  // For now, use a mock household ID. In a real app, this would come from user context
+  const householdId = 'mock-household-id';
+  
   const { 
     shoppingLists, 
     stats, 
@@ -17,7 +21,7 @@ export function ShoppingListDashboard() {
     error, 
     deleteShoppingList, 
     shareShoppingList 
-  } = useShopping();
+  } = useShopping(householdId);
 
   const handleViewList = (listId: string) => {
     setSelectedListId(listId);
@@ -240,6 +244,7 @@ export function ShoppingListDashboard() {
       {activeTab === 'create' && (
         <div>
           <CreateListForm
+            householdId={householdId}
             onSuccess={handleCreateSuccess}
             onCancel={() => setActiveTab('overview')}
           />
