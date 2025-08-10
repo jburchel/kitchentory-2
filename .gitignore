@@ -1,18 +1,19 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 # Dependencies
-node_modules/
-.pnp
+/node_modules
+/.pnp
 .pnp.js
 
 # Testing
-coverage/
+/coverage
 
 # Next.js
-.next/
-out/
+/.next/
+/out/
 
 # Production
-build/
-dist/
+/build
 
 # Misc
 .DS_Store
@@ -37,10 +38,8 @@ next-env.d.ts
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# Claude Flow
-.claude-flow/
-memory/
-.roo/
-.roomodes
-EOF < /dev/null
+# OS
+Thumbs.db.claude-flow/metrics/

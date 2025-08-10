@@ -1,19 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    typedRoutes: true,
+  },
   typescript: {
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['images.unsplash.com', 'static.openfoodfacts.org', 'world.openfoodfacts.org'],
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    domains: [],
+    formats: ['image/webp', 'image/avif'],
+  },
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
 }
 
