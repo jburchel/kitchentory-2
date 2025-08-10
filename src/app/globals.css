@@ -1,0 +1,817 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+ * Kitchentory Brand CSS Variables
+ * Light/Dark mode color system with WCAG AA compliance
+ */
+
+@layer base {
+  :root {
+    /* Light Mode Brand Colors */
+    --primary: 158 64% 52%;           /* #10B981 - Green 600 */
+    --primary-foreground: 0 0% 100%;  /* White text on primary */
+    
+    /* Background Colors */
+    --background: 0 0% 100%;          /* #FFFFFF */
+    --foreground: 222 84% 5%;         /* #111827 - Gray 900 */
+    --surface: 210 40% 98%;           /* #F9FAFB - Gray 50 */
+    --surface-elevated: 0 0% 100%;    /* #FFFFFF */
+    
+    /* Card Colors */
+    --card: 0 0% 100%;                /* #FFFFFF */
+    --card-foreground: 222 84% 5%;    /* #111827 - Gray 900 */
+    
+    /* Border & Input Colors */
+    --border: 214 32% 91%;            /* #E5E7EB - Gray 200 */
+    --input: 214 32% 91%;             /* #E5E7EB - Gray 200 */
+    --ring: 158 64% 52%;              /* #10B981 - Primary green */
+    
+    /* Secondary Colors */
+    --secondary: 210 40% 96%;         /* #F3F4F6 - Gray 100 */
+    --secondary-foreground: 222 84% 5%; /* #111827 - Gray 900 */
+    
+    /* Muted Colors */
+    --muted: 210 40% 96%;             /* #F3F4F6 - Gray 100 */
+    --muted-foreground: 215 16% 47%;  /* #6B7280 - Gray 500 */
+    
+    /* Accent Colors */
+    --accent: 210 40% 96%;            /* #F3F4F6 - Gray 100 */
+    --accent-foreground: 222 84% 5%;  /* #111827 - Gray 900 */
+    
+    /* Destructive Colors */
+    --destructive: 0 84% 60%;         /* #EF4444 - Red 500 */
+    --destructive-foreground: 0 0% 98%; /* #FAFAFA */
+    
+    /* Popover Colors */
+    --popover: 0 0% 100%;             /* #FFFFFF */
+    --popover-foreground: 222 84% 5%; /* #111827 - Gray 900 */
+    
+    /* Text Hierarchy */
+    --text-primary: 222 84% 5%;       /* #111827 - Gray 900 */
+    --text-secondary: 215 25% 27%;    /* #4B5563 - Gray 600 */
+    --text-muted: 215 16% 47%;        /* #6B7280 - Gray 500 */
+    --text-disabled: 220 13% 69%;     /* #9CA3AF - Gray 400 */
+    
+    /* Semantic Colors - Light Mode */
+    --color-success: 158 64% 52%;     /* #10B981 - Green 600 */
+    --color-success-bg: 155 100% 94%; /* #D1FAE5 - Green 100 */
+    --color-success-border: 154 75% 87%; /* #A7F3D0 - Green 200 */
+    
+    --color-warning: 43 96% 56%;      /* #F59E0B - Yellow 500 */
+    --color-warning-bg: 48 100% 88%;  /* #FEF3C7 - Yellow 100 */
+    --color-warning-border: 48 95% 76%; /* #FDE68A - Yellow 200 */
+    
+    --color-error: 0 84% 60%;         /* #EF4444 - Red 500 */
+    --color-error-bg: 0 100% 94%;     /* #FEE2E2 - Red 100 */
+    --color-error-border: 0 93% 87%;  /* #FECACA - Red 200 */
+    
+    --color-info: 221 83% 53%;        /* #3B82F6 - Blue 500 */
+    --color-info-bg: 214 100% 92%;    /* #DBEAFE - Blue 100 */
+    --color-info-border: 213 97% 87%; /* #BFDBFE - Blue 200 */
+    
+    /* Food Category Colors */
+    --color-category-produce: 142 71% 45%;    /* #22C55E - Green 500 */
+    --color-category-protein: 271 81% 56%;    /* #A855F7 - Purple 500 */
+    --color-category-dairy: 221 83% 53%;      /* #3B82F6 - Blue 500 */
+    --color-category-grains: 45 93% 47%;      /* #EAB308 - Yellow 500 */
+    --color-category-beverages: 187 100% 42%; /* #06B6D4 - Cyan 500 */
+    --color-category-frozen: 199 89% 48%;     /* #0EA5E9 - Sky 500 */
+    --color-category-pantry: 20 91% 48%;      /* #F97316 - Orange 500 */
+    --color-category-household: 82 69% 45%;   /* #84CC16 - Lime 500 */
+    
+    /* Brand Gradients */
+    --gradient-primary: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+    --gradient-surface: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    
+    /* Border Radius */
+    --radius: 0.75rem; /* 12px */
+  }
+
+  .dark {
+    /* Dark Mode Brand Colors */
+    --primary: 160 84% 39%;           /* #059669 - Emerald 600 */
+    --primary-foreground: 156 73% 17%; /* #065F46 - Emerald 800 */
+    
+    /* Background Colors */
+    --background: 224 71% 4%;         /* #0F172A - Slate 900 */
+    --foreground: 210 40% 98%;        /* #F8FAFC - Slate 50 */
+    --surface: 215 28% 17%;           /* #1E293B - Slate 800 */
+    --surface-elevated: 217 33% 22%;  /* #334155 - Slate 700 */
+    
+    /* Card Colors */
+    --card: 215 28% 17%;              /* #1E293B - Slate 800 */
+    --card-foreground: 210 40% 98%;   /* #F8FAFC - Slate 50 */
+    
+    /* Border & Input Colors */
+    --border: 217 33% 22%;            /* #334155 - Slate 700 */
+    --input: 217 33% 22%;             /* #334155 - Slate 700 */
+    --ring: 158 64% 52%;              /* #34D399 - Emerald 400 */
+    
+    /* Secondary Colors */
+    --secondary: 215 28% 17%;         /* #1E293B - Slate 800 */
+    --secondary-foreground: 210 40% 98%; /* #F8FAFC - Slate 50 */
+    
+    /* Muted Colors */
+    --muted: 217 33% 22%;             /* #334155 - Slate 700 */
+    --muted-foreground: 215 20% 65%;  /* #94A3B8 - Slate 400 */
+    
+    /* Accent Colors */
+    --accent: 217 33% 22%;            /* #334155 - Slate 700 */
+    --accent-foreground: 210 40% 98%; /* #F8FAFC - Slate 50 */
+    
+    /* Destructive Colors */
+    --destructive: 0 63% 31%;         /* #991B1B - Red 800 */
+    --destructive-foreground: 210 40% 98%; /* #F8FAFC */
+    
+    /* Popover Colors */
+    --popover: 224 71% 4%;            /* #0F172A - Slate 900 */
+    --popover-foreground: 210 40% 98%; /* #F8FAFC - Slate 50 */
+    
+    /* Text Hierarchy - Dark Mode */
+    --text-primary: 210 40% 98%;      /* #F8FAFC - Slate 50 */
+    --text-secondary: 214 32% 91%;    /* #E2E8F0 - Slate 200 */
+    --text-muted: 215 20% 65%;        /* #94A3B8 - Slate 400 */
+    --text-disabled: 215 16% 47%;     /* #64748B - Slate 500 */
+    
+    /* Semantic Colors - Dark Mode */
+    --color-success: 142 77% 73%;     /* #6EE7B7 - Emerald 300 */
+    --color-success-bg: 154 54% 23%;  /* #064E3B - Emerald 900 */
+    --color-success-border: 156 73% 17%; /* #065F46 - Emerald 800 */
+    
+    --color-warning: 48 100% 67%;     /* #FCD34D - Yellow 300 */
+    --color-warning-bg: 45 92% 22%;   /* #78350F - Yellow 900 */
+    --color-warning-border: 42 87% 55%; /* #D97706 - Yellow 600 */
+    
+    --color-error: 0 91% 71%;         /* #FCA5A5 - Red 300 */
+    --color-error-bg: 0 63% 31%;      /* #7F1D1D - Red 900 */
+    --color-error-border: 0 84% 37%;  /* #B91C1C - Red 700 */
+    
+    --color-info: 213 93% 68%;        /* #60A5FA - Blue 400 */
+    --color-info-bg: 221 39% 11%;     /* #1E3A8A - Blue 900 */
+    --color-info-border: 221 83% 25%; /* #1E40AF - Blue 800 */
+    
+    /* Food Category Colors - Dark Mode Adjustments */
+    --color-category-produce: 142 77% 73%;    /* #6EE7B7 - Emerald 300 */
+    --color-category-protein: 271 91% 65%;    /* #C084FC - Purple 400 */
+    --color-category-dairy: 213 93% 68%;      /* #60A5FA - Blue 400 */
+    --color-category-grains: 48 100% 67%;     /* #FCD34D - Yellow 300 */
+    --color-category-beverages: 187 92% 69%;  /* #22D3EE - Cyan 400 */
+    --color-category-frozen: 199 95% 74%;     /* #38BDF8 - Sky 400 */
+    --color-category-pantry: 20 95% 64%;      /* #FB923C - Orange 400 */
+    --color-category-household: 82 85% 67%;   /* #A3E635 - Lime 400 */
+    
+    /* Brand Gradients - Dark Mode */
+    --gradient-primary: linear-gradient(135deg, #065F46 0%, #047857 100%);
+    --gradient-surface: linear-gradient(135deg, #374151 0%, #4B5563 100%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Typography - Inter font family */
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'sans-serif';
+  }
+}
+
+@layer components {
+  /* ==============================================
+   * KITCHENTORY BRANDBOOK TYPOGRAPHY HIERARCHY
+   * Major Third Scale (1.250) with Inter Font
+   * ============================================== */
+
+  /* Core Typography Variables */
+  :root {
+    --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+    --font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    
+    /* Typography Scale Variables */
+    --text-xs: 12px;
+    --text-sm: 14px; 
+    --text-base: 16px;
+    --text-lg: 18px;
+    --text-xl: 20px;
+    --text-2xl: 24px;
+    --text-3xl: 30px;
+    --text-4xl: 36px;
+    
+    /* Line Height Variables */
+    --lh-xs: 16px;
+    --lh-sm: 20px;
+    --lh-base: 24px;
+    --lh-lg: 28px;
+    --lh-xl: 28px;
+    --lh-2xl: 32px;
+    --lh-3xl: 36px;
+    --lh-4xl: 40px;
+    
+    /* Letter Spacing Variables */
+    --ls-tight: -0.02em;
+    --ls-normal: -0.01em;
+    --ls-slight: -0.005em;
+    --ls-base: 0;
+    --ls-wide: 0.01em;
+  }
+
+  /* ==============================================
+   * BRANDBOOK TYPOGRAPHY CLASSES
+   * ============================================== */
+
+  /* Display Heading - Largest brand messaging */
+  .heading-display {
+    font-family: var(--font-family-primary);
+    font-size: clamp(28px, 5vw, 36px);
+    font-weight: 800;
+    line-height: clamp(32px, 5.5vw, 40px);
+    letter-spacing: var(--ls-tight);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Page Heading - Main page titles */
+  .heading-page {
+    font-family: var(--font-family-primary);
+    font-size: clamp(24px, 4vw, 30px);
+    font-weight: 700;
+    line-height: clamp(28px, 4.5vw, 36px);
+    letter-spacing: var(--ls-normal);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Section Heading - Major sections */
+  .heading-section {
+    font-family: var(--font-family-primary);
+    font-size: clamp(20px, 3vw, 24px);
+    font-weight: 600;
+    line-height: clamp(24px, 3.5vw, 32px);
+    letter-spacing: var(--ls-slight);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Subsection Heading - Minor sections */
+  .heading-subsection {
+    font-family: var(--font-family-primary);
+    font-size: clamp(18px, 2.5vw, 20px);
+    font-weight: 600;
+    line-height: clamp(22px, 3vw, 28px);
+    letter-spacing: var(--ls-base);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Component Heading - Cards, widgets */
+  .heading-component {
+    font-family: var(--font-family-primary);
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 500;
+    line-height: clamp(20px, 2.5vw, 28px);
+    letter-spacing: var(--ls-base);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Large Text - Emphasized content */
+  .text-large {
+    font-family: var(--font-family-primary);
+    font-size: clamp(16px, 2vw, 18px);
+    font-weight: 400;
+    line-height: clamp(20px, 2.5vw, 28px);
+    letter-spacing: var(--ls-base);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Body Text - Primary content */
+  .text-body {
+    font-family: var(--font-family-primary);
+    font-size: clamp(14px, 1.5vw, 16px);
+    font-weight: 400;
+    line-height: clamp(20px, 2vw, 24px);
+    letter-spacing: var(--ls-base);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-primary));
+  }
+
+  /* Small Text - Secondary information */
+  .text-small {
+    font-family: var(--font-family-primary);
+    font-size: clamp(13px, 1.2vw, 14px);
+    font-weight: 400;
+    line-height: clamp(18px, 1.8vw, 20px);
+    letter-spacing: var(--ls-base);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-secondary));
+  }
+
+  /* Caption Text - Labels, meta information */
+  .text-caption {
+    font-family: var(--font-family-primary);
+    font-size: clamp(11px, 1vw, 12px);
+    font-weight: 400;
+    line-height: clamp(14px, 1.5vw, 16px);
+    letter-spacing: var(--ls-wide);
+    font-feature-settings: var(--font-feature-settings);
+    color: hsl(var(--text-muted));
+    text-transform: uppercase;
+  }
+
+  /* ==============================================
+   * INTERACTIVE TYPOGRAPHY STATES
+   * ============================================== */
+
+  /* Link Text Styles */
+  .text-link {
+    color: hsl(var(--primary));
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    border-bottom: 1px solid transparent;
+  }
+
+  .text-link:hover {
+    color: hsl(var(--primary));
+    border-bottom-color: hsl(var(--primary));
+    text-decoration: none;
+  }
+
+  .text-link:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Button Text Styles */
+  .text-button {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .text-button-small {
+    font-size: var(--text-sm);
+    line-height: var(--lh-sm);
+  }
+
+  .text-button-large {
+    font-size: var(--text-lg);
+    line-height: var(--lh-lg);
+  }
+
+  /* ==============================================
+   * RESPONSIVE TYPOGRAPHY UTILITIES
+   * ============================================== */
+
+  /* Mobile Optimized Classes */
+  @media (max-width: 640px) {
+    .heading-display-mobile {
+      font-size: 24px;
+      line-height: 28px;
+      font-weight: 700;
+    }
+    
+    .heading-page-mobile {
+      font-size: 20px;
+      line-height: 24px;
+      font-weight: 600;
+    }
+    
+    .text-body-mobile {
+      font-size: 16px; /* Prevent iOS zoom */
+      line-height: 24px;
+    }
+  }
+
+  /* Tablet and Up */
+  @media (min-width: 768px) {
+    .heading-display-tablet {
+      font-size: 32px;
+      line-height: 36px;
+    }
+    
+    .heading-page-tablet {
+      font-size: 28px;
+      line-height: 32px;
+    }
+  }
+
+  /* Desktop and Up */
+  @media (min-width: 1024px) {
+    .heading-display-desktop {
+      font-size: 36px;
+      line-height: 40px;
+    }
+    
+    .heading-page-desktop {
+      font-size: 30px;
+      line-height: 36px;
+    }
+  }
+
+  /* ==============================================
+   * BRAND & UTILITY CLASSES
+   * ============================================== */
+
+  /* Utility classes for easy implementation */
+  .bg-brand-gradient {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-surface-gradient {
+    background: var(--gradient-surface);
+  }
+  
+  .text-brand {
+    color: hsl(var(--primary));
+  }
+  
+  .border-brand {
+    border-color: hsl(var(--primary));
+  }
+  
+  /* Category color utilities */
+  .text-category-produce { color: hsl(var(--color-category-produce)); }
+  .text-category-protein { color: hsl(var(--color-category-protein)); }
+  .text-category-dairy { color: hsl(var(--color-category-dairy)); }
+  .text-category-grains { color: hsl(var(--color-category-grains)); }
+  .text-category-beverages { color: hsl(var(--color-category-beverages)); }
+  .text-category-frozen { color: hsl(var(--color-category-frozen)); }
+  .text-category-pantry { color: hsl(var(--color-category-pantry)); }
+  .text-category-household { color: hsl(var(--color-category-household)); }
+  
+  /* Semantic color utilities */
+  .text-success { color: hsl(var(--color-success)); }
+  .text-warning { color: hsl(var(--color-warning)); }
+  .text-error { color: hsl(var(--color-error)); }
+  .text-info { color: hsl(var(--color-info)); }
+  
+  .bg-success { background-color: hsl(var(--color-success-bg)); }
+  .bg-warning { background-color: hsl(var(--color-warning-bg)); }
+  .bg-error { background-color: hsl(var(--color-error-bg)); }
+  .bg-info { background-color: hsl(var(--color-info-bg)); }
+  
+  .border-success { border-color: hsl(var(--color-success-border)); }
+  .border-warning { border-color: hsl(var(--color-warning-border)); }
+  .border-error { border-color: hsl(var(--color-error-border)); }
+  .border-info { border-color: hsl(var(--color-info-border)); }
+  
+  /* Enhanced text hierarchy utilities */
+  .text-primary { color: hsl(var(--text-primary)); }
+  .text-secondary { color: hsl(var(--text-secondary)); }
+  .text-muted { color: hsl(var(--text-muted)); }
+  .text-disabled { color: hsl(var(--text-disabled)); }
+  
+  /* Font weight utilities */
+  .font-display { font-weight: 800; }
+  .font-heading { font-weight: 700; }
+  .font-subheading { font-weight: 600; }
+  .font-medium { font-weight: 500; }
+  .font-normal { font-weight: 400; }
+  .font-light { font-weight: 300; }
+  
+  /* Letter spacing utilities */
+  .tracking-tight { letter-spacing: var(--ls-tight); }
+  .tracking-normal { letter-spacing: var(--ls-normal); }
+  .tracking-slight { letter-spacing: var(--ls-slight); }
+  .tracking-wide { letter-spacing: var(--ls-wide); }
+}
+
+@layer utilities {
+  /* ==============================================
+   * ACCESSIBILITY & USER PREFERENCE SUPPORT
+   * ============================================== */
+
+  /* Focus styles for accessibility */
+  .focus-brand:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  
+  /* Enhanced focus styles for typography */
+  .heading-display:focus-visible,
+  .heading-page:focus-visible,
+  .heading-section:focus-visible,
+  .heading-subsection:focus-visible,
+  .heading-component:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .focus-brand:focus-visible {
+      outline: 3px solid hsl(var(--foreground));
+      outline-offset: 1px;
+    }
+    
+    /* Enhance text contrast in high contrast mode */
+    .text-secondary {
+      color: hsl(var(--text-primary));
+    }
+    
+    .text-muted {
+      color: hsl(var(--text-secondary));
+    }
+    
+    /* Stronger borders for high contrast */
+    .text-link {
+      border-bottom-width: 2px;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .bg-brand-gradient,
+    .bg-surface-gradient {
+      background: hsl(var(--primary));
+    }
+    
+    /* Remove transitions for reduced motion */
+    .text-link,
+    .text-button {
+      transition: none;
+    }
+  }
+  
+  /* Font size preference support */
+  @media (prefers-reduced-data: reduce) {
+    /* Disable web fonts in low-data mode */
+    .heading-display,
+    .heading-page,
+    .heading-section,
+    .heading-subsection,
+    .heading-component,
+    .text-large,
+    .text-body,
+    .text-small,
+    .text-caption {
+      font-family: system-ui, sans-serif;
+    }
+  }
+  
+  /* Dark mode typography adjustments */
+  @media (prefers-color-scheme: dark) {
+    .text-caption {
+      letter-spacing: 0.02em; /* Slightly wider for dark mode readability */
+    }
+  }
+  
+  /* ==============================================
+   * PRINT STYLESHEET OPTIMIZATIONS
+   * ============================================== */
+  
+  @media print {
+    /* Optimize typography for print */
+    .heading-display {
+      font-size: 28px;
+      line-height: 32px;
+      page-break-after: avoid;
+      color: #000;
+    }
+    
+    .heading-page {
+      font-size: 24px;
+      line-height: 28px;
+      page-break-after: avoid;
+      color: #000;
+    }
+    
+    .heading-section {
+      font-size: 20px;
+      line-height: 24px;
+      page-break-after: avoid;
+      color: #000;
+      margin-top: 1rem;
+    }
+    
+    .heading-subsection,
+    .heading-component {
+      font-size: 16px;
+      line-height: 20px;
+      page-break-after: avoid;
+      color: #000;
+    }
+    
+    .text-body,
+    .text-large {
+      font-size: 12px;
+      line-height: 16px;
+      color: #000;
+    }
+    
+    .text-small,
+    .text-caption {
+      font-size: 10px;
+      line-height: 12px;
+      color: #333;
+    }
+    
+    /* Remove gradients and shadows for print */
+    .bg-brand-gradient,
+    .bg-surface-gradient {
+      background: #fff !important;
+    }
+    
+    .text-link {
+      color: #000;
+      text-decoration: underline;
+      border-bottom: none;
+    }
+    
+    /* Show URLs after links in print */
+    .text-link[href]:after {
+      content: " (" attr(href) ")";
+      font-size: 10px;
+      color: #666;
+    }
+  }
+  
+  /* ==============================================
+   * PERFORMANCE & LOADING OPTIMIZATIONS
+   * ============================================== */
+  
+  /* Font loading optimization */
+  .font-loading-fallback {
+    font-family: system-ui, sans-serif;
+    font-display: swap;
+  }
+  
+  /* Prevent layout shift during font loading */
+  .text-stable {
+    font-kerning: auto;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  
+  /* ==============================================
+   * RESPONSIVE HELPER UTILITIES
+   * ============================================== */
+  
+  /* Hide text on mobile if too long */
+  .text-truncate-mobile {
+    @apply truncate;
+  }
+  
+  @media (min-width: 640px) {
+    .text-truncate-mobile {
+      @apply overflow-visible whitespace-normal;
+    }
+  }
+  
+  /* Responsive text alignment */
+  .text-center-mobile {
+    text-align: center;
+  }
+  
+  @media (min-width: 640px) {
+    .text-center-mobile {
+      text-align: left;
+    }
+  }
+  
+  /* Reading width optimization */
+  .reading-width {
+    max-width: 65ch; /* Optimal reading width */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .reading-width-narrow {
+    max-width: 45ch; /* Narrow column reading */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* ==============================================
+   * BRAND-SPECIFIC TYPOGRAPHY UTILITIES
+   * ============================================== */
+  
+  /* Brand emphasis styles */
+  .text-brand-emphasis {
+    color: hsl(var(--primary));
+    font-weight: 600;
+  }
+  
+  /* Gradient text effect */
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-foreground)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+  }
+  
+  /* Fallback for browsers that don't support background-clip: text */
+  @supports not (-webkit-background-clip: text) {
+    .text-gradient {
+      color: hsl(var(--primary));
+      background: none;
+      -webkit-text-fill-color: initial;
+    }
+  }
+  
+  /* Brand shadow text */
+  .text-shadow-brand {
+    text-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+  }
+  
+  /* Interactive text states */
+  .text-interactive {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .text-interactive:hover {
+    color: hsl(var(--primary));
+  }
+  
+  .text-interactive:active {
+    color: hsl(var(--primary));
+    transform: scale(0.98);
+  }
+}
+
+/* ==============================================
+ * ACCESSIBILITY: TOUCH TARGET UTILITIES
+ * WCAG AA Compliance - 44x44px minimum
+ * ============================================== */
+
+@layer utilities {
+  /* Standard touch target - 44x44px minimum */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Small touch target - ensures 44px height with responsive width */
+  .touch-target-sm {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+  
+  @media (max-width: 640px) {
+    .touch-target-sm {
+      min-width: 44px;
+    }
+  }
+  
+  /* Large touch target - 48x48px for enhanced usability */
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Icon touch target with centered content */
+  .touch-target-icon {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Touch spacing for adequate separation between targets */
+  .touch-spacing {
+    gap: 8px;
+  }
+  
+  .touch-spacing-lg {
+    gap: 12px;
+  }
+  
+  /* Enhanced feedback for touch interactions */
+  .touch-feedback:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .touch-feedback:active {
+      transform: none;
+    }
+  }
+  
+  /* High contrast support for touch targets */
+  @media (prefers-contrast: high) {
+    .touch-target,
+    .touch-target-sm,
+    .touch-target-lg,
+    .touch-target-icon {
+      border: 2px solid;
+      border-color: currentColor;
+    }
+  }
+}
