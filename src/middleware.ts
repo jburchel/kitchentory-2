@@ -7,8 +7,6 @@ const isPublicRoute = createRouteMatcher([
   '/auth/sign-in(.*)',
   '/auth/sign-up(.*)', 
   '/auth/forgot-password(.*)',
-  '/onboarding(.*)',
-  '/dashboard(.*)',
   '/api/webhooks(.*)',
   '/api/public(.*)',
 ])
@@ -17,7 +15,16 @@ const isApiRoute = createRouteMatcher(['/api(.*)'])
 const isDashboardRoute = createRouteMatcher(['/dashboard(.*)'])
 const isOnboardingRoute = createRouteMatcher(['/onboarding(.*)'])
 
-export default clerkMiddleware()
+export default clerkMiddleware(async (auth, req) => {
+  // For public routes, don't require authentication
+  if (isPublicRoute(req)) {
+    return NextResponse.next()
+  }
+  
+  // For all other routes, authentication is required
+  // This will automatically redirect to sign-in if not authenticated
+  await auth.protect()
+})
 
 export const config = {
   matcher: [

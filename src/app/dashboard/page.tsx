@@ -1,29 +1,15 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { UserButton } from '@/components/auth/UserButton'
+import { AppLayout } from '@/components/layout/AppLayout'
 import { ProduceIcon, BeveragesIcon, ProteinIcon } from '@/components/icons/svg'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import Link from 'next/link'
 
 export default function DashboardPage() {
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
-        {/* Brand-compliant header */}
-        <header className="bg-card border-b border-border shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center py-6">
-              <div>
-                <h1 className="text-3xl font-bold text-primary">Kitchentory</h1>
-                <p className="text-sm text-muted-foreground">Manage your kitchen inventory</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <UserButton />
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <AppLayout>
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* Welcome Card - Brand compliant with utility classes */}
@@ -41,29 +27,35 @@ export default function DashboardPage() {
             <Card className="p-6">
               <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
               <div className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start min-h-[44px] text-category-produce border-green-200 bg-green-50 hover:bg-green-100"
-                >
-                  <ProduceIcon className="w-5 h-5 mr-3 text-category-produce" />
-                  Add New Item
-                </Button>
+                <Link href="/inventory" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start min-h-[44px] text-category-produce border-green-200 bg-green-50 hover:bg-green-100"
+                  >
+                    <ProduceIcon className="w-5 h-5 mr-3 text-category-produce" />
+                    View Inventory
+                  </Button>
+                </Link>
                 
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start min-h-[44px] text-category-beverages border-cyan-200 bg-cyan-50 hover:bg-cyan-100"
-                >
-                  <BeveragesIcon className="w-5 h-5 mr-3 text-category-beverages" />
-                  Create Shopping List
-                </Button>
+                <Link href="/shopping-lists" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start min-h-[44px] text-category-beverages border-cyan-200 bg-cyan-50 hover:bg-cyan-100"
+                  >
+                    <BeveragesIcon className="w-5 h-5 mr-3 text-category-beverages" />
+                    Shopping Lists
+                  </Button>
+                </Link>
                 
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start min-h-[44px] text-category-protein border-purple-200 bg-purple-50 hover:bg-purple-100"
-                >
-                  <ProteinIcon className="w-5 h-5 mr-3 text-category-protein" />
-                  Manage Categories
-                </Button>
+                <Link href="/onboarding" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start min-h-[44px] text-category-protein border-purple-200 bg-purple-50 hover:bg-purple-100"
+                  >
+                    <ProteinIcon className="w-5 h-5 mr-3 text-category-protein" />
+                    Household Settings
+                  </Button>
+                </Link>
               </div>
             </Card>
 
@@ -129,8 +121,8 @@ export default function DashboardPage() {
               ))}
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </AppLayout>
     </ProtectedRoute>
   )
 }
