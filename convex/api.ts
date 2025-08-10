@@ -23,6 +23,9 @@ export * as users from "./users";
 // Product management (existing)
 export * as products from "./products";
 
+// Shopping list management
+export * as shoppingLists from "./shoppingLists";
+
 // Validators and utilities
 export * from "./validators";
 
@@ -81,3 +84,14 @@ export {
   getRecentSearches,
   addSearch
 } from "./products";
+
+export {
+  // Shopping list functions
+  createShoppingList,
+  getShoppingLists,
+  getShoppingList,
+  addItemToList,
+  updateShoppingItem,
+  deleteShoppingItem,
+  generateSmartSuggestions
+} from "./shoppingLists";\n\nexport {\n  // Inventory item functions\n  createInventoryItem,\n  getInventoryItems,\n  updateInventoryItem,\n  deleteInventoryItem,\n  updateItemQuantity,\n  getInventoryStats,\n  createStorageLocation,\n  getStorageLocations\n} from "./inventoryItems";

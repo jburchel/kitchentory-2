@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
-## Kitchentory - Kitchen Inventory & Recipe Management System
 
+## Kitchentory - Kitchen Inventory & Recipe Management System
 
 ### Executive Summary
 

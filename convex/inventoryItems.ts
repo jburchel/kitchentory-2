@@ -1,0 +1,483 @@
+import { query, mutation, internalQuery, internalMutation } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { v } from "convex/values";
+import { Id } from "./_generated/dataModel";
+
+// Inventory item management functions
+export const createInventoryItem = mutation({
+  args: {
+    householdId: v.id("households"),
+    productId: v.optional(v.id("products")),
+    customName: v.optional(v.string()),
+    customBrand: v.optional(v.string()),
+    customCategory: v.optional(v.string()),
+    barcode: v.optional(v.string()),
+    quantity: v.number(),
+    unit: v.string(),
+    storageLocationId: v.optional(v.id("storageLocations")),
+    purchaseDate: v.optional(v.number()),
+    expirationDate: v.optional(v.number()),
+    cost: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    addedBy: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Check household membership
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", args.householdId).eq("userId", args.addedBy))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership) {
+      throw new Error("Access denied: Not a member of this household");
+    }
+
+    // Create the inventory item
+    const itemId = await ctx.db.insert("inventoryItems", {
+      householdId: args.householdId,
+      productId: args.productId,
+      customName: args.customName,
+      customBrand: args.customBrand,
+      customCategory: args.customCategory,
+      barcode: args.barcode,
+      quantity: args.quantity,
+      unit: args.unit,
+      storageLocationId: args.storageLocationId,
+      purchaseDate: args.purchaseDate,
+      expirationDate: args.expirationDate,
+      cost: args.cost,
+      notes: args.notes,
+      addedBy: args.addedBy,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    // Log activity
+    await ctx.runMutation(internal.activityFeed.logActivity, {
+      householdId: args.householdId,
+      userId: args.addedBy,
+      type: "item_added",
+      itemId,
+      itemName: args.customName || 'New Item',
+      details: `Added "${args.customName || 'New Item'}" to inventory`,
+      metadata: {
+        quantity: args.quantity,
+        unit: args.unit,
+        location: args.storageLocationId,
+      },
+    });
+
+    return itemId;
+  },
+});
+
+export const getInventoryItems = query({
+  args: {
+    householdId: v.id("households"),
+    userId: v.string(),
+    categoryFilter: v.optional(v.string()),
+    locationFilter: v.optional(v.id("storageLocations")),
+    expirationFilter: v.optional(v.union(v.literal("expired"), v.literal("expiring"), v.literal("all"))),
+    searchQuery: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // Check household membership
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", args.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership) {
+      throw new Error("Access denied: Not a member of this household");
+    }
+
+    // Get all inventory items for the household
+    let itemsQuery = ctx.db
+      .query("inventoryItems")
+      .withIndex("by_household", (q) => q.eq("householdId", args.householdId));
+
+    let items = await itemsQuery.collect();
+
+    // Apply filters
+    if (args.categoryFilter) {
+      items = items.filter((item) => item.customCategory === args.categoryFilter);
+    }
+
+    if (args.locationFilter) {
+      items = items.filter((item) => item.storageLocationId === args.locationFilter);
+    }
+
+    if (args.expirationFilter) {
+      const now = Date.now();
+      const threeDaysFromNow = now + (3 * 24 * 60 * 60 * 1000);
+
+      switch (args.expirationFilter) {
+        case "expired":
+          items = items.filter((item) => item.expirationDate && item.expirationDate < now);
+          break;
+        case "expiring":
+          items = items.filter((item) => 
+            item.expirationDate && 
+            item.expirationDate >= now && 
+            item.expirationDate <= threeDaysFromNow
+          );
+          break;
+      }
+    }
+
+    if (args.searchQuery) {
+      const query = args.searchQuery.toLowerCase();
+      items = items.filter((item) => 
+        (item.customName && item.customName.toLowerCase().includes(query)) ||
+        (item.customBrand && item.customBrand.toLowerCase().includes(query)) ||
+        (item.notes && item.notes.toLowerCase().includes(query))
+      );
+    }
+
+    // Enrich with storage location data
+    const enrichedItems = await Promise.all(
+      items.map(async (item) => {
+        let storageLocation = null;
+        if (item.storageLocationId) {
+          storageLocation = await ctx.db.get(item.storageLocationId);
+        }
+
+        return {
+          ...item,
+          storageLocation,
+          // Add computed fields
+          isExpired: item.expirationDate ? item.expirationDate < Date.now() : false,
+          isExpiringSoon: item.expirationDate ? 
+            item.expirationDate >= Date.now() && 
+            item.expirationDate <= Date.now() + (3 * 24 * 60 * 60 * 1000) : false,
+          isLowStock: item.quantity <= 2,
+        };
+      })
+    );
+
+    return enrichedItems;
+  },
+});
+
+export const updateInventoryItem = mutation({
+  args: {
+    itemId: v.id("inventoryItems"),
+    userId: v.string(),
+    updates: v.object({
+      customName: v.optional(v.string()),
+      customBrand: v.optional(v.string()),
+      customCategory: v.optional(v.string()),
+      quantity: v.optional(v.number()),
+      unit: v.optional(v.string()),
+      storageLocationId: v.optional(v.id("storageLocations")),
+      purchaseDate: v.optional(v.number()),
+      expirationDate: v.optional(v.number()),
+      cost: v.optional(v.number()),
+      notes: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const item = await ctx.db.get(args.itemId);
+    if (!item) {
+      throw new Error("Item not found");
+    }
+
+    // Check household membership and permissions
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", item.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership || !membership.permissions.includes("write")) {
+      throw new Error("Access denied: Insufficient permissions");
+    }
+
+    // Update the item
+    await ctx.db.patch(args.itemId, {
+      ...args.updates,
+      updatedAt: Date.now(),
+    });
+
+    // Log activity for significant changes
+    if (args.updates.quantity !== undefined && args.updates.quantity !== item.quantity) {
+      await ctx.runMutation(internal.activityFeed.logActivity, {
+        householdId: item.householdId,
+        userId: args.userId,
+        type: "item_updated",
+        itemId: args.itemId,
+        itemName: item.customName || 'Unknown Item',
+        details: `Updated quantity from ${item.quantity} to ${args.updates.quantity}`,
+        metadata: {
+          quantity: args.updates.quantity,
+          unit: item.unit,
+        },
+      });
+    }
+
+    return args.itemId;
+  },
+});
+
+export const deleteInventoryItem = mutation({
+  args: {
+    itemId: v.id("inventoryItems"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const item = await ctx.db.get(args.itemId);
+    if (!item) {
+      throw new Error("Item not found");
+    }
+
+    // Check household membership and permissions
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", item.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership || !membership.permissions.includes("delete")) {
+      throw new Error("Access denied: Insufficient permissions");
+    }
+
+    await ctx.db.delete(args.itemId);
+
+    // Log activity
+    await ctx.runMutation(internal.activityFeed.logActivity, {
+      householdId: item.householdId,
+      userId: args.userId,
+      type: "item_removed",
+      itemName: item.customName || 'Unknown Item',
+      details: `Removed "${item.customName || 'Unknown Item'}" from inventory`,
+    });
+
+    return args.itemId;
+  },
+});
+
+export const updateItemQuantity = mutation({
+  args: {
+    itemId: v.id("inventoryItems"),
+    userId: v.string(),
+    quantityChange: v.number(), // Can be positive or negative
+    consumed: v.optional(v.boolean()),
+  },
+  handler: async (ctx, args) => {
+    const item = await ctx.db.get(args.itemId);
+    if (!item) {
+      throw new Error("Item not found");
+    }
+
+    // Check household membership
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", item.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership) {
+      throw new Error("Access denied: Not a member of this household");
+    }
+
+    const newQuantity = Math.max(0, item.quantity + args.quantityChange);
+    
+    await ctx.db.patch(args.itemId, {
+      quantity: newQuantity,
+      updatedAt: Date.now(),
+    });
+
+    // Log activity
+    const activityType = args.consumed ? "item_consumed" : "item_updated";
+    await ctx.runMutation(internal.activityFeed.logActivity, {
+      householdId: item.householdId,
+      userId: args.userId,
+      type: activityType,
+      itemId: args.itemId,
+      itemName: item.customName || 'Unknown Item',
+      details: args.consumed 
+        ? `Consumed ${Math.abs(args.quantityChange)} ${item.unit} of "${item.customName}"`
+        : `Updated quantity by ${args.quantityChange} ${item.unit}`,
+      metadata: {
+        quantity: newQuantity,
+        unit: item.unit,
+      },
+    });
+
+    return args.itemId;
+  },
+});
+
+export const getInventoryStats = query({
+  args: {
+    householdId: v.id("households"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Check household membership
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", args.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership) {
+      throw new Error("Access denied: Not a member of this household");
+    }
+
+    const items = await ctx.db
+      .query("inventoryItems")
+      .withIndex("by_household", (q) => q.eq("householdId", args.householdId))
+      .collect();
+
+    const now = Date.now();
+    const threeDaysFromNow = now + (3 * 24 * 60 * 60 * 1000);
+    const sevenDaysFromNow = now + (7 * 24 * 60 * 60 * 1000);
+
+    // Calculate statistics
+    const totalItems = items.length;
+    const totalValue = items.reduce((sum, item) => sum + (item.cost || 0), 0);
+    
+    const expiredItems = items.filter(item => 
+      item.expirationDate && item.expirationDate < now
+    );
+    
+    const expiringSoonItems = items.filter(item => 
+      item.expirationDate && 
+      item.expirationDate >= now && 
+      item.expirationDate <= threeDaysFromNow
+    );
+    
+    const expiringWeekItems = items.filter(item => 
+      item.expirationDate && 
+      item.expirationDate >= now && 
+      item.expirationDate <= sevenDaysFromNow
+    );
+
+    const lowStockItems = items.filter(item => item.quantity <= 2);
+    const outOfStockItems = items.filter(item => item.quantity === 0);
+
+    // Category breakdown
+    const categoryStats = items.reduce((acc, item) => {
+      const category = item.customCategory || 'uncategorized';
+      if (!acc[category]) {
+        acc[category] = { count: 0, value: 0 };
+      }
+      acc[category].count++;
+      acc[category].value += item.cost || 0;
+      return acc;
+    }, {} as Record<string, { count: number; value: number }>);
+
+    return {
+      totalItems,
+      totalValue,
+      expiredCount: expiredItems.length,
+      expiringSoonCount: expiringSoonItems.length,
+      expiringWeekCount: expiringWeekItems.length,
+      lowStockCount: lowStockItems.length,
+      outOfStockCount: outOfStockItems.length,
+      categoryBreakdown: categoryStats,
+      expiredItems: expiredItems.slice(0, 10), // Recent expired items
+      expiringSoonItems: expiringSoonItems.slice(0, 10), // Items expiring soon
+      lowStockItems: lowStockItems.slice(0, 10), // Low stock items
+    };
+  },
+});
+
+// Storage location management
+export const createStorageLocation = mutation({
+  args: {
+    householdId: v.id("households"),
+    name: v.string(),
+    type: v.union(v.literal("pantry"), v.literal("fridge"), v.literal("freezer"), v.literal("cabinet"), v.literal("other")),
+    description: v.optional(v.string()),
+    temperature: v.optional(v.string()),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Check household membership and permissions
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", args.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership || !membership.permissions.includes("write")) {
+      throw new Error("Access denied: Insufficient permissions");
+    }
+
+    return await ctx.db.insert("storageLocations", {
+      householdId: args.householdId,
+      name: args.name,
+      type: args.type,
+      description: args.description,
+      temperature: args.temperature,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const getStorageLocations = query({
+  args: {
+    householdId: v.id("households"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Check household membership
+    const membership = await ctx.db
+      .query("householdMemberships")
+      .withIndex("by_household_user", (q) => q.eq("householdId", args.householdId).eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    if (!membership) {
+      throw new Error("Access denied: Not a member of this household");
+    }
+
+    return await ctx.db
+      .query("storageLocations")
+      .withIndex("by_household", (q) => q.eq("householdId", args.householdId))
+      .collect();
+  },
+});
+
+// Internal function for activity feed logging
+export const logActivity = internalMutation({
+  args: {
+    householdId: v.id("households"),
+    userId: v.string(),
+    type: v.union(
+      v.literal("item_added"),
+      v.literal("item_updated"),
+      v.literal("item_removed"),
+      v.literal("item_consumed"),
+      v.literal("expiration_warning"),
+      v.literal("shopping_list_created"),
+      v.literal("shopping_item_added"),
+    ),
+    itemId: v.optional(v.id("inventoryItems")),
+    itemName: v.string(),
+    details: v.optional(v.string()),
+    metadata: v.optional(v.object({
+      quantity: v.optional(v.number()),
+      unit: v.optional(v.string()),
+      location: v.optional(v.string()),
+    })),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("activityFeed", {
+      householdId: args.householdId,
+      userId: args.userId,
+      type: args.type,
+      itemId: args.itemId,
+      itemName: args.itemName,
+      details: args.details,
+      metadata: args.metadata,
+      isRead: false,
+      createdAt: Date.now(),
+    });
+  },
+});

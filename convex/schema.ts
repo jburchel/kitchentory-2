@@ -251,6 +251,224 @@ export default defineSchema({
   .index("by_type", ["type"])
   .index("by_unread", ["isRead"]),
 
+  // Shopping Lists
+  shoppingLists: defineTable({
+    name: v.string(),
+    description: v.optional(v.string()),
+    householdId: v.id("households"),
+    ownerId: v.string(), // Clerk User ID
+    status: v.union(v.literal("active"), v.literal("completed"), v.literal("archived"), v.literal("template")),
+    isTemplate: v.boolean(),
+    templateName: v.optional(v.string()),
+    storeLayoutId: v.optional(v.string()),
+    itemCount: v.number(),
+    completedItemCount: v.number(),
+    totalEstimatedCost: v.optional(v.number()),
+    totalActualCost: v.optional(v.number()),
+    scheduledDate: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+    lastModifiedBy: v.string(),
+    archivedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  })
+  .index("by_household", ["householdId"])
+  .index("by_owner", ["ownerId"])
+  .index("by_status", ["status"])
+  .index("by_household_status", ["householdId", "status"]),
+
+  // Shopping List Items
+  shoppingListItems: defineTable({
+    listId: v.id("shoppingLists"),
+    name: v.string(),
+    category: v.union(
+      v.literal("produce"),
+      v.literal("dairy"), 
+      v.literal("meat"),
+      v.literal("pantry"),
+      v.literal("frozen"),
+      v.literal("beverages"),
+      v.literal("bakery"),
+      v.literal("deli"),
+      v.literal("household"),
+      v.literal("pharmacy")
+    ),
+    quantity: v.number(),
+    unit: v.string(),
+    status: v.union(v.literal("pending"), v.literal("purchased"), v.literal("unavailable"), v.literal("substituted")),
+    priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+    estimatedCost: v.optional(v.number()),
+    actualCost: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    assignedTo: v.optional(v.string()), // User ID
+    inventoryItemId: v.optional(v.id("inventoryItems")),
+    brand: v.optional(v.string()),
+    size: v.optional(v.string()),
+    substitutionNotes: v.optional(v.string()),
+    purchasedAt: v.optional(v.number()),
+    addedBy: v.string(),
+    lastModifiedBy: v.string(),
+    displayOrder: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  })
+  .index("by_list", ["listId"])
+  .index("by_status", ["status"])
+  .index("by_assigned_to", ["assignedTo"])
+  .index("by_category", ["category"])
+  .index("by_priority", ["priority"]),
+
+  // Shopping List Members (for collaboration)
+  shoppingListMembers: defineTable({
+    listId: v.id("shoppingLists"),
+    userId: v.string(), // Clerk User ID
+    role: v.union(v.literal("owner"), v.literal("editor"), v.literal("viewer")),
+    canEdit: v.boolean(),
+    canAssignItems: v.boolean(),
+    canCompleteItems: v.boolean(),
+    canInviteOthers: v.boolean(),
+    joinedAt: v.number(),
+    lastActiveAt: v.optional(v.number()),
+    notificationSettings: v.optional(v.object({
+      itemAdded: v.boolean(),
+      itemCompleted: v.boolean(),
+      listCompleted: v.boolean(),
+      itemAssigned: v.boolean()
+    })),
+    isActive: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  })
+  .index("by_list", ["listId"])
+  .index("by_user", ["userId"])
+  .index("by_list_user", ["listId", "userId"])
+  .index("by_active", ["isActive"]),
+
+  // Shopping List Templates
+  shoppingListTemplates: defineTable({
+    name: v.string(),
+    description: v.optional(v.string()),
+    householdId: v.optional(v.id("households")), // null for system templates
+    isPublic: v.boolean(),
+    category: v.union(v.literal("weekly_groceries"), v.literal("party_planning"), v.literal("holiday_shopping"), v.literal("custom")),
+    items: v.array(v.object({
+      name: v.string(),
+      category: v.union(
+        v.literal("produce"),
+        v.literal("dairy"), 
+        v.literal("meat"),
+        v.literal("pantry"),
+        v.literal("frozen"),
+        v.literal("beverages"),
+        v.literal("bakery"),
+        v.literal("deli"),
+        v.literal("household"),
+        v.literal("pharmacy")
+      ),
+      quantity: v.number(),
+      unit: v.string(),
+      priority: v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
+      notes: v.optional(v.string()),
+      estimatedCost: v.optional(v.number())
+    })),
+    usageCount: v.number(),
+    createdBy: v.string(),
+    tags: v.optional(v.array(v.string())),
+    imageUrl: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  })
+  .index("by_household", ["householdId"])
+  .index("by_creator", ["createdBy"])
+  .index("by_category", ["category"])
+  .index("by_public", ["isPublic"]),
+
+  // Shopping List Activities (for collaboration feeds)
+  shoppingListActivities: defineTable({
+    listId: v.id("shoppingLists"),
+    userId: v.string(),
+    action: v.union(
+      v.literal("created"),
+      v.literal("item_added"),
+      v.literal("item_completed"),
+      v.literal("item_removed"),
+      v.literal("shared"),
+      v.literal("completed"),
+      v.literal("item_assigned"),
+      v.literal("item_updated")
+    ),
+    itemName: v.optional(v.string()),
+    itemId: v.optional(v.id("shoppingListItems")),
+    details: v.optional(v.string()),
+    metadata: v.optional(v.object({
+      previousValue: v.optional(v.any()),
+      newValue: v.optional(v.any()),
+      itemCount: v.optional(v.number()),
+      costChange: v.optional(v.number())
+    })),
+    createdAt: v.number()
+  })
+  .index("by_list", ["listId"])
+  .index("by_user", ["userId"])
+  .index("by_action", ["action"])
+  .index("by_created_at", ["createdAt"]),
+
+  // Store Layouts for organizing shopping lists
+  storeLayouts: defineTable({
+    name: v.string(),
+    householdId: v.id("households"),
+    sections: v.array(v.object({
+      sectionId: v.string(),
+      displayOrder: v.number()
+    })),
+    isDefault: v.boolean(),
+    createdBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number()
+  })
+  .index("by_household", ["householdId"])
+  .index("by_default", ["isDefault"]),
+
+  // Shopping Suggestions (smart recommendations)
+  shoppingSuggestions: defineTable({
+    householdId: v.id("households"),
+    itemName: v.string(),
+    category: v.union(
+      v.literal("produce"),
+      v.literal("dairy"), 
+      v.literal("meat"),
+      v.literal("pantry"),
+      v.literal("frozen"),
+      v.literal("beverages"),
+      v.literal("bakery"),
+      v.literal("deli"),
+      v.literal("household"),
+      v.literal("pharmacy")
+    ),
+    reason: v.union(v.literal("low_stock"), v.literal("out_of_stock"), v.literal("recurring_purchase"), v.literal("seasonal"), v.literal("frequently_bought")),
+    priority: v.number(), // 0-100 scoring
+    inventoryItemId: v.optional(v.id("inventoryItems")),
+    lastPurchaseDate: v.optional(v.number()),
+    averageDaysBetweenPurchases: v.optional(v.number()),
+    suggestedQuantity: v.optional(v.number()),
+    suggestedUnit: v.optional(v.string()),
+    suggestedBrand: v.optional(v.string()),
+    confidence: v.number(), // 0-1 confidence score
+    metadata: v.optional(v.object({
+      consumptionRate: v.optional(v.number()),
+      seasonalFactor: v.optional(v.number()),
+      priceHistory: v.optional(v.array(v.number())),
+      frequencyScore: v.optional(v.number())
+    })),
+    createdAt: v.number(),
+    expiresAt: v.number()
+  })
+  .index("by_household", ["householdId"])
+  .index("by_category", ["category"])
+  .index("by_priority", ["priority"])
+  .index("by_expires_at", ["expiresAt"]),
+
   // Audit log for security and compliance
   auditLog: defineTable({
     householdId: v.optional(v.id("households")),
