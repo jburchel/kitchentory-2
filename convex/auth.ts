@@ -32,7 +32,7 @@ export async function getAuthenticatedUser(ctx: QueryCtx | MutationCtx) {
   }
 
   return {
-    clerkUserId: identity.subject,
+    clerkId: identity.subject,
     email: identity.email!,
     name: identity.name,
     avatar: identity.pictureUrl
@@ -48,14 +48,14 @@ export async function getOrCreateUser(ctx: MutationCtx) {
   // Try to find existing user
   let user = await ctx.db
     .query("users")
-    .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", authUser.clerkUserId))
+    .withIndex("by_clerk_id", (q) => q.eq("clerkId", authUser.clerkId))
     .first();
 
   // Create user if doesn't exist
   if (!user) {
     const now = Date.now();
     const userId = await ctx.db.insert("users", {
-      clerkUserId: authUser.clerkUserId,
+      clerkId: authUser.clerkId,
       email: authUser.email,
       name: authUser.name,
       avatar: authUser.avatar,
@@ -85,7 +85,7 @@ export async function checkHouseholdPermission(
     const membership = await ctx.db
       .query("householdMemberships")
       .withIndex("by_household_user", (q) => 
-        q.eq("householdId", householdId).eq("userId", authUser.clerkUserId)
+        q.eq("householdId", householdId).eq("userId", authUser.clerkId)
       )
       .first();
 
@@ -123,7 +123,7 @@ export async function getUserHouseholdRole(
   householdId: Id<"households">,
   userId?: string
 ): Promise<Role | null> {
-  const targetUserId = userId || (await getAuthenticatedUser(ctx)).clerkUserId;
+  const targetUserId = userId || (await getAuthenticatedUser(ctx)).clerkId;
   
   const membership = await ctx.db
     .query("householdMemberships")
@@ -142,7 +142,7 @@ export async function getUserHouseholds(
   ctx: QueryCtx | MutationCtx,
   userId?: string
 ) {
-  const targetUserId = userId || (await getAuthenticatedUser(ctx)).clerkUserId;
+  const targetUserId = userId || (await getAuthenticatedUser(ctx)).clerkId;
   
   const memberships = await ctx.db
     .query("householdMemberships")
@@ -173,7 +173,7 @@ export async function isHouseholdOwner(
   householdId: Id<"households">,
   userId?: string
 ): Promise<boolean> {
-  const targetUserId = userId || (await getAuthenticatedUser(ctx)).clerkUserId;
+  const targetUserId = userId || (await getAuthenticatedUser(ctx)).clerkId;
   
   const household = await ctx.db.get(householdId);
   return household?.ownerId === targetUserId;
@@ -230,7 +230,7 @@ export async function logAuditEvent(
     
     await ctx.db.insert("auditLog", {
       householdId: details?.householdId,
-      userId: authUser.clerkUserId,
+      userId: authUser.clerkId,
       action,
       resource,
       resourceId: details?.resourceId,

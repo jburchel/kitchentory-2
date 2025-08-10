@@ -65,13 +65,14 @@ export const createShoppingList = mutation({
     }
 
     // Log activity
-    await ctx.runMutation(internal.activityFeed.logActivity, {
-      householdId: args.householdId,
-      userId: args.createdBy,
-      type: "shopping_list_created",
-      itemName: args.name,
-      details: `Created shopping list "${args.name}"`,
-    });
+    // TODO: Implement activityFeed module
+    // await ctx.runMutation(internal.activityFeed.logActivity, {
+    //   householdId: args.householdId,
+    //   userId: args.createdBy,
+    //   type: "shopping_list_created",
+    //   itemName: args.name,
+    //   details: `Created shopping list "${args.name}"`,
+    // });
 
     return listId;
   },
@@ -126,7 +127,7 @@ export const getShoppingLists = query({
 
         const owner = await ctx.db
           .query("users")
-          .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", list.ownerId))
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", list.ownerId))
           .first();
 
         return {
@@ -187,7 +188,7 @@ export const getShoppingList = query({
       members.map(async (member) => {
         const user = await ctx.db
           .query("users")
-          .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", member.userId))
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", member.userId))
           .first();
         return {
           ...member,
@@ -264,17 +265,18 @@ export const addItemToList = mutation({
     await updateListStats(ctx, args.listId);
 
     // Log activity
-    await ctx.runMutation(internal.activityFeed.logActivity, {
-      householdId: list.householdId,
-      userId: args.addedBy,
-      type: "shopping_item_added",
-      itemName: args.name,
-      details: `Added "${args.name}" to shopping list "${list.name}"`,
-      metadata: {
-        quantity: args.quantity,
-        unit: args.unit,
-      },
-    });
+    // TODO: Implement activityFeed module
+    // await ctx.runMutation(internal.activityFeed.logActivity, {
+    //   householdId: list.householdId,
+    //   userId: args.addedBy,
+    //   type: "shopping_item_added",
+    //   itemName: args.name,
+    //   details: `Added "${args.name}" to shopping list "${list.name}"`,
+    //   metadata: {
+    //     quantity: args.quantity,
+    //     unit: args.unit,
+    //   },
+    // });
 
     return itemId;
   },

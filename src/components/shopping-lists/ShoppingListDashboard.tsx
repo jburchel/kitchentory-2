@@ -11,8 +11,9 @@ export function ShoppingListDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'lists' | 'create'>('overview');
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   
-  // For now, use a mock household ID. In a real app, this would come from user context
-  const householdId = 'mock-household-id';
+  // For now, skip the shopping lists API call until we have a real household
+  // In a real app, this would come from user context/auth
+  const householdId = undefined; // Don't pass invalid ID
   
   const { 
     shoppingLists, 
@@ -243,11 +244,22 @@ export function ShoppingListDashboard() {
 
       {activeTab === 'create' && (
         <div>
-          <CreateListForm
-            householdId={householdId}
-            onSuccess={handleCreateSuccess}
-            onCancel={() => setActiveTab('overview')}
-          />
+          {householdId ? (
+            <CreateListForm
+              householdId={householdId}
+              onSuccess={handleCreateSuccess}
+              onCancel={() => setActiveTab('overview')}
+            />
+          ) : (
+            <div className="text-center py-12 bg-gray-50 rounded-lg">
+              <div className="text-4xl mb-4">🏠</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No household found</h3>
+              <p className="text-gray-600 mb-4">You need to create or join a household first to manage shopping lists</p>
+              <Button onClick={() => window.location.href = '/onboarding'}>
+                Set Up Household
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

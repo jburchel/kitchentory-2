@@ -13,12 +13,12 @@ export const getCurrentUser = query({
       
       const user = await ctx.db
         .query("users")
-        .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", authUser.clerkUserId))
+        .withIndex("by_clerk_id", (q) => q.eq("clerkId", authUser.clerkId))
         .first();
 
       if (!user) {
         return {
-          clerkUserId: authUser.clerkUserId,
+          clerkId: authUser.clerkId,
           email: authUser.email,
           name: authUser.name,
           avatar: authUser.avatar,
@@ -130,21 +130,21 @@ export const getUserStats = query({
     // Get user's households
     const memberships = await ctx.db
       .query("householdMemberships")
-      .withIndex("by_user", (q) => q.eq("userId", authUser.clerkUserId))
+      .withIndex("by_user", (q) => q.eq("userId", authUser.clerkId))
       .filter((q) => q.eq(q.field("isActive"), true))
       .collect();
 
     // Get total inventory items added by user across all households
     const inventoryItems = await ctx.db
       .query("inventoryItems")
-      .withIndex("by_household", (q) => q.eq("addedBy", authUser.clerkUserId))
+      .withIndex("by_household", (q) => q.eq("addedBy", authUser.clerkId))
       .collect();
 
     // Get recent activity count (last 30 days)
     const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
     const recentActivity = await ctx.db
       .query("activityFeed")
-      .withIndex("by_user", (q) => q.eq("userId", authUser.clerkUserId))
+      .withIndex("by_user", (q) => q.eq("userId", authUser.clerkId))
       .filter((q) => q.gte(q.field("createdAt"), thirtyDaysAgo))
       .collect();
 
@@ -194,7 +194,7 @@ export const searchUsersByEmail = query({
       const membership = await ctx.db
         .query("householdMemberships")
         .withIndex("by_household_user", (q) => 
-          q.eq("householdId", args.householdId).eq("userId", authUser.clerkUserId)
+          q.eq("householdId", args.householdId).eq("userId", authUser.clerkId)
         )
         .first();
 
@@ -224,7 +224,7 @@ export const searchUsersByEmail = query({
         ctx.db
           .query("householdMemberships")
           .withIndex("by_household_user", (q) => 
-            q.eq("householdId", args.householdId!).eq("userId", user.clerkUserId)
+            q.eq("householdId", args.householdId!).eq("userId", user.clerkId)
           )
           .first()
       );
@@ -234,7 +234,7 @@ export const searchUsersByEmail = query({
       return users
         .filter((_, index) => !memberships[index]?.isActive)
         .map(user => ({
-          clerkUserId: user.clerkUserId,
+          clerkId: user.clerkId,
           email: user.email,
           name: user.name,
           avatar: user.avatar
@@ -242,7 +242,7 @@ export const searchUsersByEmail = query({
     }
 
     return users.map(user => ({
-      clerkUserId: user.clerkUserId,
+      clerkId: user.clerkId,
       email: user.email,
       name: user.name,
       avatar: user.avatar
@@ -261,7 +261,7 @@ export const deleteUserAccount = mutation({
     // Check if user owns any households
     const ownedHouseholds = await ctx.db
       .query("households")
-      .withIndex("by_owner", (q) => q.eq("ownerId", user.clerkUserId))
+      .withIndex("by_owner", (q) => q.eq("ownerId", user.clerkId))
       .filter((q) => q.eq(q.field("isActive"), true))
       .collect();
 
@@ -272,7 +272,7 @@ export const deleteUserAccount = mutation({
     // Deactivate all memberships
     const memberships = await ctx.db
       .query("householdMemberships")
-      .withIndex("by_user", (q) => q.eq("userId", user.clerkUserId))
+      .withIndex("by_user", (q) => q.eq("userId", user.clerkId))
       .filter((q) => q.eq(q.field("isActive"), true))
       .collect();
 

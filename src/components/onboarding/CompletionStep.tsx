@@ -80,31 +80,23 @@ export function CompletionStep({
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between space-x-4 pt-4">
-        <Button
-          variant="outline"
-          onClick={onBack}
-          disabled={isLoading}
-          className="flex items-center space-x-2"
-        >
-          <span>Back</span>
-        </Button>
-
-        <Button
-          onClick={onSubmit}
-          disabled={isLoading}
-          className="flex items-center space-x-2 min-w-[140px] justify-center"
-        >
-          {isLoading ? (
-            <>
-              <LoadingSpinner size="sm" />
-              <span>Creating...</span>
-            </>
-          ) : (
-            <span>Create household</span>
-          )}
-        </Button>
+      {/* Summary Section */}
+      <div className="bg-gray-50 rounded-lg p-4">
+        <h3 className="text-sm font-medium text-gray-900 mb-3">Setup Summary</h3>
+        <div className="space-y-2 text-sm text-gray-600">
+          <div className="flex justify-between">
+            <span>Profile:</span>
+            <span className="text-gray-900">{data.profile.firstName} {data.profile.lastName}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Household:</span>
+            <span className="text-gray-900">{data.household.name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Invitations:</span>
+            <span className="text-gray-900">{data.invitations.length} people</span>
+          </div>
+        </div>
       </div>
     </div>
   );

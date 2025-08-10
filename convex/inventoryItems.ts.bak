@@ -203,7 +203,19 @@ export const updateInventoryItem = mutation({
 
     // Log activity for significant changes
     if (args.updates.quantity !== undefined && args.updates.quantity !== item.quantity) {
-      // TODO: Implement activityFeed module for quantity changes
+      // TODO: Implement activityFeed module
+    // // await ctx.runMutation(internal.activityFeed.logActivity, {
+        householdId: item.householdId,
+        userId: args.userId,
+        type: "item_updated",
+        itemId: args.itemId,
+        itemName: item.customName || 'Unknown Item',
+        details: `Updated quantity from ${item.quantity} to ${args.updates.quantity}`,
+        metadata: {
+          quantity: args.updates.quantity,
+          unit: item.unit,
+        },
+      });
     }
 
     return args.itemId;
@@ -234,7 +246,16 @@ export const deleteInventoryItem = mutation({
 
     await ctx.db.delete(args.itemId);
 
-    // TODO: Implement activityFeed module for item deletion
+    // Log activity
+    // TODO: Implement activityFeed module
+    // // await ctx.runMutation(internal.activityFeed.logActivity, {
+      householdId: item.householdId,
+      userId: args.userId,
+      type: "item_removed",
+      itemName: item.customName || 'Unknown Item',
+      details: `Removed "${item.customName || 'Unknown Item'}" from inventory`,
+    });
+
     return args.itemId;
   },
 });
@@ -270,8 +291,24 @@ export const updateItemQuantity = mutation({
       updatedAt: Date.now(),
     });
 
-    // TODO: Implement activityFeed module for quantity updates
-    // const activityType = args.consumed ? "item_consumed" : "item_updated";
+    // Log activity
+    const activityType = args.consumed ? "item_consumed" : "item_updated";
+    // TODO: Implement activityFeed module
+    // // await ctx.runMutation(internal.activityFeed.logActivity, {
+      householdId: item.householdId,
+      userId: args.userId,
+      type: activityType,
+      itemId: args.itemId,
+      itemName: item.customName || 'Unknown Item',
+      details: args.consumed 
+        ? `Consumed ${Math.abs(args.quantityChange)} ${item.unit} of "${item.customName}"`
+        : `Updated quantity by ${args.quantityChange} ${item.unit}`,
+      metadata: {
+        quantity: newQuantity,
+        unit: item.unit,
+      },
+    });
+
     return args.itemId;
   },
 });

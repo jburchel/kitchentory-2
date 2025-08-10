@@ -94,4 +94,16 @@ export {
   updateShoppingItem,
   deleteShoppingItem,
   generateSmartSuggestions
-} from "./shoppingLists";\n\nexport {\n  // Inventory item functions\n  createInventoryItem,\n  getInventoryItems,\n  updateInventoryItem,\n  deleteInventoryItem,\n  updateItemQuantity,\n  getInventoryStats,\n  createStorageLocation,\n  getStorageLocations\n} from "./inventoryItems";
+} from "./shoppingLists";
+
+export {
+  // Inventory item functions
+  createInventoryItem,
+  getInventoryItems,
+  updateInventoryItem,
+  deleteInventoryItem,
+  updateItemQuantity,
+  getInventoryStats,
+  createStorageLocation,
+  getStorageLocations
+} from "./inventoryItems";

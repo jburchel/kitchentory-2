@@ -14,7 +14,8 @@ export default function ShoppingListDetailPage() {
   const listId = params.id as string
   
   // In real implementation, this would come from the user's current household context
-  const householdId = 'mock-household-id'
+  // For now, don't pass invalid household ID - let hook handle fallback to mock data
+  const householdId = undefined
   
   const {
     lists,

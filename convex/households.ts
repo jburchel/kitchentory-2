@@ -35,7 +35,7 @@ export const createHousehold = mutation({
     const householdId = await ctx.db.insert("households", {
       name: args.name.trim(),
       description: args.description?.trim(),
-      ownerId: user.clerkUserId,
+      ownerId: user.clerkId,
       settings: args.settings || {
         currency: "USD",
         defaultUnit: "pieces",
@@ -53,7 +53,7 @@ export const createHousehold = mutation({
     // Create owner membership
     await ctx.db.insert("householdMemberships", {
       householdId,
-      userId: user.clerkUserId,
+      userId: user.clerkId,
       role: "owner",
       permissions: getPermissionsForRole("owner"),
       joinedAt: now,
@@ -65,7 +65,7 @@ export const createHousehold = mutation({
     // Log activity
     await ctx.db.insert("activityFeed", {
       householdId,
-      userId: user.clerkUserId,
+      userId: user.clerkId,
       type: "household_created",
       itemName: args.name,
       details: "Household created",
@@ -109,7 +109,7 @@ export const getHousehold = query({
       memberships.map(async (membership) => {
         const user = await ctx.db
           .query("users")
-          .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", membership.userId))
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", membership.userId))
           .first();
         
         return {
@@ -185,7 +185,7 @@ export const updateHousehold = mutation({
     const user = await getAuthenticatedUser(ctx);
     await ctx.db.insert("activityFeed", {
       householdId: args.householdId,
-      userId: user.clerkUserId,
+      userId: user.clerkId,
       type: "household_updated",
       itemName: household.name,
       details: "Household settings updated",
@@ -309,7 +309,7 @@ export const joinHouseholdByCode = mutation({
     const existingMembership = await ctx.db
       .query("householdMemberships")
       .withIndex("by_household_user", (q) => 
-        q.eq("householdId", household._id).eq("userId", user.clerkUserId)
+        q.eq("householdId", household._id).eq("userId", user.clerkId)
       )
       .first();
 
@@ -329,7 +329,7 @@ export const joinHouseholdByCode = mutation({
     } else {
       await ctx.db.insert("householdMemberships", {
         householdId: household._id,
-        userId: user.clerkUserId,
+        userId: user.clerkId,
         role: "member",
         permissions: getPermissionsForRole("member"),
         joinedAt: now,
@@ -348,7 +348,7 @@ export const joinHouseholdByCode = mutation({
     // Log activity
     await ctx.db.insert("activityFeed", {
       householdId: household._id,
-      userId: user.clerkUserId,
+      userId: user.clerkId,
       type: "member_joined",
       itemName: household.name,
       details: `${user.name || user.email} joined the household`,
@@ -379,7 +379,7 @@ export const leaveHousehold = mutation({
     const user = await getOrCreateUser(ctx);
 
     // Check if user is the owner
-    if (await isHouseholdOwner(ctx, args.householdId, user.clerkUserId)) {
+    if (await isHouseholdOwner(ctx, args.householdId, user.clerkId)) {
       throw new ConvexError("Household owner cannot leave. Transfer ownership first or delete the household.");
     }
 
@@ -387,7 +387,7 @@ export const leaveHousehold = mutation({
     const membership = await ctx.db
       .query("householdMemberships")
       .withIndex("by_household_user", (q) => 
-        q.eq("householdId", args.householdId).eq("userId", user.clerkUserId)
+        q.eq("householdId", args.householdId).eq("userId", user.clerkId)
       )
       .first();
 
@@ -414,7 +414,7 @@ export const leaveHousehold = mutation({
       // Log activity
       await ctx.db.insert("activityFeed", {
         householdId: args.householdId,
-        userId: user.clerkUserId,
+        userId: user.clerkId,
         type: "member_left",
         itemName: household.name,
         details: `${user.name || user.email} left the household`,
@@ -488,7 +488,7 @@ export const markActivityRead = mutation({
         .query("activityFeed")
         .withIndex("by_household", (q) => q.eq("householdId", args.householdId))
         .filter((q) => q.and(
-          q.eq(q.field("userId"), user.clerkUserId),
+          q.eq(q.field("userId"), user.clerkId),
           q.eq(q.field("isRead"), false)
         ))
         .collect();

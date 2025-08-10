@@ -8,7 +8,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 
 export default function InventoryPage() {
   // In real implementation, this would come from the user's current household context
-  const householdId = 'mock-household-id'
+  const householdId = undefined // Don't pass invalid ID - let hook handle fallback
 
   return (
     <ProtectedRoute>

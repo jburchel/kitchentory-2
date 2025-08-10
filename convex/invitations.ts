@@ -47,7 +47,7 @@ export const sendInvitation = mutation({
       const existingMembership = await ctx.db
         .query("householdMemberships")
         .withIndex("by_household_user", (q) => 
-          q.eq("householdId", args.householdId).eq("userId", existingUser.clerkUserId)
+          q.eq("householdId", args.householdId).eq("userId", existingUser.clerkId)
         )
         .first();
 
@@ -78,9 +78,9 @@ export const sendInvitation = mutation({
     // Create invitation
     const invitationId = await ctx.db.insert("householdInvitations", {
       householdId: args.householdId,
-      inviterUserId: currentUser.clerkUserId,
+      inviterUserId: currentUser.clerkId,
       invitedEmail: email,
-      invitedUserId: existingUser?.clerkUserId,
+      invitedUserId: existingUser?.clerkId,
       role: args.role,
       permissions,
       message: args.message,
@@ -97,7 +97,7 @@ export const sendInvitation = mutation({
     // Log activity
     await ctx.db.insert("activityFeed", {
       householdId: args.householdId,
-      userId: currentUser.clerkUserId,
+      userId: currentUser.clerkId,
       type: "invitation_sent",
       itemName: household?.name || "Household",
       details: `Invitation sent to ${email}`,
@@ -156,7 +156,7 @@ export const getInvitationByToken = query({
     const household = await ctx.db.get(invitation.householdId);
     const inviterUser = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", invitation.inviterUserId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", invitation.inviterUserId))
       .first();
 
     return {
@@ -218,7 +218,7 @@ export const acceptInvitation = mutation({
     const existingMembership = await ctx.db
       .query("householdMemberships")
       .withIndex("by_household_user", (q) => 
-        q.eq("householdId", invitation.householdId).eq("userId", currentUser.clerkUserId)
+        q.eq("householdId", invitation.householdId).eq("userId", currentUser.clerkId)
       )
       .first();
 
@@ -241,7 +241,7 @@ export const acceptInvitation = mutation({
     } else {
       await ctx.db.insert("householdMemberships", {
         householdId: invitation.householdId,
-        userId: currentUser.clerkUserId,
+        userId: currentUser.clerkId,
         role: invitation.role,
         permissions: invitation.permissions,
         joinedAt: now,
@@ -255,7 +255,7 @@ export const acceptInvitation = mutation({
     // Update invitation status
     await ctx.db.patch(invitation._id, {
       status: "accepted",
-      invitedUserId: currentUser.clerkUserId,
+      invitedUserId: currentUser.clerkId,
       respondedAt: now,
       updatedAt: now
     });
@@ -271,7 +271,7 @@ export const acceptInvitation = mutation({
       // Log activity
       await ctx.db.insert("activityFeed", {
         householdId: invitation.householdId,
-        userId: currentUser.clerkUserId,
+        userId: currentUser.clerkId,
         type: "member_joined",
         itemName: household.name,
         details: `${currentUser.name || currentUser.email} accepted invitation and joined the household`,
@@ -326,7 +326,7 @@ export const declineInvitation = mutation({
     // Update invitation status
     await ctx.db.patch(invitation._id, {
       status: "declined",
-      invitedUserId: currentUser.clerkUserId,
+      invitedUserId: currentUser.clerkId,
       respondedAt: now,
       updatedAt: now
     });
@@ -410,7 +410,7 @@ export const getHouseholdInvitations = query({
       invitations.map(async (invitation) => {
         const inviterUser = await ctx.db
           .query("users")
-          .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", invitation.inviterUserId))
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", invitation.inviterUserId))
           .first();
 
         return {
@@ -455,7 +455,7 @@ export const getUserInvitations = query({
         const household = await ctx.db.get(invitation.householdId);
         const inviterUser = await ctx.db
           .query("users")
-          .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", invitation.inviterUserId))
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", invitation.inviterUserId))
           .first();
 
         validInvitations.push({

@@ -27,7 +27,7 @@ export const getHouseholdMembers = query({
       memberships.map(async (membership) => {
         const user = await ctx.db
           .query("users")
-          .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", membership.userId))
+          .withIndex("by_clerk_id", (q) => q.eq("clerkId", membership.userId))
           .first();
 
         return {
@@ -80,7 +80,7 @@ export const updateMemberRole = mutation({
       const currentUserRole = await ctx.db
         .query("householdMemberships")
         .withIndex("by_household_user", (q) => 
-          q.eq("householdId", args.householdId).eq("userId", currentUser.clerkUserId)
+          q.eq("householdId", args.householdId).eq("userId", currentUser.clerkId)
         )
         .first();
       
@@ -113,13 +113,13 @@ export const updateMemberRole = mutation({
     // Get user for activity log
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", args.userId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.userId))
       .first();
 
     // Log activity
     await ctx.db.insert("activityFeed", {
       householdId: args.householdId,
-      userId: currentUser.clerkUserId,
+      userId: currentUser.clerkId,
       type: "member_updated" as any,
       itemName: "Member Role Updated",
       details: `${user?.name || user?.email || args.userId} role changed from ${oldRole} to ${args.role}`,
@@ -162,7 +162,7 @@ export const removeMember = mutation({
     }
 
     // Can't remove yourself using this method
-    if (args.userId === currentUser.clerkUserId) {
+    if (args.userId === currentUser.clerkId) {
       throw new ConvexError("Use leaveHousehold to remove yourself");
     }
 
@@ -198,13 +198,13 @@ export const removeMember = mutation({
     // Get user for activity log
     const user = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", args.userId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.userId))
       .first();
 
     // Log activity
     await ctx.db.insert("activityFeed", {
       householdId: args.householdId,
-      userId: currentUser.clerkUserId,
+      userId: currentUser.clerkId,
       type: "member_left",
       itemName: household?.name || "Household",
       details: `${user?.name || user?.email || args.userId} was removed from the household`,
@@ -245,7 +245,7 @@ export const transferOwnership = mutation({
     const currentUser = await getAuthenticatedUser(ctx);
 
     // Can't transfer to yourself
-    if (args.newOwnerId === currentUser.clerkUserId) {
+    if (args.newOwnerId === currentUser.clerkId) {
       throw new ConvexError("Cannot transfer ownership to yourself");
     }
 
@@ -265,7 +265,7 @@ export const transferOwnership = mutation({
     const currentOwnerMembership = await ctx.db
       .query("householdMemberships")
       .withIndex("by_household_user", (q) => 
-        q.eq("householdId", args.householdId).eq("userId", currentUser.clerkUserId)
+        q.eq("householdId", args.householdId).eq("userId", currentUser.clerkId)
       )
       .first();
 
@@ -298,7 +298,7 @@ export const transferOwnership = mutation({
     // Get users for activity log
     const newOwnerUser = await ctx.db
       .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkUserId", args.newOwnerId))
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.newOwnerId))
       .first();
 
     const household = await ctx.db.get(args.householdId);
@@ -306,7 +306,7 @@ export const transferOwnership = mutation({
     // Log activity
     await ctx.db.insert("activityFeed", {
       householdId: args.householdId,
-      userId: currentUser.clerkUserId,
+      userId: currentUser.clerkId,
       type: "household_updated",
       itemName: household?.name || "Household",
       details: `Ownership transferred to ${newOwnerUser?.name || newOwnerUser?.email || args.newOwnerId}`,
@@ -322,7 +322,7 @@ export const transferOwnership = mutation({
     await logAuditEvent(ctx, "transfer_ownership", "household", {
       householdId: args.householdId,
       resourceId: args.householdId,
-      oldValue: { ownerId: currentUser.clerkUserId },
+      oldValue: { ownerId: currentUser.clerkId },
       newValue: { ownerId: args.newOwnerId },
       severity: "warning"
     });
@@ -344,7 +344,7 @@ export const getMemberActivity = query({
     await requireHouseholdPermission(ctx, args.householdId, "read");
     const currentUser = await getAuthenticatedUser(ctx);
     
-    const targetUserId = args.userId || currentUser.clerkUserId;
+    const targetUserId = args.userId || currentUser.clerkId;
     const daysAgo = (args.days || 30) * 24 * 60 * 60 * 1000;
     const cutoffTime = Date.now() - daysAgo;
 
@@ -402,7 +402,7 @@ export const updateLastActive = mutation({
     const membership = await ctx.db
       .query("householdMemberships")
       .withIndex("by_household_user", (q) => 
-        q.eq("householdId", args.householdId).eq("userId", currentUser.clerkUserId)
+        q.eq("householdId", args.householdId).eq("userId", currentUser.clerkId)
       )
       .first();
 

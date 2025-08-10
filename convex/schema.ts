@@ -4,7 +4,7 @@ import { v } from "convex/values"
 export default defineSchema({
   // Enhanced user management with preferences
   users: defineTable({
-    clerkUserId: v.string(),
+    clerkId: v.string(),
     email: v.string(),
     name: v.optional(v.string()),
     avatar: v.optional(v.string()),
@@ -18,12 +18,15 @@ export default defineSchema({
         activityFeed: v.boolean()
       }))
     })),
-    isOnboarded: v.boolean(),
-    lastSeenAt: v.optional(v.number()),
-    createdAt: v.number(),
-    updatedAt: v.number()
+    isOnboarded: v.optional(v.boolean()),
+    lastSeenAt: v.optional(v.float64()),
+    lastLoginAt: v.optional(v.float64()),
+    imageUrl: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+    createdAt: v.float64(),
+    updatedAt: v.float64()
   })
-  .index("by_clerk_id", ["clerkUserId"])
+  .index("by_clerk_id", ["clerkId"])
   .index("by_email", ["email"]),
 
   // Enhanced household management
