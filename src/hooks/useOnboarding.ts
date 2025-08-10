@@ -456,17 +456,6 @@ export function useOnboarding(): UseOnboardingReturn {
     dispatch({ type: 'START_OPERATION', payload: 'completion' });
 
     try {
-      // Update user profile if needed
-      if (state.profile.data.firstName !== user.firstName || 
-          state.profile.data.lastName !== user.lastName) {
-        await user.update({
-          unsafeMetadata: {
-            firstName: state.profile.data.firstName,
-            lastName: state.profile.data.lastName,
-          }
-        });
-      }
-
       // Create household
       const householdId = await createHousehold({
         name: state.household.data.name,
@@ -488,15 +477,6 @@ export function useOnboarding(): UseOnboardingReturn {
       const successfulInvitations = invitationResults.filter(
         result => result.status === 'fulfilled'
       ).length;
-
-      // Mark onboarding as completed
-      await user.update({
-        publicMetadata: {
-          ...user.publicMetadata,
-          onboardingCompleted: true,
-          primaryHouseholdId: householdId,
-        },
-      });
 
       dispatch({ type: 'COMPLETE_ONBOARDING' });
 

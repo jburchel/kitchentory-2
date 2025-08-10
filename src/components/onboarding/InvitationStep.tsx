@@ -94,7 +94,7 @@ export function InvitationStep({
         </div>
 
         {/* Invited Email List */}
-        {data.length > 0 && (
+        {data && data.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium text-gray-700">
               People to invite ({data.length}):
