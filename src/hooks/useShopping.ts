@@ -74,19 +74,13 @@ export function useShopping(householdId?: string) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Convex mutations and queries - handle SSR gracefully
-  const createShoppingListMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.createShoppingList) : null
-  const getShoppingListsQuery = useQuery(
-    householdId && typeof window !== 'undefined' ? api.shoppingLists.getShoppingLists : undefined,
-    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
-  )
-  const addItemToListMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.addItemToList) : null
-  const updateShoppingItemMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.updateShoppingItem) : null
-  const deleteShoppingItemMutation = typeof window !== 'undefined' ? useMutation(api.shoppingLists.deleteShoppingItem) : null
-  const generateSmartSuggestionsMutation = useQuery(
-    householdId && typeof window !== 'undefined' ? api.shoppingLists.generateSmartSuggestions : undefined,
-    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
-  )
+  // Convex mutations and queries - temporarily disabled for stability
+  const createShoppingListMutation = null;
+  const getShoppingListsQuery = undefined;
+  const addItemToListMutation = null;
+  const updateShoppingItemMutation = null;
+  const deleteShoppingItemMutation = null;
+  const generateSmartSuggestionsMutation = undefined;
 
   // Transform Convex data to match our interface
   const transformedLists = useMemo(() => {

@@ -20,7 +20,8 @@
       "Bash(npx tsc:*)",
       "Bash(sed:*)",
       "Bash(grep:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(rm:*)"
     ]
   },
   "enabledMcpjsonServers": [
