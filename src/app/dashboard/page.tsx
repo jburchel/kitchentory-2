@@ -1,437 +1,136 @@
-'use client'
-
-import { useState } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { UserButton } from '@/components/auth/UserButton'
+import { ProduceIcon, BeveragesIcon, ProteinIcon } from '@/components/icons/svg'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Plus, Package, Camera, Edit, Trash2, Calendar, MapPin } from 'lucide-react'
-import ProductSearch from '@/components/inventory/ProductSearch'
-import { CategoryIcon, CategoryFilter } from '@/components/icons'
+import { Card } from '@/components/ui/card'
 
-interface ProductInfo {
-  barcode?: string
-  name: string
-  brand?: string
-  category?: string
-  image?: string
-  description?: string
-}
-
-interface InventoryItem {
-  id: string
-  name: string
-  brand?: string
-  category?: string
-  quantity: number
-  unit: string
-  location?: string
-  expirationDate?: string
-  image?: string
-  barcode?: string
-}
-
-export default function InventoryPage() {
-  const { user } = useUser()
-  const [showAddForm, setShowAddForm] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState<ProductInfo | null>(null)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([
-    // Sample data - replace with Convex query
-    {
-      id: '1',
-      name: 'Organic Bananas',
-      brand: 'Whole Foods',
-      category: 'Fruits',
-      quantity: 6,
-      unit: 'pieces',
-      location: 'Counter',
-      expirationDate: '2024-08-15',
-      image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=100&h=100&fit=crop',
-      barcode: '123456789'
-    },
-    {
-      id: '2',
-      name: 'Whole Milk',
-      brand: 'Organic Valley',
-      category: 'Dairy',
-      quantity: 1,
-      unit: 'gallon',
-      location: 'Refrigerator',
-      expirationDate: '2024-08-12',
-      barcode: '987654321'
-    }
-  ])
-
-  // Form state
-  const [formData, setFormData] = useState({
-    quantity: 1,
-    unit: 'pieces',
-    location: '',
-    expirationDate: '',
-    notes: ''
-  })
-
-  const handleProductSelect = (product: ProductInfo) => {
-    setSelectedProduct(product)
-    setShowAddForm(true)
-  }
-
-  const handleAddItem = () => {
-    if (!selectedProduct) return
-
-    const newItem: InventoryItem = {
-      id: Date.now().toString(),
-      name: selectedProduct.name,
-      brand: selectedProduct.brand,
-      category: selectedProduct.category,
-      quantity: formData.quantity,
-      unit: formData.unit,
-      location: formData.location,
-      expirationDate: formData.expirationDate,
-      image: selectedProduct.image,
-      barcode: selectedProduct.barcode
-    }
-
-    setInventoryItems(prev => [...prev, newItem])
-    setShowAddForm(false)
-    setSelectedProduct(null)
-    setFormData({
-      quantity: 1,
-      unit: 'pieces',
-      location: '',
-      expirationDate: '',
-      notes: ''
-    })
-  }
-
-  const handleDeleteItem = (id: string) => {
-    setInventoryItems(prev => prev.filter(item => item.id !== id))
-  }
-
-  const isExpiringSoon = (expirationDate: string) => {
-    if (!expirationDate) return false
-    const expiry = new Date(expirationDate)
-    const today = new Date()
-    const diffDays = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-    return diffDays <= 3
-  }
-
-  const isExpired = (expirationDate: string) => {
-    if (!expirationDate) return false
-    return new Date(expirationDate) < new Date()
-  }
-
+export default function DashboardPage() {
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="heading-page">Inventory</h1>
-          <p className="text-large text-secondary">
-            Manage your kitchen inventory with smart tracking
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowAddForm(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Item
-          </Button>
-        </div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-caption">Total Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="heading-section">{inventoryItems.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-caption">Expiring Soon</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="heading-section text-warning">
-              {inventoryItems.filter(item => item.expirationDate && isExpiringSoon(item.expirationDate)).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-caption">Expired</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="heading-section text-error">
-              {inventoryItems.filter(item => item.expirationDate && isExpired(item.expirationDate)).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-caption">Categories</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="heading-section">
-              {new Set(inventoryItems.map(item => item.category).filter(Boolean)).size}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Add Item and Filters */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Product Search */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="heading-component">Add New Item</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ProductSearch
-              onProductSelect={handleProductSelect}
-              placeholder="Search products or scan barcode to add to inventory..."
-            />
-          </CardContent>
-        </Card>
-        
-        {/* Category Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="heading-component">Filter Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CategoryFilter
-              selectedCategories={selectedCategories as any}
-              onCategoryChange={(categories) => setSelectedCategories(categories as string[])}
-              showLabel={true}
-              size="sm"
-            />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Add Item Form */}
-      {showAddForm && selectedProduct && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="heading-subsection">Add to Inventory</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Product Info */}
-            <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-              {selectedProduct.image ? (
-                <img 
-                  src={selectedProduct.image} 
-                  alt={selectedProduct.name}
-                  className="w-12 h-12 rounded object-cover"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded bg-muted-foreground/20 flex items-center justify-center">
-                  <Package className="h-6 w-6 text-muted-foreground" />
-                </div>
-              )}
-              <div className="flex-1">
-                <div className="heading-component">{selectedProduct.name}</div>
-                <div className="flex items-center gap-2 text-small">
-                  {selectedProduct.brand && <span>{selectedProduct.brand}</span>}
-                  {selectedProduct.category && (
-                    <div className="flex items-center gap-1">
-                      <CategoryIcon
-                        category={selectedProduct.category}
-                        size="xs"
-                        variant="subtle"
-                        aria-label={`${selectedProduct.category} category`}
-                      />
-                      <Badge variant="secondary">
-                        {selectedProduct.category}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        {/* Brand-compliant header */}
+        <header className="bg-card border-b border-border shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div>
+                <h1 className="text-3xl font-bold text-primary">Kitchentory</h1>
+                <p className="text-sm text-muted-foreground">Manage your kitchen inventory</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <UserButton />
               </div>
             </div>
-
-            {/* Form Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="quantity">Quantity</Label>
-                <Input
-                  id="quantity"
-                  type="number"
-                  min="1"
-                  value={formData.quantity}
-                  onChange={(e) => setFormData(prev => ({ ...prev, quantity: parseInt(e.target.value) || 1 }))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="unit">Unit</Label>
-                <Select value={formData.unit} onValueChange={(value) => setFormData(prev => ({ ...prev, unit: value }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pieces">Pieces</SelectItem>
-                    <SelectItem value="kg">Kilograms</SelectItem>
-                    <SelectItem value="lbs">Pounds</SelectItem>
-                    <SelectItem value="liters">Liters</SelectItem>
-                    <SelectItem value="gallons">Gallons</SelectItem>
-                    <SelectItem value="boxes">Boxes</SelectItem>
-                    <SelectItem value="cans">Cans</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="location">Storage Location</Label>
-                <Select value={formData.location} onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pantry">Pantry</SelectItem>
-                    <SelectItem value="Refrigerator">Refrigerator</SelectItem>
-                    <SelectItem value="Freezer">Freezer</SelectItem>
-                    <SelectItem value="Counter">Counter</SelectItem>
-                    <SelectItem value="Cabinet">Cabinet</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="expiration">Expiration Date</Label>
-                <Input
-                  id="expiration"
-                  type="date"
-                  value={formData.expirationDate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, expirationDate: e.target.value }))}
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-4">
-              <Button onClick={handleAddItem} className="flex-1">
-                Add to Inventory
-              </Button>
-              <Button variant="outline" onClick={() => setShowAddForm(false)}>
-                Cancel
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Inventory Items */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="heading-subsection">Current Inventory</CardTitle>
-            {selectedCategories.length > 0 && (
-              <Badge variant="outline">
-                {selectedCategories.length} filter{selectedCategories.length === 1 ? '' : 's'} active
-              </Badge>
-            )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {inventoryItems
-              .filter(item => 
-                selectedCategories.length === 0 || 
-                (item.category && selectedCategories.includes(item.category))
-              )
-              .map((item) => (
-              <div key={item.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                {item.image ? (
-                  <img 
-                    src={item.image} 
-                    alt={item.name}
-                    className="w-12 h-12 rounded object-cover"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded bg-muted flex items-center justify-center">
-                    <Package className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                )}
+        </header>
+
+        <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            {/* Welcome Card - Brand compliant with utility classes */}
+            <Card className="p-6 border-2 bg-success border-success">
+              <h2 className="text-xl font-semibold mb-3 text-success">
+                Welcome!
+              </h2>
+              <p className="text-foreground">
+                Your kitchen inventory management dashboard is ready to use.
+                Start by creating your first household or joining an existing one.
+              </p>
+            </Card>
+            
+            {/* Quick Actions - Using food category brand colors with icons */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
+              <div className="space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start min-h-[44px] text-category-produce border-green-200 bg-green-50 hover:bg-green-100"
+                >
+                  <ProduceIcon className="w-5 h-5 mr-3 text-category-produce" />
+                  Add New Item
+                </Button>
                 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="heading-component truncate">{item.name}</h3>
-                    {item.category && (
-                      <div className="flex items-center gap-1">
-                        <CategoryIcon
-                          category={item.category}
-                          size="xs"
-                          variant="subtle"
-                          aria-label={`${item.category} category`}
-                        />
-                        <Badge variant="secondary" className="text-xs">
-                          {item.category}
-                        </Badge>
-                      </div>
-                    )}
-                    {item.expirationDate && isExpired(item.expirationDate) && (
-                      <Badge variant="destructive" className="text-xs">Expired</Badge>
-                    )}
-                    {item.expirationDate && isExpiringSoon(item.expirationDate) && !isExpired(item.expirationDate) && (
-                      <Badge variant="outline" className="text-xs border-orange-500 text-orange-500">Soon</Badge>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-small text-muted">
-                    <span>{item.quantity} {item.unit}</span>
-                    {item.location && (
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {item.location}
-                      </span>
-                    )}
-                    {item.expirationDate && (
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {new Date(item.expirationDate).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start min-h-[44px] text-category-beverages border-cyan-200 bg-cyan-50 hover:bg-cyan-100"
+                >
+                  <BeveragesIcon className="w-5 h-5 mr-3 text-category-beverages" />
+                  Create Shopping List
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start min-h-[44px] text-category-protein border-purple-200 bg-purple-50 hover:bg-purple-100"
+                >
+                  <ProteinIcon className="w-5 h-5 mr-3 text-category-protein" />
+                  Manage Categories
+                </Button>
+              </div>
+            </Card>
 
-                <div className="flex gap-1">
-                  <Button size="sm" variant="ghost">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    variant="ghost" 
-                    onClick={() => handleDeleteItem(item.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+            {/* Recent Activity */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold text-foreground mb-4">Recent Activity</h2>
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-muted-foreground">No recent activity to show</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">Start by adding items to your inventory</p>
                 </div>
               </div>
-            ))}
-
-            {inventoryItems
-              .filter(item => 
-                selectedCategories.length === 0 || 
-                (item.category && selectedCategories.includes(item.category))
-              ).length === 0 && (
-              <div className="text-center py-8 text-body text-muted">
-                {selectedCategories.length > 0 
-                  ? 'No items found matching the selected filters.' 
-                  : 'No items in inventory yet. Use the search above to add your first item!'
-                }
-              </div>
-            )}
+            </Card>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          {/* Category showcase with brand colors */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-center text-foreground mb-8">Organize Your Kitchen by Category</h2>
+            <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-4 max-w-4xl mx-auto">
+              {[
+                { 
+                  icon: ProduceIcon, 
+                  name: 'Produce', 
+                  bgVar: '--color-category-produce',
+                  colorVar: '--color-category-produce'
+                },
+                { 
+                  icon: ProteinIcon, 
+                  name: 'Protein', 
+                  bgVar: '--color-category-protein',
+                  colorVar: '--color-category-protein'
+                },
+                { 
+                  icon: BeveragesIcon, 
+                  name: 'Beverages', 
+                  bgVar: '--color-category-beverages',
+                  colorVar: '--color-category-beverages'
+                }
+              ].map((category, index) => (
+                <Card key={index} className="p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+                  <div 
+                    className={`w-12 h-12 mx-auto mb-2 rounded-lg flex items-center justify-center ${
+                      category.name === 'Produce' ? 'bg-green-100' :
+                      category.name === 'Protein' ? 'bg-purple-100' :
+                      'bg-cyan-100'
+                    }`}
+                  >
+                    <category.icon 
+                      className={`w-6 h-6 ${
+                        category.name === 'Produce' ? 'text-category-produce' :
+                        category.name === 'Protein' ? 'text-category-protein' :
+                        'text-category-beverages'
+                      }`}
+                    />
+                  </div>
+                  <p className="text-xs font-medium text-foreground">{category.name}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </main>
+      </div>
+    </ProtectedRoute>
   )
 }

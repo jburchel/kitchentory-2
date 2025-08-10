@@ -1,13 +1,23 @@
-import './globals.css'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
-import ConvexProvider from './ConvexProvider'
+import './globals.css'
+import { ClerkProvider } from '@/components/providers/ClerkProvider'
+import { ConvexProvider } from '@/components/providers/ConvexProvider'
+import { AuthProvider } from '@/contexts/AuthContext'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
-export const metadata = {
-  title: 'Kitchentory',
-  description: 'Smart kitchen inventory management',
+export const metadata: Metadata = {
+  title: 'Kitchentory - Kitchen Inventory Management',
+  description: 'Manage your kitchen inventory with ease',
+  keywords: ['kitchen', 'inventory', 'management', 'recipes'],
+  authors: [{ name: 'Kitchentory Team' }],
+  creator: 'Kitchentory',
+  publisher: 'Kitchentory',
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
@@ -16,14 +26,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <ClerkProvider>
           <ConvexProvider>
-            {children}
+            <AuthProvider>
+              <div id="root">{children}</div>
+            </AuthProvider>
           </ConvexProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   )
 }

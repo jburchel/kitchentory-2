@@ -1,0 +1,8 @@
+export default function HomePage() {
+  return (
+    <main>
+      <h1>Hello from Kitchentory!</h1>
+      <p>If you can see this, routing is working.</p>
+    </main>
+  )
+}

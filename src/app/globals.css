@@ -10,7 +10,7 @@
 @layer base {
   :root {
     /* Light Mode Brand Colors */
-    --primary: 158 64% 52%;           /* #10B981 - Green 600 */
+    --primary: 158 64% 52%;           /* #10B981 - Emerald 600 */
     --primary-foreground: 0 0% 100%;  /* White text on primary */
     
     /* Background Colors */
@@ -55,9 +55,9 @@
     --text-disabled: 220 13% 69%;     /* #9CA3AF - Gray 400 */
     
     /* Semantic Colors - Light Mode */
-    --color-success: 158 64% 52%;     /* #10B981 - Green 600 */
-    --color-success-bg: 155 100% 94%; /* #D1FAE5 - Green 100 */
-    --color-success-border: 154 75% 87%; /* #A7F3D0 - Green 200 */
+    --color-success: 158 64% 52%;     /* #10B981 - Emerald 600 */
+    --color-success-bg: 155 100% 94%; /* #D1FAE5 - Emerald 100 */
+    --color-success-border: 154 75% 87%; /* #A7F3D0 - Emerald 200 */
     
     --color-warning: 43 96% 56%;      /* #F59E0B - Yellow 500 */
     --color-warning-bg: 48 100% 88%;  /* #FEF3C7 - Yellow 100 */
@@ -71,7 +71,7 @@
     --color-info-bg: 214 100% 92%;    /* #DBEAFE - Blue 100 */
     --color-info-border: 213 97% 87%; /* #BFDBFE - Blue 200 */
     
-    /* Food Category Colors */
+    /* Food Category Colors - Brand Specification */
     --color-category-produce: 142 71% 45%;    /* #22C55E - Green 500 */
     --color-category-protein: 271 81% 56%;    /* #A855F7 - Purple 500 */
     --color-category-dairy: 221 83% 53%;      /* #3B82F6 - Blue 500 */
@@ -91,7 +91,7 @@
 
   .dark {
     /* Dark Mode Brand Colors */
-    --primary: 160 84% 39%;           /* #059669 - Emerald 600 */
+    --primary: 160 84% 39%;           /* #059669 - Emerald 700 */
     --primary-foreground: 156 73% 17%; /* #065F46 - Emerald 800 */
     
     /* Background Colors */
@@ -185,244 +185,6 @@
 }
 
 @layer components {
-  /* ==============================================
-   * KITCHENTORY BRANDBOOK TYPOGRAPHY HIERARCHY
-   * Major Third Scale (1.250) with Inter Font
-   * ============================================== */
-
-  /* Core Typography Variables */
-  :root {
-    --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
-    --font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
-    
-    /* Typography Scale Variables */
-    --text-xs: 12px;
-    --text-sm: 14px; 
-    --text-base: 16px;
-    --text-lg: 18px;
-    --text-xl: 20px;
-    --text-2xl: 24px;
-    --text-3xl: 30px;
-    --text-4xl: 36px;
-    
-    /* Line Height Variables */
-    --lh-xs: 16px;
-    --lh-sm: 20px;
-    --lh-base: 24px;
-    --lh-lg: 28px;
-    --lh-xl: 28px;
-    --lh-2xl: 32px;
-    --lh-3xl: 36px;
-    --lh-4xl: 40px;
-    
-    /* Letter Spacing Variables */
-    --ls-tight: -0.02em;
-    --ls-normal: -0.01em;
-    --ls-slight: -0.005em;
-    --ls-base: 0;
-    --ls-wide: 0.01em;
-  }
-
-  /* ==============================================
-   * BRANDBOOK TYPOGRAPHY CLASSES
-   * ============================================== */
-
-  /* Display Heading - Largest brand messaging */
-  .heading-display {
-    font-family: var(--font-family-primary);
-    font-size: clamp(28px, 5vw, 36px);
-    font-weight: 800;
-    line-height: clamp(32px, 5.5vw, 40px);
-    letter-spacing: var(--ls-tight);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Page Heading - Main page titles */
-  .heading-page {
-    font-family: var(--font-family-primary);
-    font-size: clamp(24px, 4vw, 30px);
-    font-weight: 700;
-    line-height: clamp(28px, 4.5vw, 36px);
-    letter-spacing: var(--ls-normal);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Section Heading - Major sections */
-  .heading-section {
-    font-family: var(--font-family-primary);
-    font-size: clamp(20px, 3vw, 24px);
-    font-weight: 600;
-    line-height: clamp(24px, 3.5vw, 32px);
-    letter-spacing: var(--ls-slight);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Subsection Heading - Minor sections */
-  .heading-subsection {
-    font-family: var(--font-family-primary);
-    font-size: clamp(18px, 2.5vw, 20px);
-    font-weight: 600;
-    line-height: clamp(22px, 3vw, 28px);
-    letter-spacing: var(--ls-base);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Component Heading - Cards, widgets */
-  .heading-component {
-    font-family: var(--font-family-primary);
-    font-size: clamp(16px, 2vw, 18px);
-    font-weight: 500;
-    line-height: clamp(20px, 2.5vw, 28px);
-    letter-spacing: var(--ls-base);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Large Text - Emphasized content */
-  .text-large {
-    font-family: var(--font-family-primary);
-    font-size: clamp(16px, 2vw, 18px);
-    font-weight: 400;
-    line-height: clamp(20px, 2.5vw, 28px);
-    letter-spacing: var(--ls-base);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Body Text - Primary content */
-  .text-body {
-    font-family: var(--font-family-primary);
-    font-size: clamp(14px, 1.5vw, 16px);
-    font-weight: 400;
-    line-height: clamp(20px, 2vw, 24px);
-    letter-spacing: var(--ls-base);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-primary));
-  }
-
-  /* Small Text - Secondary information */
-  .text-small {
-    font-family: var(--font-family-primary);
-    font-size: clamp(13px, 1.2vw, 14px);
-    font-weight: 400;
-    line-height: clamp(18px, 1.8vw, 20px);
-    letter-spacing: var(--ls-base);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-secondary));
-  }
-
-  /* Caption Text - Labels, meta information */
-  .text-caption {
-    font-family: var(--font-family-primary);
-    font-size: clamp(11px, 1vw, 12px);
-    font-weight: 400;
-    line-height: clamp(14px, 1.5vw, 16px);
-    letter-spacing: var(--ls-wide);
-    font-feature-settings: var(--font-feature-settings);
-    color: hsl(var(--text-muted));
-    text-transform: uppercase;
-  }
-
-  /* ==============================================
-   * INTERACTIVE TYPOGRAPHY STATES
-   * ============================================== */
-
-  /* Link Text Styles */
-  .text-link {
-    color: hsl(var(--primary));
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease-in-out;
-    border-bottom: 1px solid transparent;
-  }
-
-  .text-link:hover {
-    color: hsl(var(--primary));
-    border-bottom-color: hsl(var(--primary));
-    text-decoration: none;
-  }
-
-  .text-link:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-
-  /* Button Text Styles */
-  .text-button {
-    font-weight: 500;
-    letter-spacing: 0.025em;
-    transition: all 0.2s ease-in-out;
-  }
-
-  .text-button-small {
-    font-size: var(--text-sm);
-    line-height: var(--lh-sm);
-  }
-
-  .text-button-large {
-    font-size: var(--text-lg);
-    line-height: var(--lh-lg);
-  }
-
-  /* ==============================================
-   * RESPONSIVE TYPOGRAPHY UTILITIES
-   * ============================================== */
-
-  /* Mobile Optimized Classes */
-  @media (max-width: 640px) {
-    .heading-display-mobile {
-      font-size: 24px;
-      line-height: 28px;
-      font-weight: 700;
-    }
-    
-    .heading-page-mobile {
-      font-size: 20px;
-      line-height: 24px;
-      font-weight: 600;
-    }
-    
-    .text-body-mobile {
-      font-size: 16px; /* Prevent iOS zoom */
-      line-height: 24px;
-    }
-  }
-
-  /* Tablet and Up */
-  @media (min-width: 768px) {
-    .heading-display-tablet {
-      font-size: 32px;
-      line-height: 36px;
-    }
-    
-    .heading-page-tablet {
-      font-size: 28px;
-      line-height: 32px;
-    }
-  }
-
-  /* Desktop and Up */
-  @media (min-width: 1024px) {
-    .heading-display-desktop {
-      font-size: 36px;
-      line-height: 40px;
-    }
-    
-    .heading-page-desktop {
-      font-size: 30px;
-      line-height: 36px;
-    }
-  }
-
-  /* ==============================================
-   * BRAND & UTILITY CLASSES
-   * ============================================== */
-
   /* Utility classes for easy implementation */
   .bg-brand-gradient {
     background: var(--gradient-primary);
@@ -466,31 +228,38 @@
   .border-error { border-color: hsl(var(--color-error-border)); }
   .border-info { border-color: hsl(var(--color-info-border)); }
   
-  /* Enhanced text hierarchy utilities */
+  /* Text hierarchy utilities */
   .text-primary { color: hsl(var(--text-primary)); }
   .text-secondary { color: hsl(var(--text-secondary)); }
   .text-muted { color: hsl(var(--text-muted)); }
   .text-disabled { color: hsl(var(--text-disabled)); }
-  
-  /* Font weight utilities */
-  .font-display { font-weight: 800; }
-  .font-heading { font-weight: 700; }
-  .font-subheading { font-weight: 600; }
-  .font-medium { font-weight: 500; }
-  .font-normal { font-weight: 400; }
-  .font-light { font-weight: 300; }
-  
-  /* Letter spacing utilities */
-  .tracking-tight { letter-spacing: var(--ls-tight); }
-  .tracking-normal { letter-spacing: var(--ls-normal); }
-  .tracking-slight { letter-spacing: var(--ls-slight); }
-  .tracking-wide { letter-spacing: var(--ls-wide); }
 }
 
 @layer utilities {
-  /* ==============================================
-   * ACCESSIBILITY & USER PREFERENCE SUPPORT
-   * ============================================== */
+  /* Mobile safe area utilities */
+  .mobile-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .mobile-nav-height {
+    height: calc(100vh - env(safe-area-inset-bottom));
+  }
+
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
 
   /* Focus styles for accessibility */
   .focus-brand:focus-visible {
@@ -498,17 +267,39 @@
     outline-offset: 2px;
   }
   
-  /* Enhanced focus styles for typography */
-  .heading-display:focus-visible,
-  .heading-page:focus-visible,
-  .heading-section:focus-visible,
-  .heading-subsection:focus-visible,
-  .heading-component:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 4px;
-    border-radius: 4px;
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
-  
+
+  /* Smooth transitions */
+  .transition-smooth {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  /* Custom scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground));
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--foreground));
+  }
+
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     .focus-brand:focus-visible {
@@ -516,18 +307,9 @@
       outline-offset: 1px;
     }
     
-    /* Enhance text contrast in high contrast mode */
-    .text-secondary {
-      color: hsl(var(--text-primary));
-    }
-    
-    .text-muted {
-      color: hsl(var(--text-secondary));
-    }
-    
-    /* Stronger borders for high contrast */
-    .text-link {
-      border-bottom-width: 2px;
+    .high-contrast {
+      border-width: 2px;
+      border-color: currentColor;
     }
   }
   
@@ -538,280 +320,21 @@
       background: hsl(var(--primary));
     }
     
-    /* Remove transitions for reduced motion */
-    .text-link,
-    .text-button {
-      transition: none;
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
     }
   }
-  
-  /* Font size preference support */
-  @media (prefers-reduced-data: reduce) {
-    /* Disable web fonts in low-data mode */
-    .heading-display,
-    .heading-page,
-    .heading-section,
-    .heading-subsection,
-    .heading-component,
-    .text-large,
-    .text-body,
-    .text-small,
-    .text-caption {
-      font-family: system-ui, sans-serif;
-    }
-  }
-  
-  /* Dark mode typography adjustments */
-  @media (prefers-color-scheme: dark) {
-    .text-caption {
-      letter-spacing: 0.02em; /* Slightly wider for dark mode readability */
-    }
-  }
-  
-  /* ==============================================
-   * PRINT STYLESHEET OPTIMIZATIONS
-   * ============================================== */
-  
+
+  /* Print styles */
   @media print {
-    /* Optimize typography for print */
-    .heading-display {
-      font-size: 28px;
-      line-height: 32px;
-      page-break-after: avoid;
-      color: #000;
+    .print-hidden {
+      display: none !important;
     }
     
-    .heading-page {
-      font-size: 24px;
-      line-height: 28px;
-      page-break-after: avoid;
-      color: #000;
-    }
-    
-    .heading-section {
-      font-size: 20px;
-      line-height: 24px;
-      page-break-after: avoid;
-      color: #000;
-      margin-top: 1rem;
-    }
-    
-    .heading-subsection,
-    .heading-component {
-      font-size: 16px;
-      line-height: 20px;
-      page-break-after: avoid;
-      color: #000;
-    }
-    
-    .text-body,
-    .text-large {
-      font-size: 12px;
-      line-height: 16px;
-      color: #000;
-    }
-    
-    .text-small,
-    .text-caption {
-      font-size: 10px;
-      line-height: 12px;
-      color: #333;
-    }
-    
-    /* Remove gradients and shadows for print */
-    .bg-brand-gradient,
-    .bg-surface-gradient {
-      background: #fff !important;
-    }
-    
-    .text-link {
-      color: #000;
-      text-decoration: underline;
-      border-bottom: none;
-    }
-    
-    /* Show URLs after links in print */
-    .text-link[href]:after {
-      content: " (" attr(href) ")";
-      font-size: 10px;
-      color: #666;
-    }
-  }
-  
-  /* ==============================================
-   * PERFORMANCE & LOADING OPTIMIZATIONS
-   * ============================================== */
-  
-  /* Font loading optimization */
-  .font-loading-fallback {
-    font-family: system-ui, sans-serif;
-    font-display: swap;
-  }
-  
-  /* Prevent layout shift during font loading */
-  .text-stable {
-    font-kerning: auto;
-    font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1;
-  }
-  
-  /* ==============================================
-   * RESPONSIVE HELPER UTILITIES
-   * ============================================== */
-  
-  /* Hide text on mobile if too long */
-  .text-truncate-mobile {
-    @apply truncate;
-  }
-  
-  @media (min-width: 640px) {
-    .text-truncate-mobile {
-      @apply overflow-visible whitespace-normal;
-    }
-  }
-  
-  /* Responsive text alignment */
-  .text-center-mobile {
-    text-align: center;
-  }
-  
-  @media (min-width: 640px) {
-    .text-center-mobile {
-      text-align: left;
-    }
-  }
-  
-  /* Reading width optimization */
-  .reading-width {
-    max-width: 65ch; /* Optimal reading width */
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .reading-width-narrow {
-    max-width: 45ch; /* Narrow column reading */
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  /* ==============================================
-   * BRAND-SPECIFIC TYPOGRAPHY UTILITIES
-   * ============================================== */
-  
-  /* Brand emphasis styles */
-  .text-brand-emphasis {
-    color: hsl(var(--primary));
-    font-weight: 600;
-  }
-  
-  /* Gradient text effect */
-  .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-foreground)) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-weight: 700;
-  }
-  
-  /* Fallback for browsers that don't support background-clip: text */
-  @supports not (-webkit-background-clip: text) {
-    .text-gradient {
-      color: hsl(var(--primary));
-      background: none;
-      -webkit-text-fill-color: initial;
-    }
-  }
-  
-  /* Brand shadow text */
-  .text-shadow-brand {
-    text-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
-  }
-  
-  /* Interactive text states */
-  .text-interactive {
-    cursor: pointer;
-    transition: color 0.2s ease-in-out;
-  }
-  
-  .text-interactive:hover {
-    color: hsl(var(--primary));
-  }
-  
-  .text-interactive:active {
-    color: hsl(var(--primary));
-    transform: scale(0.98);
-  }
-}
-
-/* ==============================================
- * ACCESSIBILITY: TOUCH TARGET UTILITIES
- * WCAG AA Compliance - 44x44px minimum
- * ============================================== */
-
-@layer utilities {
-  /* Standard touch target - 44x44px minimum */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Small touch target - ensures 44px height with responsive width */
-  .touch-target-sm {
-    min-height: 44px;
-    padding: 10px 16px;
-  }
-  
-  @media (max-width: 640px) {
-    .touch-target-sm {
-      min-width: 44px;
-    }
-  }
-  
-  /* Large touch target - 48x48px for enhanced usability */
-  .touch-target-lg {
-    min-height: 48px;
-    min-width: 48px;
-  }
-  
-  /* Icon touch target with centered content */
-  .touch-target-icon {
-    min-height: 44px;
-    min-width: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* Touch spacing for adequate separation between targets */
-  .touch-spacing {
-    gap: 8px;
-  }
-  
-  .touch-spacing-lg {
-    gap: 12px;
-  }
-  
-  /* Enhanced feedback for touch interactions */
-  .touch-feedback:active {
-    transform: scale(0.98);
-    transition: transform 0.1s ease;
-  }
-  
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
-    .touch-feedback:active {
-      transform: none;
-    }
-  }
-  
-  /* High contrast support for touch targets */
-  @media (prefers-contrast: high) {
-    .touch-target,
-    .touch-target-sm,
-    .touch-target-lg,
-    .touch-target-icon {
-      border: 2px solid;
-      border-color: currentColor;
+    .print-visible {
+      display: block !important;
     }
   }
 }
