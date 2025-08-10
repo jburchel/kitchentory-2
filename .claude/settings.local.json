@@ -12,7 +12,10 @@
       "Bash(git add:*)",
       "Bash(git push:*)",
       "Bash(npx vercel:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(node:*)",
+      "Bash(cp:*)"
     ]
   },
   "enabledMcpjsonServers": [

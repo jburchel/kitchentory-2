@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@/components/auth/UserButton'
 import { ProduceIcon, BeveragesIcon, HouseholdIcon } from '@/components/icons/svg'
+import { HeaderInstallButton } from '@/components/ui/InstallPrompt'
+import { ConnectionStatus, MobileConnectionStatus } from '@/components/ui/ConnectionStatus'
 import { cn } from '@/lib/utils'
 
 interface AppLayoutProps {
@@ -36,6 +38,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Mobile Connection Status */}
+      <MobileConnectionStatus />
+      
       {/* Header Navigation */}
       <header className="bg-card border-b border-border shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,7 +72,9 @@ export function AppLayout({ children }: AppLayoutProps) {
             </div>
 
             {/* User Menu */}
-            <div className="flex items-center">
+            <div className="flex items-center space-x-3">
+              <ConnectionStatus showLabel={false} size="sm" className="hidden md:flex" />
+              <HeaderInstallButton />
               <UserButton />
             </div>
           </div>

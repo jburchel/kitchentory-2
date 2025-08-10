@@ -12,9 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Plus, Scan, Search, Package, Calendar, AlertTriangle } from 'lucide-react'
+import { Plus, Scan, Search, Package, Calendar, AlertTriangle, Camera } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatISO } from 'date-fns'
+import { CameraScanner } from '@/components/ui/CameraScanner'
+import { usePWA } from '@/components/providers/PWAProvider'
 
 // Food categories with their associated colors and icons
 export const FOOD_CATEGORIES = {
@@ -78,6 +80,9 @@ export function AddItemForm({
 }: AddItemFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
+  const [showPhotoCapture, setShowPhotoCapture] = useState(false)
+  const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null)
+  const { isOnline } = usePWA()
 
   const form = useForm<AddItemFormData>({
     resolver: zodResolver(addItemSchema),
@@ -127,8 +132,18 @@ export function AddItemForm({
   const handleBarcodeDetected = (barcode: string) => {
     form.setValue('barcode', barcode)
     setShowBarcodeScanner(false)
-    // In real implementation, this would trigger a product lookup
     toast.success(`Barcode detected: ${barcode}`)
+    
+    // Auto-trigger product lookup
+    setTimeout(() => {
+      handleProductLookup()
+    }, 500)
+  }
+
+  const handlePhotoCapture = (imageData: string) => {
+    setCapturedPhoto(imageData)
+    setShowPhotoCapture(false)
+    toast.success('Photo captured! This will help identify your item.')
   }
 
   const handleProductLookup = async () => {
@@ -195,22 +210,12 @@ export function AddItemForm({
                   <DialogHeader>
                     <DialogTitle>Scan Barcode</DialogTitle>
                   </DialogHeader>
-                  <div className="p-4 text-center">
-                    <div className="w-64 h-48 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                      <Scan className="w-12 h-12 text-gray-400" />
-                      <span className="ml-2 text-gray-600">Camera View</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Point your camera at a barcode to scan
-                    </p>
-                    <Button 
-                      onClick={() => handleBarcodeDetected('123456789012')}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Simulate Scan
-                    </Button>
-                  </div>
+                  <CameraScanner
+                    mode="barcode"
+                    onScan={handleBarcodeDetected}
+                    onClose={() => setShowBarcodeScanner(false)}
+                    className="border-0"
+                  />
                 </DialogContent>
               </Dialog>
               
@@ -378,6 +383,59 @@ export function AddItemForm({
               {...form.register('notes')}
               className="resize-none"
             />
+          </div>
+
+          {/* Photo Capture */}
+          <div className="space-y-2">
+            <Label>Item Photo (Optional)</Label>
+            <div className="flex items-center gap-3">
+              {capturedPhoto ? (
+                <div className="relative">
+                  <img
+                    src={capturedPhoto}
+                    alt="Captured item"
+                    className="w-20 h-20 object-cover rounded-lg border-2 border-border"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                    onClick={() => setCapturedPhoto(null)}
+                  >
+                    ×
+                  </Button>
+                </div>
+              ) : (
+                <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed border-border">
+                  <Camera className="w-8 h-8 text-muted-foreground" />
+                </div>
+              )}
+              <div className="flex-1">
+                <Dialog open={showPhotoCapture} onOpenChange={setShowPhotoCapture}>
+                  <DialogTrigger asChild>
+                    <Button type="button" variant="outline" className="w-full">
+                      <Camera className="w-4 h-4 mr-2" />
+                      {capturedPhoto ? 'Retake Photo' : 'Take Photo'}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Take Item Photo</DialogTitle>
+                    </DialogHeader>
+                    <CameraScanner
+                      mode="photo"
+                      onCapture={handlePhotoCapture}
+                      onClose={() => setShowPhotoCapture(false)}
+                      className="border-0"
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Add a photo to help identify this item in your inventory
+            </p>
           </div>
 
           {/* Actions */}

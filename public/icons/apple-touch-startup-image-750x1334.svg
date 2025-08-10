@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="750" height="1334" viewBox="0 0 750 1334" xmlns="http://www.w3.org/2000/svg">
+  <rect width="750" height="1334" fill="#10b981"/>
+  <text x="375" y="667" text-anchor="middle" 
+        font-family="system-ui, -apple-system, sans-serif" 
+        font-size="48" font-weight="bold" fill="white">Kitchentory</text>
+  <text x="375" y="720" text-anchor="middle" 
+        font-family="system-ui, -apple-system, sans-serif" 
+        font-size="24" fill="rgba(255,255,255,0.8)">Kitchen Inventory Manager</text>
+</svg>
