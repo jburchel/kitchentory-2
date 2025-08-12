@@ -125,13 +125,17 @@ export function useInventory(householdId?: string): UseInventoryReturn {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Check if Convex API is available - add safety checks
+  const convexAvailable = api && api.inventoryItems && typeof api.inventoryItems === 'object'
+  
   // Convex mutations - always call hooks unconditionally (React rule)
-  const createInventoryItem = useMutation(api.inventoryItems.createInventoryItem)
-  const updateInventoryItemMutation = useMutation(api.inventoryItems.updateInventoryItem)
-  const deleteInventoryItemMutation = useMutation(api.inventoryItems.deleteInventoryItem)
-  const updateItemQuantityMutation = useMutation(api.inventoryItems.updateItemQuantity)
-  // Only use Convex queries if we have a valid Convex ID format (starts with a letter followed by alphanumeric)
-  const isValidConvexId = householdId && /^[a-z][a-z0-9]*$/.test(householdId)
+  const createInventoryItem = useMutation(convexAvailable ? api.inventoryItems.createInventoryItem : undefined)
+  const updateInventoryItemMutation = useMutation(convexAvailable ? api.inventoryItems.updateInventoryItem : undefined)
+  const deleteInventoryItemMutation = useMutation(convexAvailable ? api.inventoryItems.deleteInventoryItem : undefined)
+  const updateItemQuantityMutation = useMutation(convexAvailable ? api.inventoryItems.updateItemQuantity : undefined)
+  
+  // Only use Convex queries if we have a valid Convex ID format and API is available
+  const isValidConvexId = householdId && /^[a-z][a-z0-9]*$/.test(householdId) && convexAvailable
   
   // Always call hooks unconditionally, but pass undefined to skip execution
   const getInventoryItemsQuery = useQuery(
