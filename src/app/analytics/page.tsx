@@ -2,17 +2,13 @@
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
-import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
-import { useAnalytics } from '@/hooks/useAnalytics'
-import { Button } from '@/components/ui/button'
-import { RefreshCw } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { BarChart3 } from 'lucide-react'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
 
 export default function AnalyticsPage() {
-  const { analyticsData, loading, error, refreshAnalytics } = useAnalytics()
-
   return (
     <ProtectedRoute>
       <AppLayout>
@@ -24,23 +20,25 @@ export default function AnalyticsPage() {
                 Insights into your household's consumption patterns and spending
               </p>
             </div>
-            
-            <Button 
-              onClick={refreshAnalytics}
-              disabled={loading}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Data
-            </Button>
           </div>
           
-          <AnalyticsDashboard
-            analyticsData={analyticsData}
-            loading={loading}
-            error={error}
-            onRefresh={refreshAnalytics}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Analytics Dashboard
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Analytics Coming Soon</h3>
+                <p className="text-muted-foreground">
+                  Advanced analytics and insights will be available in the next update.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </AppLayout>
     </ProtectedRoute>
