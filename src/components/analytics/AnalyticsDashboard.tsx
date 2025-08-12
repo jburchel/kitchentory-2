@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { 
   TrendingUp, 
   TrendingDown, 
-  TrendingFlat,
+  Minus,
   Package,
   DollarSign,
   RotateCcw,

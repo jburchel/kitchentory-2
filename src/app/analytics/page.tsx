@@ -1,11 +1,15 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Button } from '@/components/ui/button'
 import { RefreshCw } from 'lucide-react'
+
+// Disable static generation for this page
+export const dynamic = 'force-dynamic'
 
 export default function AnalyticsPage() {
   const { analyticsData, loading, error, refreshAnalytics } = useAnalytics()
