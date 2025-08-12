@@ -24,14 +24,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Load theme from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme | null
-    const savedCustomTheme = localStorage.getItem('customTheme') as CustomTheme | null
-    
-    if (savedTheme) {
-      setThemeState(savedTheme)
-    }
-    if (savedCustomTheme) {
-      setCustomThemeState(savedCustomTheme)
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme | null
+      const savedCustomTheme = localStorage.getItem('customTheme') as CustomTheme | null
+      
+      if (savedTheme) {
+        setThemeState(savedTheme)
+      }
+      if (savedCustomTheme) {
+        setCustomThemeState(savedCustomTheme)
+      }
     }
     
     setIsLoading(false)
@@ -39,32 +41,36 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Handle system theme changes
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    
-    const handleChange = () => {
-      if (theme === 'system') {
-        const newResolvedTheme = mediaQuery.matches ? 'dark' : 'light'
-        setResolvedTheme(newResolvedTheme)
-        updateThemeOnDocument(newResolvedTheme, customTheme)
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      
+      const handleChange = () => {
+        if (theme === 'system') {
+          const newResolvedTheme = mediaQuery.matches ? 'dark' : 'light'
+          setResolvedTheme(newResolvedTheme)
+          updateThemeOnDocument(newResolvedTheme, customTheme)
+        }
       }
-    }
 
-    handleChange() // Set initial value
-    mediaQuery.addEventListener('change', handleChange)
-    
-    return () => mediaQuery.removeEventListener('change', handleChange)
+      handleChange() // Set initial value
+      mediaQuery.addEventListener('change', handleChange)
+      
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    }
   }, [theme, customTheme])
 
   // Update resolved theme when theme changes
   useEffect(() => {
-    if (theme !== 'system') {
-      setResolvedTheme(theme)
-      updateThemeOnDocument(theme, customTheme)
-    } else {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      const newResolvedTheme = mediaQuery.matches ? 'dark' : 'light'
-      setResolvedTheme(newResolvedTheme)
-      updateThemeOnDocument(newResolvedTheme, customTheme)
+    if (typeof window !== 'undefined') {
+      if (theme !== 'system') {
+        setResolvedTheme(theme)
+        updateThemeOnDocument(theme, customTheme)
+      } else {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+        const newResolvedTheme = mediaQuery.matches ? 'dark' : 'light'
+        setResolvedTheme(newResolvedTheme)
+        updateThemeOnDocument(newResolvedTheme, customTheme)
+      }
     }
   }, [theme, customTheme])
 
@@ -89,12 +95,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
-    localStorage.setItem('theme', newTheme)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme)
+    }
   }
 
   const setCustomTheme = (newCustomTheme: CustomTheme) => {
     setCustomThemeState(newCustomTheme)
-    localStorage.setItem('customTheme', newCustomTheme)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('customTheme', newCustomTheme)
+    }
   }
 
   return (

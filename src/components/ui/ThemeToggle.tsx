@@ -13,7 +13,21 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 export function ThemeToggle() {
-  const { theme, setTheme, customTheme, setCustomTheme, resolvedTheme } = useTheme()
+  const { theme, setTheme, customTheme, setCustomTheme, resolvedTheme, isLoading } = useTheme()
+
+  // Don't render until client-side hydration is complete
+  if (isLoading) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="relative w-9 h-9"
+        disabled
+      >
+        <Sun className="h-4 w-4" />
+      </Button>
+    )
+  }
 
   const themes = [
     { value: 'light', label: 'Light', icon: Sun },
