@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Plus, ShoppingCart, Users, Calendar, DollarSign, MapPin, Tag, Template } from 'lucide-react'
+import { Plus, ShoppingCart, Users, Calendar, DollarSign, MapPin, Tag, Bookmark } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatISO } from 'date-fns'
 import {
@@ -390,7 +390,7 @@ export function ShoppingListCreationForm({
                 }}
               />
               <Label htmlFor="isTemplate" className="flex items-center gap-2">
-                <Template className="w-4 h-4" />
+                <Bookmark className="w-4 h-4" />
                 Save as template for future use
               </Label>
             </div>

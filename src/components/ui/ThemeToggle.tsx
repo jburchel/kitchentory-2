@@ -23,11 +23,13 @@ export function ThemeToggle() {
         size="icon"
         className="relative w-9 h-9"
         disabled
+        title="Theme toggle loading..."
       >
         <Sun className="h-4 w-4" />
       </Button>
     )
   }
+
 
   const themes = [
     { value: 'light', label: 'Light', icon: Sun },
