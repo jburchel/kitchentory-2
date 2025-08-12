@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { addDays, isBefore, isAfter } from 'date-fns'
@@ -127,21 +125,22 @@ export function useInventory(householdId?: string): UseInventoryReturn {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Convex mutations and queries - handle SSR gracefully
-  const createInventoryItem = typeof window !== 'undefined' ? useMutation(api.inventoryItems.createInventoryItem) : null
-  const updateInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateInventoryItem) : null
-  const deleteInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.deleteInventoryItem) : null
-  const updateItemQuantityMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateItemQuantity) : null
+  // Convex mutations - always call hooks unconditionally (React rule)
+  const createInventoryItem = useMutation(api.inventoryItems.createInventoryItem)
+  const updateInventoryItemMutation = useMutation(api.inventoryItems.updateInventoryItem)
+  const deleteInventoryItemMutation = useMutation(api.inventoryItems.deleteInventoryItem)
+  const updateItemQuantityMutation = useMutation(api.inventoryItems.updateItemQuantity)
   // Only use Convex queries if we have a valid Convex ID format (starts with a letter followed by alphanumeric)
   const isValidConvexId = householdId && /^[a-z][a-z0-9]*$/.test(householdId)
   
+  // Always call hooks unconditionally, but pass undefined to skip execution
   const getInventoryItemsQuery = useQuery(
-    isValidConvexId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryItems : undefined,
-    isValidConvexId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+    isValidConvexId ? api.inventoryItems.getInventoryItems : undefined,
+    isValidConvexId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : undefined
   )
   const getInventoryStatsQuery = useQuery(
-    isValidConvexId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryStats : undefined,
-    isValidConvexId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+    isValidConvexId ? api.inventoryItems.getInventoryStats : undefined,
+    isValidConvexId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : undefined
   )
 
   // Use Convex data when available, fallback to mock data for development
