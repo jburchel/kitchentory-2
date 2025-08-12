@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { AlertDashboard } from '@/components/alerts/AlertDashboard'
-import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
 import { 
   Package, 
   Plus, 
@@ -26,7 +25,6 @@ import { FOOD_CATEGORIES } from './AddItemForm'
 import { formatDistanceToNow, isAfter, isBefore, addDays } from 'date-fns'
 import { toast } from 'sonner'
 import { useInventory } from '@/hooks/useInventory'
-import { useAnalytics } from '@/hooks/useAnalytics'
 
 export interface InventoryDashboardProps {
   householdId: string
@@ -35,7 +33,6 @@ export interface InventoryDashboardProps {
 
 export function InventoryDashboard({ householdId, className }: InventoryDashboardProps) {
   const { items, loading: inventoryLoading, error: inventoryError } = useInventory(householdId)
-  const { analyticsData, loading: analyticsLoading, error: analyticsError, refreshAnalytics } = useAnalytics(householdId)
   
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null)
@@ -262,12 +259,23 @@ export function InventoryDashboard({ householdId, className }: InventoryDashboar
         </TabsContent>
 
         <TabsContent value="analytics">
-          <AnalyticsDashboard
-            analyticsData={analyticsData}
-            loading={analyticsLoading}
-            error={analyticsError}
-            onRefresh={refreshAnalytics}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5" />
+                Analytics Dashboard
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <BarChart3 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Analytics Coming Soon</h3>
+                <p className="text-muted-foreground">
+                  Advanced analytics and insights will be available in the next update.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 
