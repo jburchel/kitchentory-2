@@ -54,15 +54,23 @@ export async function getOrCreateUser(ctx: MutationCtx) {
   // Create user if doesn't exist
   if (!user) {
     const now = Date.now();
-    const userId = await ctx.db.insert("users", {
+    const userData: any = {
       clerkId: authUser.clerkId,
       email: authUser.email,
-      name: authUser.name,
-      avatar: authUser.avatar,
       isOnboarded: false,
       createdAt: now,
       updatedAt: now
-    });
+    };
+    
+    // Only add optional fields if they have values
+    if (authUser.name !== undefined) {
+      userData.name = authUser.name;
+    }
+    if (authUser.avatar !== undefined) {
+      userData.avatar = authUser.avatar;
+    }
+    
+    const userId = await ctx.db.insert("users", userData);
     
     user = await ctx.db.get(userId);
   }
@@ -228,19 +236,29 @@ export async function logAuditEvent(
   try {
     const authUser = await getAuthenticatedUser(ctx);
     
-    await ctx.db.insert("auditLog", {
-      householdId: details?.householdId,
+    const auditData: any = {
       userId: authUser.clerkId,
       action,
       resource,
-      resourceId: details?.resourceId,
-      details: details ? {
-        oldValue: details.oldValue,
-        newValue: details.newValue
-      } : undefined,
       severity: details?.severity || "info",
       createdAt: Date.now()
-    });
+    };
+    
+    // Only add optional fields if they have values
+    if (details?.householdId !== undefined) {
+      auditData.householdId = details.householdId;
+    }
+    if (details?.resourceId !== undefined) {
+      auditData.resourceId = details.resourceId;
+    }
+    if (details?.oldValue !== undefined || details?.newValue !== undefined) {
+      auditData.details = {
+        oldValue: details.oldValue,
+        newValue: details.newValue
+      };
+    }
+    
+    await ctx.db.insert("auditLog", auditData);
   } catch (error) {
     // Don't throw on audit log failures
     console.error("Failed to log audit event:", error);

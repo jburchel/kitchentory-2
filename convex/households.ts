@@ -32,9 +32,8 @@ export const createHousehold = mutation({
     const now = Date.now();
 
     // Create household
-    const householdId = await ctx.db.insert("households", {
+    const householdData: any = {
       name: args.name.trim(),
-      description: args.description?.trim(),
       ownerId: user.clerkId,
       settings: args.settings || {
         currency: "USD",
@@ -48,7 +47,15 @@ export const createHousehold = mutation({
       inviteCodeExpiresAt: now + (30 * 24 * 60 * 60 * 1000), // 30 days
       createdAt: now,
       updatedAt: now
-    });
+    };
+    
+    // Only add optional fields if they have values
+    const trimmedDescription = args.description?.trim();
+    if (trimmedDescription) {
+      householdData.description = trimmedDescription;
+    }
+    
+    const householdId = await ctx.db.insert("households", householdData);
 
     // Create owner membership
     await ctx.db.insert("householdMemberships", {

@@ -67,6 +67,10 @@ export interface UseInventoryReturn {
   searchItems: (query: string) => InventoryItem[]
   filterItems: (filter: 'all' | 'expiring' | 'expired' | 'low-stock') => InventoryItem[]
   refreshItems: (householdId: string) => Promise<void>
+  getItemsByCategory: (category: string) => InventoryItem[]
+  getItemsExpiringBefore: (date: Date) => InventoryItem[]
+  getLowStockItems: (threshold?: number) => InventoryItem[]
+  sortItems: (sortBy: 'name' | 'category' | 'expiration' | 'quantity' | 'cost' | 'createdAt') => InventoryItem[]
 }
 
 // Mock data for development
@@ -440,6 +444,43 @@ export function useInventory(householdId?: string): UseInventoryReturn {
     return Promise.resolve()
   }, [])
 
+  const getItemsByCategory = useCallback((category: string): InventoryItem[] => {
+    return transformedItems.filter(item => item.category === category)
+  }, [transformedItems])
+
+  const getItemsExpiringBefore = useCallback((date: Date): InventoryItem[] => {
+    return transformedItems.filter(item => 
+      item.expirationDate && isBefore(item.expirationDate, date)
+    )
+  }, [transformedItems])
+
+  const getLowStockItems = useCallback((threshold = 2): InventoryItem[] => {
+    return transformedItems.filter(item => item.quantity <= threshold)
+  }, [transformedItems])
+
+  const sortItems = useCallback((sortBy: 'name' | 'category' | 'expiration' | 'quantity' | 'cost' | 'createdAt'): InventoryItem[] => {
+    return [...transformedItems].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name)
+        case 'category':
+          return a.category.localeCompare(b.category)
+        case 'expiration':
+          if (!a.expirationDate && !b.expirationDate) return 0
+          if (!a.expirationDate) return 1
+          if (!b.expirationDate) return -1
+          return a.expirationDate.getTime() - b.expirationDate.getTime()
+        case 'quantity':
+          return a.quantity - b.quantity
+        case 'cost':
+          return (a.cost || 0) - (b.cost || 0)
+        case 'createdAt':
+        default:
+          return a.createdAt.getTime() - b.createdAt.getTime()
+      }
+    })
+  }, [transformedItems])
+
   return {
     items: transformedItems,
     stats,
@@ -451,6 +492,10 @@ export function useInventory(householdId?: string): UseInventoryReturn {
     updateQuantity,
     searchItems,
     filterItems,
-    refreshItems
+    refreshItems,
+    getItemsByCategory,
+    getItemsExpiringBefore,
+    getLowStockItems,
+    sortItems
   }
 }

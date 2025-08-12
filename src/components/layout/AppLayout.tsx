@@ -4,8 +4,15 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@/components/auth/UserButton'
 import { ProduceIcon, BeveragesIcon, HouseholdIcon } from '@/components/icons/svg'
+import { 
+  Bell, 
+  BarChart3, 
+  Utensils 
+} from 'lucide-react'
 import { HeaderInstallButton } from '@/components/ui/InstallPrompt'
 import { ConnectionStatus, MobileConnectionStatus } from '@/components/ui/ConnectionStatus'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { AccessibilityMenu } from '@/components/ui/AccessibilityMenu'
 import { cn } from '@/lib/utils'
 
 interface AppLayoutProps {
@@ -37,8 +44,20 @@ export function AppLayout({ children }: AppLayoutProps) {
     {
       href: '/alerts',
       label: 'Alerts',
-      icon: ProduceIcon, // Using ProduceIcon temporarily - could use a bell icon
+      icon: Bell,
       active: pathname.startsWith('/alerts')
+    },
+    {
+      href: '/analytics',
+      label: 'Analytics',
+      icon: BarChart3,
+      active: pathname.startsWith('/analytics')
+    },
+    {
+      href: '/meal-planning',
+      label: 'Meal Planning',
+      icon: Utensils,
+      active: pathname.startsWith('/meal-planning')
     }
   ]
 
@@ -80,6 +99,8 @@ export function AppLayout({ children }: AppLayoutProps) {
             {/* User Menu */}
             <div className="flex items-center space-x-3">
               <ConnectionStatus showLabel={false} size="sm" className="hidden md:flex" />
+              <AccessibilityMenu />
+              <ThemeToggle />
               <HeaderInstallButton />
               <UserButton />
             </div>
@@ -90,7 +111,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50">
         <div className="flex justify-around items-center h-16">
-          {navItems.map((item) => (
+          {navItems.slice(0, 5).map((item) => (
             <Link
               key={item.href}
               href={item.href}

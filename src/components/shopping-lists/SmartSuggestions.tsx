@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -15,15 +15,17 @@ import {
   Snowflake,
   ChefHat,
   RefreshCw,
-  X
+  X,
+  Package
 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
-  SmartSuggestion,
   ITEM_PRIORITIES,
   STORE_SECTIONS,
   AddItemToListData
 } from '@/schemas/shoppingListSchemas'
+import { SmartSuggestion } from '@/services/SmartSuggestionsService'
+import { useSmartSuggestions } from '@/hooks/useSmartSuggestions'
 
 export interface SmartSuggestionsProps {
   householdId: string
@@ -31,7 +33,6 @@ export interface SmartSuggestionsProps {
   excludeItems?: string[]
   maxSuggestions?: number
   onRefresh?: () => void
-  loading?: boolean
   className?: string
 }
 
@@ -48,7 +49,13 @@ const REASON_CONFIG = {
     icon: AlertTriangle,
     description: 'Item has expired'
   },
-  frequently_bought: {
+  expired_soon: {
+    label: 'Expiring',
+    color: 'text-orange-600 bg-orange-50 border-orange-200',
+    icon: Clock,
+    description: 'Expires soon'
+  },
+  frequently_used: {
     label: 'Frequent',
     color: 'text-blue-600 bg-blue-50 border-blue-200',
     icon: TrendingUp,
@@ -65,105 +72,13 @@ const REASON_CONFIG = {
     color: 'text-purple-600 bg-purple-50 border-purple-200',
     icon: ChefHat,
     description: 'Needed for planned recipes'
+  },
+  waste_reduction: {
+    label: 'Waste',
+    color: 'text-red-600 bg-red-50 border-red-200',
+    icon: Package,
+    description: 'Previously wasted item'
   }
-}
-
-// Mock smart suggestions generator
-const generateSmartSuggestions = async (
-  householdId: string, 
-  excludeItems: string[] = []
-): Promise<SmartSuggestion[]> => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000))
-
-  const allSuggestions: SmartSuggestion[] = [
-    {
-      itemName: 'Organic Bananas',
-      category: 'produce',
-      reason: 'low_stock',
-      priority: 'high',
-      estimatedQuantity: 6,
-      estimatedUnit: 'pieces',
-      inventoryItemId: 'inv-1',
-      lastPurchaseDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-      averageConsumption: 1.5
-    },
-    {
-      itemName: 'Whole Milk',
-      category: 'dairy',
-      reason: 'expired',
-      priority: 'urgent',
-      estimatedQuantity: 1,
-      estimatedUnit: 'gallon',
-      inventoryItemId: 'inv-2',
-      lastPurchaseDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
-    },
-    {
-      itemName: 'Bread',
-      category: 'bakery',
-      reason: 'frequently_bought',
-      priority: 'medium',
-      estimatedQuantity: 1,
-      estimatedUnit: 'loaf',
-      lastPurchaseDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-      averageConsumption: 0.8
-    },
-    {
-      itemName: 'Eggs',
-      category: 'dairy',
-      reason: 'frequently_bought',
-      priority: 'medium',
-      estimatedQuantity: 12,
-      estimatedUnit: 'pieces',
-      lastPurchaseDate: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
-      averageConsumption: 2.1
-    },
-    {
-      itemName: 'Orange Juice',
-      category: 'beverages',
-      reason: 'low_stock',
-      priority: 'medium',
-      estimatedQuantity: 1,
-      estimatedUnit: 'bottle',
-      inventoryItemId: 'inv-3',
-      lastPurchaseDate: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
-      averageConsumption: 1.2
-    },
-    {
-      itemName: 'Chicken Breast',
-      category: 'meat',
-      reason: 'recipe_ingredient',
-      priority: 'high',
-      estimatedQuantity: 2,
-      estimatedUnit: 'lbs',
-      lastPurchaseDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
-    },
-    {
-      itemName: 'Pasta',
-      category: 'pantry',
-      reason: 'frequently_bought',
-      priority: 'low',
-      estimatedQuantity: 2,
-      estimatedUnit: 'boxes',
-      lastPurchaseDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
-      averageConsumption: 0.5
-    },
-    {
-      itemName: 'Apples',
-      category: 'produce',
-      reason: 'seasonal',
-      priority: 'medium',
-      estimatedQuantity: 8,
-      estimatedUnit: 'pieces',
-      lastPurchaseDate: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-      averageConsumption: 2.0
-    }
-  ]
-
-  // Filter out excluded items
-  return allSuggestions
-    .filter(suggestion => !excludeItems.includes(suggestion.itemName.toLowerCase()))
-    .slice(0, 6) // Limit suggestions
 }
 
 export function SmartSuggestions({
@@ -172,28 +87,14 @@ export function SmartSuggestions({
   excludeItems = [],
   maxSuggestions = 6,
   onRefresh,
-  loading = false,
   className
 }: SmartSuggestionsProps) {
-  const [suggestions, setSuggestions] = useState<SmartSuggestion[]>([])
-  const [isLoading, setIsLoading] = useState(false)
+  const { suggestions, loading, error, refreshSuggestions } = useSmartSuggestions(
+    householdId,
+    excludeItems
+  )
+  
   const [dismissedItems, setDismissedItems] = useState<string[]>([])
-
-  const loadSuggestions = async () => {
-    try {
-      setIsLoading(true)
-      const newSuggestions = await generateSmartSuggestions(householdId, excludeItems)
-      setSuggestions(newSuggestions.slice(0, maxSuggestions))
-    } catch (error) {
-      toast.error('Failed to load smart suggestions')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadSuggestions()
-  }, [householdId, excludeItems, maxSuggestions])
 
   const handleAddToList = async (suggestion: SmartSuggestion) => {
     try {
@@ -210,9 +111,7 @@ export function SmartSuggestions({
       await onAddToList(itemData)
       
       // Remove from suggestions
-      setSuggestions(prev => 
-        prev.filter(s => s.itemName !== suggestion.itemName)
-      )
+      setDismissedItems(prev => [...prev, suggestion.itemName])
       
       toast.success(`Added ${suggestion.itemName} to shopping list`)
     } catch (error) {
@@ -222,22 +121,19 @@ export function SmartSuggestions({
 
   const handleDismiss = (itemName: string) => {
     setDismissedItems(prev => [...prev, itemName])
-    setSuggestions(prev => 
-      prev.filter(s => s.itemName !== itemName)
-    )
   }
 
   const handleRefresh = () => {
     setDismissedItems([])
-    loadSuggestions()
+    refreshSuggestions()
     onRefresh?.()
   }
 
   const visibleSuggestions = suggestions.filter(
     suggestion => !dismissedItems.includes(suggestion.itemName)
-  )
+  ).slice(0, maxSuggestions)
 
-  if (loading || isLoading) {
+  if (loading) {
     return (
       <Card className={className}>
         <CardHeader>
@@ -258,6 +154,42 @@ export function SmartSuggestions({
                 <Skeleton className="w-16 h-8" />
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className={className}>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-emerald-600" />
+              Smart Suggestions
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">
+            <AlertTriangle className="w-12 h-12 mx-auto mb-4 text-red-300" />
+            <h3 className="text-lg font-medium mb-2">Error Loading Suggestions</h3>
+            <p className="text-sm mb-4">
+              {error}
+            </p>
+            <Button onClick={handleRefresh} variant="outline">
+              Try Again
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -322,7 +254,8 @@ export function SmartSuggestions({
       <CardContent>
         <div className="space-y-3">
           {visibleSuggestions.map((suggestion) => {
-            const reasonConfig = REASON_CONFIG[suggestion.reason]
+            const reasonConfig = REASON_CONFIG[suggestion.reason as keyof typeof REASON_CONFIG] || 
+              REASON_CONFIG.frequently_used
             const priorityConfig = ITEM_PRIORITIES[suggestion.priority]
             const sectionConfig = STORE_SECTIONS[suggestion.category as keyof typeof STORE_SECTIONS]
             const ReasonIcon = reasonConfig.icon
@@ -361,7 +294,7 @@ export function SmartSuggestions({
                     {suggestion.averageConsumption && (
                       <>
                         <span>•</span>
-                        <span>{suggestion.averageConsumption}/week avg</span>
+                        <span>{suggestion.averageConsumption.toFixed(1)}/week avg</span>
                       </>
                     )}
                   </div>
@@ -401,7 +334,8 @@ export function SmartSuggestions({
                 <li>• Items running low in your inventory</li>
                 <li>• Frequently purchased items based on your history</li>
                 <li>• Expired items that need replacing</li>
-                <li>• Seasonal recommendations and recipe ingredients</li>
+                <li>• Items you may have previously wasted</li>
+                <li>• Seasonal recommendations</li>
               </ul>
             </div>
           </div>

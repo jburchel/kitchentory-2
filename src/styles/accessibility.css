@@ -1,0 +1,199 @@
+/* Accessibility Enhancements */
+
+/* High Contrast Mode */
+.contrast-high {
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 158 70% 45%;
+}
+
+.dark.contrast-high {
+  --border: 0 0% 85%;
+  --input: 0 0% 85%;
+  --ring: 158 70% 55%;
+}
+
+/* Highest Contrast Mode */
+.contrast-highest {
+  --border: 0 0% 0%;
+  --input: 0 0% 0%;
+  --ring: 158 80% 40%;
+  --foreground: 0 0% 0%;
+  --background: 0 0% 100%;
+}
+
+.dark.contrast-highest {
+  --border: 0 0% 100%;
+  --input: 0 0% 100%;
+  --ring: 158 80% 60%;
+  --foreground: 0 0% 100%;
+  --background: 0 0% 0%;
+}
+
+/* Reduce Motion */
+.reduce-motion * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Enhanced Focus Indicators */
+.focus-visible *:focus-visible {
+  outline: 3px solid hsl(var(--ring));
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Screen Reader Mode - Hide decorative elements */
+.screen-reader-mode .decorative,
+.screen-reader-mode [aria-hidden="true"] {
+  display: none !important;
+}
+
+/* Keyboard Navigation Highlights */
+.keyboard-nav *:focus {
+  box-shadow: 0 0 0 4px rgba(var(--primary), 0.2);
+}
+
+/* Skip to Content Link */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 8px;
+  z-index: 100;
+  text-decoration: none;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Large Click Targets */
+@media (pointer: coarse) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Improved Text Readability */
+.improve-readability {
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  word-spacing: 0.1em;
+}
+
+/* Dyslexia-Friendly Font Option */
+.dyslexia-font {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+}
+
+/* Color Blind Friendly Indicators */
+.color-blind-mode {
+  /* Use patterns and shapes in addition to colors */
+}
+
+.color-blind-mode .success::before {
+  content: '✓ ';
+}
+
+.color-blind-mode .error::before {
+  content: '✗ ';
+}
+
+.color-blind-mode .warning::before {
+  content: '⚠ ';
+}
+
+.color-blind-mode .info::before {
+  content: 'ℹ ';
+}
+
+/* Improved Form Labels */
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+/* Required Field Indicators */
+.required::after {
+  content: ' *';
+  color: hsl(var(--destructive));
+  font-weight: bold;
+}
+
+/* Error Message Styling */
+.error-message {
+  color: hsl(var(--destructive));
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.error-message::before {
+  content: '⚠';
+  font-size: 1rem;
+}
+
+/* Loading States */
+.loading {
+  position: relative;
+  color: transparent;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid hsl(var(--muted));
+  border-top-color: hsl(var(--primary));
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print,
+  nav,
+  aside,
+  footer,
+  .theme-toggle,
+  .accessibility-menu {
+    display: none !important;
+  }
+  
+  body {
+    font-size: 12pt;
+    color: black;
+    background: white;
+  }
+  
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+  
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+  }
+}

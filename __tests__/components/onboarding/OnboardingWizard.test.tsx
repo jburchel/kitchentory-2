@@ -277,7 +277,7 @@ const mockActions = {
   addInvitation: jest.fn(),
   updateInvitation: jest.fn(),
   removeInvitation: jest.fn(),
-  validateStep: jest.fn(),
+  validateStep: jest.fn().mockReturnValue(false),
   submitOnboarding: jest.fn(),
   reset: jest.fn(),
 }
@@ -354,12 +354,35 @@ describe('OnboardingWizard', () => {
   })
 
   it('handles step navigation correctly', async () => {
+    // Set up the mock to have valid profile data so we can proceed
+    const { useOnboarding } = require('@/hooks/useOnboarding')
+    useOnboarding.mockReturnValue({
+      state: {
+        ...mockOnboardingState,
+        profile: {
+          ...mockOnboardingState.profile,
+          data: { firstName: 'John', lastName: 'Doe' },
+          validation: { isValid: true, errors: {}, touched: {} },
+        },
+      },
+      actions: {
+        ...mockActions,
+        validateStep: jest.fn().mockReturnValue(true),
+      },
+      computed: {
+        ...mockComputed,
+        canProceed: true,
+      },
+    })
+    
     const user = userEvent.setup()
     renderWithProviders(<OnboardingWizard />)
     
     const nextButton = screen.getByTestId('nav-next')
     await user.click(nextButton)
     
+    // The handleNext function should validate and then call nextStep
+    expect(mockActions.validateStep).toHaveBeenCalledWith('profile')
     expect(mockActions.nextStep).toHaveBeenCalled()
   })
 
@@ -393,9 +416,13 @@ describe('OnboardingWizard', () => {
     const user = userEvent.setup()
     renderWithProviders(<OnboardingWizard />)
     
+    // Verify we're on the profile step initially
+    expect(screen.getByTestId('profile-step')).toBeInTheDocument()
+    
     const firstNameInput = screen.getByTestId('first-name-input')
     await user.type(firstNameInput, 'Jane')
     
+    // The mock ProfileStep calls onChange with the new value
     expect(mockActions.updateProfile).toHaveBeenCalledWith({ firstName: 'Jane' })
   })
 
@@ -405,7 +432,7 @@ describe('OnboardingWizard', () => {
     
     renderWithProviders(<OnboardingWizard />)
     
-    const nextButton = screen.getByTestId('profile-next')
+    const nextButton = screen.getByTestId('nav-next')
     await user.click(nextButton)
     
     expect(mockActions.validateStep).toHaveBeenCalledWith('profile')
@@ -418,7 +445,7 @@ describe('OnboardingWizard', () => {
     
     renderWithProviders(<OnboardingWizard />)
     
-    const nextButton = screen.getByTestId('profile-next')
+    const nextButton = screen.getByTestId('nav-next')
     await user.click(nextButton)
     
     expect(mockActions.validateStep).toHaveBeenCalledWith('profile')

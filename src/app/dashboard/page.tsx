@@ -1,6 +1,15 @@
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AppLayout } from '@/components/layout/AppLayout'
-import { ProduceIcon, BeveragesIcon, ProteinIcon } from '@/components/icons/svg'
+import { 
+  ProduceIcon, 
+  BeveragesIcon, 
+  ProteinIcon,
+  HouseholdIcon
+} from '@/components/icons/svg'
+import { 
+  AlertTriangle,
+  BarChart3
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
@@ -47,13 +56,23 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
                 
-                <Link href="/onboarding" className="w-full">
+                <Link href="/alerts" className="w-full">
                   <Button 
                     variant="outline" 
-                    className="w-full justify-start min-h-[44px] text-category-protein border-purple-200 bg-purple-50 hover:bg-purple-100"
+                    className="w-full justify-start min-h-[44px] text-red-600 border-red-200 bg-red-50 hover:bg-red-100"
                   >
-                    <ProteinIcon className="w-5 h-5 mr-3 text-category-protein" />
-                    Household Settings
+                    <AlertTriangle className="w-5 h-5 mr-3 text-red-600" />
+                    Expiration Alerts
+                  </Button>
+                </Link>
+                
+                <Link href="/analytics" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start min-h-[44px] text-blue-600 border-blue-200 bg-blue-50 hover:bg-blue-100"
+                  >
+                    <BarChart3 className="w-5 h-5 mr-3 text-blue-600" />
+                    Analytics
                   </Button>
                 </Link>
               </div>

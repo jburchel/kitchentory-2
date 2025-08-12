@@ -1,10 +1,14 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import '@/styles/themes.css'
+import '@/styles/accessibility.css'
+import '@/styles/animations.css'
 import { ClerkProvider } from '@/components/providers/ClerkProvider'
 import { ConvexProvider } from '@/components/providers/ConvexProvider'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { PWAProvider } from '@/components/providers/PWAProvider'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 import { InstallPrompt } from '@/components/ui/InstallPrompt'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -81,17 +85,24 @@ export default function RootLayout({
         <link rel="apple-touch-startup-image" href="/icons/apple-touch-startup-image-750x1334.png" />
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
-        <ClerkProvider>
-          <ConvexProvider>
-            <AuthProvider>
-              <PWAProvider>
-                <div id="root">{children}</div>
-                <InstallPrompt />
-                <Toaster position="top-right" />
-              </PWAProvider>
-            </AuthProvider>
-          </ConvexProvider>
-        </ClerkProvider>
+        <a href="#main-content" className="skip-to-content">
+          Skip to main content
+        </a>
+        <ThemeProvider>
+          <ClerkProvider>
+            <ConvexProvider>
+              <AuthProvider>
+                <PWAProvider>
+                  <div id="root">
+                    <main id="main-content">{children}</main>
+                  </div>
+                  <InstallPrompt />
+                  <Toaster position="top-right" />
+                </PWAProvider>
+              </AuthProvider>
+            </ConvexProvider>
+          </ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
