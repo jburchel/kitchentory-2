@@ -38,7 +38,9 @@ export function useProfile() {
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<AuthError | null>(null)
   
-  const updateUserProfile = useMutation(api.users.updateUserProfile)
+  // Check if Convex API is available
+  const convexAvailable = api && api.users && typeof api.users === 'object'
+  const updateUserProfile = useMutation(convexAvailable ? api.users.updateUserProfile : undefined)
 
   const updateProfile = useCallback(async (data: {
     firstName?: string
@@ -95,8 +97,10 @@ export function useSession() {
   const { sessionId, isLoaded, isSignedIn } = useAuth()
   const [isCreatingSession, setIsCreatingSession] = useState(false)
   
-  const createUserSession = useMutation(api.users.createUserSession)
-  const endUserSession = useMutation(api.users.endUserSession)
+  // Check if Convex API is available
+  const convexAvailable = api && api.users && typeof api.users === 'object'
+  const createUserSession = useMutation(convexAvailable ? api.users.createUserSession : undefined)
+  const endUserSession = useMutation(convexAvailable ? api.users.endUserSession : undefined)
 
   const createSession = useCallback(async (data: {
     userId: string

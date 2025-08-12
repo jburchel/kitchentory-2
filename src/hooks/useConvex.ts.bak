@@ -51,43 +51,43 @@ export const useHouseholds = () => {
 
     // Mutations
     create: useConvexMutation(convexAvailable ? api.households.create : undefined),
-    update: useConvexMutation(convexAvailable ? api.households.update : undefined),
-    remove: useConvexMutation(convexAvailable ? api.households.remove : undefined),
-    addMember: useConvexMutation(convexAvailable ? api.households.addMember : undefined),
-    removeMember: useConvexMutation(convexAvailable ? api.households.removeMember : undefined),
+    update: useConvexMutation(api.households.update),
+    remove: useConvexMutation(api.households.remove),
+    addMember: useConvexMutation(api.households.addMember),
+    removeMember: useConvexMutation(api.households.removeMember),
   }
 }
 
 export const useCategories = () => {
   return {
     // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.categories.get : undefined, { id: id as any }),
+    get: (id: string) => useQuery(api.categories.get, { id: id as any }),
     listForHousehold: (householdId: string, activeOnly?: boolean) =>
-      useQuery(convexAvailable ? api.categories.listForHousehold : undefined, {
+      useQuery(api.categories.listForHousehold, {
         householdId: householdId as any,
         activeOnly,
       }),
     getSubcategories: (parentId: string) =>
-      useQuery(convexAvailable ? api.categories.getSubcategories : undefined, { parentId: parentId as any }),
+      useQuery(api.categories.getSubcategories, { parentId: parentId as any }),
     getHierarchy: (householdId: string) =>
-      useQuery(convexAvailable ? api.categories.getHierarchy : undefined, {
+      useQuery(api.categories.getHierarchy, {
         householdId: householdId as any,
       }),
 
     // Mutations
-    create: useConvexMutation(convexAvailable ? api.categories.create : undefined),
-    update: useConvexMutation(convexAvailable ? api.categories.update : undefined),
-    remove: useConvexMutation(convexAvailable ? api.categories.remove : undefined),
-    hardDelete: useConvexMutation(convexAvailable ? api.categories.hardDelete : undefined),
+    create: useConvexMutation(api.categories.create),
+    update: useConvexMutation(api.categories.update),
+    remove: useConvexMutation(api.categories.remove),
+    hardDelete: useConvexMutation(api.categories.hardDelete),
   }
 }
 
 export const useProducts = () => {
   return {
     // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.products.get : undefined, { id: id as any }),
+    get: (id: string) => useQuery(api.products.get, { id: id as any }),
     getByBarcode: (barcode: string) =>
-      useQuery(convexAvailable ? api.products.getByBarcode : undefined, { barcode }),
+      useQuery(api.products.getByBarcode, { barcode }),
     listForHousehold: (
       householdId: string,
       options?: {
@@ -97,37 +97,37 @@ export const useProducts = () => {
         limit?: number
       }
     ) =>
-      useQuery(convexAvailable ? api.products.listForHousehold : undefined, {
+      useQuery(api.products.listForHousehold, {
         householdId: householdId as any,
         ...options,
         categoryId: options?.categoryId as any,
       }),
     search: (householdId: string, searchTerm: string, limit?: number) =>
-      useQuery(convexAvailable ? api.products.search : undefined, {
+      useQuery(api.products.search, {
         householdId: householdId as any,
         searchTerm,
         limit,
       }),
     getByCategory: (categoryId: string) =>
-      useQuery(convexAvailable ? api.products.getByCategory : undefined, { categoryId: categoryId as any }),
+      useQuery(api.products.getByCategory, { categoryId: categoryId as any }),
     getPopular: (householdId: string, limit?: number) =>
-      useQuery(convexAvailable ? api.products.getPopular : undefined, {
+      useQuery(api.products.getPopular, {
         householdId: householdId as any,
         limit,
       }),
 
     // Mutations
-    create: useConvexMutation(convexAvailable ? api.products.create : undefined),
-    update: useConvexMutation(convexAvailable ? api.products.update : undefined),
-    remove: useConvexMutation(convexAvailable ? api.products.remove : undefined),
-    hardDelete: useConvexMutation(convexAvailable ? api.products.hardDelete : undefined),
+    create: useConvexMutation(api.products.create),
+    update: useConvexMutation(api.products.update),
+    remove: useConvexMutation(api.products.remove),
+    hardDelete: useConvexMutation(api.products.hardDelete),
   }
 }
 
 export const useInventoryItems = () => {
   return {
     // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.inventoryItems.get : undefined, { id: id as any }),
+    get: (id: string) => useQuery(api.inventoryItems.get, { id: id as any }),
     listForHousehold: (
       householdId: string,
       options?: {
@@ -136,48 +136,48 @@ export const useInventoryItems = () => {
         productId?: string
       }
     ) =>
-      useQuery(convexAvailable ? api.inventoryItems.listForHousehold : undefined, {
+      useQuery(api.inventoryItems.listForHousehold, {
         householdId: householdId as any,
         ...options,
         productId: options?.productId as any,
       }),
     getWithProducts: (householdId: string, activeOnly?: boolean) =>
-      useQuery(convexAvailable ? api.inventoryItems.getWithProducts : undefined, {
+      useQuery(api.inventoryItems.getWithProducts, {
         householdId: householdId as any,
         activeOnly,
       }),
     getExpiring: (householdId: string, daysAhead?: number) =>
-      useQuery(convexAvailable ? api.inventoryItems.getExpiring : undefined, {
+      useQuery(api.inventoryItems.getExpiring, {
         householdId: householdId as any,
         daysAhead,
       }),
     getLowStock: (householdId: string, threshold?: number) =>
-      useQuery(convexAvailable ? api.inventoryItems.getLowStock : undefined, {
+      useQuery(api.inventoryItems.getLowStock, {
         householdId: householdId as any,
         threshold,
       }),
     getByLocation: (householdId: string, location: string) =>
-      useQuery(convexAvailable ? api.inventoryItems.getByLocation : undefined, {
+      useQuery(api.inventoryItems.getByLocation, {
         householdId: householdId as any,
         location,
       }),
     getStats: (householdId: string) =>
-      useQuery(convexAvailable ? api.inventoryItems.getStats : undefined, {
+      useQuery(api.inventoryItems.getStats, {
         householdId: householdId as any,
       }),
 
     // Mutations
-    create: useConvexMutation(convexAvailable ? api.inventoryItems.create : undefined),
-    update: useConvexMutation(convexAvailable ? api.inventoryItems.update : undefined),
-    consume: useConvexMutation(convexAvailable ? api.inventoryItems.consume : undefined),
-    remove: useConvexMutation(convexAvailable ? api.inventoryItems.remove : undefined),
+    create: useConvexMutation(api.inventoryItems.create),
+    update: useConvexMutation(api.inventoryItems.update),
+    consume: useConvexMutation(api.inventoryItems.consume),
+    remove: useConvexMutation(api.inventoryItems.remove),
   }
 }
 
 export const useShoppingLists = () => {
   return {
     // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.shoppingLists.get : undefined, { id: id as any }),
+    get: (id: string) => useQuery(api.shoppingLists.get, { id: id as any }),
     listForHousehold: (
       householdId: string,
       options?: {
@@ -185,31 +185,31 @@ export const useShoppingLists = () => {
         completedOnly?: boolean
       }
     ) =>
-      useQuery(convexAvailable ? api.shoppingLists.listForHousehold : undefined, {
+      useQuery(api.shoppingLists.listForHousehold, {
         householdId: householdId as any,
         ...options,
       }),
     getWithItems: (id: string) =>
-      useQuery(convexAvailable ? api.shoppingLists.getWithItems : undefined, { id: id as any }),
+      useQuery(api.shoppingLists.getWithItems, { id: id as any }),
     getItems: (shoppingListId: string, completedOnly?: boolean) =>
-      useQuery(convexAvailable ? api.shoppingLists.getItems : undefined, {
+      useQuery(api.shoppingLists.getItems, {
         shoppingListId: shoppingListId as any,
         completedOnly,
       }),
     getStats: (householdId: string) =>
-      useQuery(convexAvailable ? api.shoppingLists.getStats : undefined, { householdId: householdId as any }),
+      useQuery(api.shoppingLists.getStats, { householdId: householdId as any }),
 
     // Mutations
-    create: useConvexMutation(convexAvailable ? api.shoppingLists.create : undefined),
-    update: useConvexMutation(convexAvailable ? api.shoppingLists.update : undefined),
-    complete: useConvexMutation(convexAvailable ? api.shoppingLists.complete : undefined),
-    remove: useConvexMutation(convexAvailable ? api.shoppingLists.remove : undefined),
-    addItem: useConvexMutation(convexAvailable ? api.shoppingLists.addItem : undefined),
-    updateItem: useConvexMutation(convexAvailable ? api.shoppingLists.updateItem : undefined),
-    completeItem: useConvexMutation(convexAvailable ? api.shoppingLists.completeItem : undefined),
-    removeItem: useConvexMutation(convexAvailable ? api.shoppingLists.removeItem : undefined),
+    create: useConvexMutation(api.shoppingLists.create),
+    update: useConvexMutation(api.shoppingLists.update),
+    complete: useConvexMutation(api.shoppingLists.complete),
+    remove: useConvexMutation(api.shoppingLists.remove),
+    addItem: useConvexMutation(api.shoppingLists.addItem),
+    updateItem: useConvexMutation(api.shoppingLists.updateItem),
+    completeItem: useConvexMutation(api.shoppingLists.completeItem),
+    removeItem: useConvexMutation(api.shoppingLists.removeItem),
     generateFromLowStock: useConvexMutation(
-      convexAvailable ? api.shoppingLists.generateFromLowStock : undefined
+      api.shoppingLists.generateFromLowStock
     ),
   }
 }
