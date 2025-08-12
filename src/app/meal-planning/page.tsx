@@ -1,23 +1,36 @@
 'use client'
 
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { AppLayout } from '@/components/layout/AppLayout'
+import React, { useState, useEffect } from 'react'
 import { MealPlanning } from '@/components/meal-planning/MealPlanning'
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic'
 
 export default function MealPlanningPage() {
+  const [mounted, setMounted] = useState(false)
   // In a real implementation, we would get the household ID from context or props
   const householdId = 'household-1' // Mock for now
 
-  return (
-    <ProtectedRoute>
-      <AppLayout>
-        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-          <MealPlanning householdId={householdId} />
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-1/3 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+          </div>
         </div>
-      </AppLayout>
-    </ProtectedRoute>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container max-w-7xl mx-auto px-4 py-8">
+      <MealPlanning householdId={householdId} />
+    </div>
   )
 }
