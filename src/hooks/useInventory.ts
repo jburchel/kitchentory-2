@@ -127,6 +127,20 @@ export function useInventory(householdId?: string): UseInventoryReturn {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Convex mutations and queries - handle SSR gracefully
+  const createInventoryItem = typeof window !== 'undefined' ? useMutation(api.inventoryItems.createInventoryItem) : null
+  const updateInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateInventoryItem) : null
+  const deleteInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.deleteInventoryItem) : null
+  const updateItemQuantityMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateItemQuantity) : null
+  const getInventoryItemsQuery = useQuery(
+    householdId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryItems : undefined,
+    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+  )
+  const getInventoryStatsQuery = useQuery(
+    householdId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryStats : undefined,
+    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
+  )
+
   // Use Convex data when available, fallback to mock data for development
   const convexItems = getInventoryItemsQuery
   const convexStats = getInventoryStatsQuery
@@ -257,20 +271,6 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       lowStockItems
     }
   }, [convexStats, transformedItems])
-
-  // Convex mutations and queries - handle SSR gracefully
-  const createInventoryItem = typeof window !== 'undefined' ? useMutation(api.inventoryItems.createInventoryItem) : null
-  const updateInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateInventoryItem) : null
-  const deleteInventoryItemMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.deleteInventoryItem) : null
-  const updateItemQuantityMutation = typeof window !== 'undefined' ? useMutation(api.inventoryItems.updateItemQuantity) : null
-  const getInventoryItemsQuery = useQuery(
-    householdId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryItems : undefined,
-    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
-  )
-  const getInventoryStatsQuery = useQuery(
-    householdId && typeof window !== 'undefined' ? api.inventoryItems.getInventoryStats : undefined,
-    householdId && typeof window !== 'undefined' ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : 'skip'
-  )
 
   const createItem = useCallback(async (householdId: string, data: CreateItemData): Promise<InventoryItem> => {
     try {
