@@ -14,8 +14,8 @@ export function AlertDashboard() {
   const [activeTab, setActiveTab] = useState<'alerts' | 'preferences' | 'history'>('alerts')
   const [refreshKey, setRefreshKey] = useState(0)
   
-  // Get inventory data to check for expirations
-  const { items: inventoryItems, loading: inventoryLoading } = useInventory()
+  // Get inventory data to check for expirations - use mock household ID
+  const { items: inventoryItems, loading: inventoryLoading } = useInventory('household-1')
   
   // Get alert system
   const {
