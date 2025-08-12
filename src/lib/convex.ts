@@ -1,9 +1,18 @@
 import { ConvexReactClient } from 'convex/react'
 
-if (!process.env.NEXT_PUBLIC_CONVEX_URL) {
-  throw new Error('NEXT_PUBLIC_CONVEX_URL environment variable is required')
-}
+// Create a safe Convex client that handles missing environment variables
+export const convex = (() => {
+  if (!process.env.NEXT_PUBLIC_CONVEX_URL) {
+    console.warn('NEXT_PUBLIC_CONVEX_URL environment variable is not set. Convex features will be disabled.')
+    return null
+  }
 
-export const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL)
+  try {
+    return new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL)
+  } catch (error) {
+    console.error('Failed to initialize Convex client:', error)
+    return null
+  }
+})()
 
 export default convex
