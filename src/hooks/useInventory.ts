@@ -2,7 +2,16 @@ import { useState, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { addDays, isBefore, isAfter } from 'date-fns'
 import { useConvex, useMutation, useQuery } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+
+// Safely import API with error handling
+let api: any = null
+try {
+  const apiModule = require('../../convex/_generated/api')
+  api = apiModule.api
+} catch (error) {
+  console.warn('Convex API not available in useInventory:', error)
+  api = null
+}
 import { Id } from '../../convex/_generated/dataModel'
 
 export interface InventoryItem {

@@ -3,7 +3,16 @@
 import { useAuth as useClerkAuth, useUser } from '@clerk/nextjs'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useMutation } from 'convex/react'
-import { api } from "@/convex/_generated/api"
+
+// Safely import API with error handling
+let api: any = null
+try {
+  const apiModule = require("@/convex/_generated/api")
+  api = apiModule.api
+} catch (error) {
+  console.warn('Convex API not available in useAuth:', error)
+  api = null
+}
 import { AuthError, AuthResult } from '@/types/auth'
 import { useState, useCallback } from 'react'
 

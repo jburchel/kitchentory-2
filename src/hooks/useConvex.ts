@@ -1,15 +1,27 @@
 'use client'
 
 import { useQuery, useMutation, useAction } from 'convex/react'
-import { api } from "@/convex/_generated/api"
 import type {
   FunctionReference,
   OptionalRestArgs,
   FunctionReturnType,
 } from 'convex/server'
 
-// Check if Convex API is available - add safety checks
-const convexAvailable = api && typeof api === 'object'
+// Safely import API with error handling
+let api: any = null
+let convexAvailable = false
+
+try {
+  const apiModule = require("@/convex/_generated/api")
+  api = apiModule.api
+  convexAvailable = api && typeof api === 'object' && 
+    api.households && api.categories && api.products && 
+    api.inventoryItems && api.shoppingLists
+} catch (error) {
+  console.warn('Convex API not available:', error)
+  api = null
+  convexAvailable = false
+}
 
 /**
  * Custom hook for Convex queries with error handling
