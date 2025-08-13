@@ -139,11 +139,11 @@ export function useInventory(householdId?: string): UseInventoryReturn {
   
   // Always call hooks unconditionally, but pass undefined to skip execution
   const getInventoryItemsQuery = useQuery(
-    isValidConvexId ? api.inventoryItems.getInventoryItems : undefined,
+    (isValidConvexId && convexAvailable) ? api.inventoryItems.getInventoryItems : undefined,
     isValidConvexId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : undefined
   )
   const getInventoryStatsQuery = useQuery(
-    isValidConvexId ? api.inventoryItems.getInventoryStats : undefined,
+    (isValidConvexId && convexAvailable) ? api.inventoryItems.getInventoryStats : undefined,
     isValidConvexId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : undefined
   )
 
