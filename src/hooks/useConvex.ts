@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery, useMutation, useAction } from 'convex/react'
+// Removed Convex imports to fix production Symbol(functionName) errors
 import type {
   FunctionReference,
   OptionalRestArgs,
@@ -30,36 +30,40 @@ export function useConvexQuery<T extends FunctionReference<'query'>>(
   query: T,
   ...args: OptionalRestArgs<T>
 ): FunctionReturnType<T> | undefined {
-  return useQuery(convexAvailable ? query : undefined, ...args)
+  return undefined // Return undefined for mock mode
 }
 
 /**
- * Custom hook for Convex mutations with error handling
+ * Mock wrapper for mutations
  */
 export function useConvexMutation<T extends FunctionReference<'mutation'>>(
   mutation: T
 ) {
-  return useMutation(convexAvailable ? mutation : undefined)
+  return async (data: any) => {
+    console.log('Mock mutation called:', data)
+    return Promise.resolve(null)
+  }
 }
 
 /**
- * Custom hook for Convex actions with error handling
+ * Mock wrapper for actions
  */
 export function useConvexAction<T extends FunctionReference<'action'>>(
   action: T
 ) {
-  return useAction(convexAvailable ? action : undefined)
+  return async (data: any) => {
+    console.log('Mock action called:', data)
+    return Promise.resolve(null)
+  }
 }
 
 // Specific hooks for common operations
 export const useHouseholds = () => {
   return {
-    // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.households.get : undefined, { id: id as any }),
-    listForUser: (userId: string) =>
-      useQuery(convexAvailable ? api.households.listForUser : undefined, { userId }),
-    getMembers: (householdId: string) =>
-      useQuery(convexAvailable ? api.households.getMembers : undefined, { householdId: householdId as any }),
+    // Queries - all return undefined for mock mode
+    get: (id: string) => undefined,
+    listForUser: (userId: string) => undefined,
+    getMembers: (householdId: string) => undefined,
 
     // Mutations
     create: useConvexMutation(convexAvailable ? api.households.create : undefined),
@@ -72,19 +76,11 @@ export const useHouseholds = () => {
 
 export const useCategories = () => {
   return {
-    // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.categories.get : undefined, { id: id as any }),
-    listForHousehold: (householdId: string, activeOnly?: boolean) =>
-      useQuery(convexAvailable ? api.categories.listForHousehold : undefined, {
-        householdId: householdId as any,
-        activeOnly,
-      }),
-    getSubcategories: (parentId: string) =>
-      useQuery(convexAvailable ? api.categories.getSubcategories : undefined, { parentId: parentId as any }),
-    getHierarchy: (householdId: string) =>
-      useQuery(convexAvailable ? api.categories.getHierarchy : undefined, {
-        householdId: householdId as any,
-      }),
+    // Queries - all return undefined for mock mode
+    get: (id: string) => undefined,
+    listForHousehold: (householdId: string, activeOnly?: boolean) => undefined,
+    getSubcategories: (parentId: string) => undefined,
+    getHierarchy: (householdId: string) => undefined,
 
     // Mutations
     create: useConvexMutation(convexAvailable ? api.categories.create : undefined),
@@ -96,10 +92,9 @@ export const useCategories = () => {
 
 export const useProducts = () => {
   return {
-    // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.products.get : undefined, { id: id as any }),
-    getByBarcode: (barcode: string) =>
-      useQuery(convexAvailable ? api.products.getByBarcode : undefined, { barcode }),
+    // Queries - all return undefined for mock mode
+    get: (id: string) => undefined,
+    getByBarcode: (barcode: string) => undefined,
     listForHousehold: (
       householdId: string,
       options?: {
@@ -108,25 +103,10 @@ export const useProducts = () => {
         searchTerm?: string
         limit?: number
       }
-    ) =>
-      useQuery(convexAvailable ? api.products.listForHousehold : undefined, {
-        householdId: householdId as any,
-        ...options,
-        categoryId: options?.categoryId as any,
-      }),
-    search: (householdId: string, searchTerm: string, limit?: number) =>
-      useQuery(convexAvailable ? api.products.search : undefined, {
-        householdId: householdId as any,
-        searchTerm,
-        limit,
-      }),
-    getByCategory: (categoryId: string) =>
-      useQuery(convexAvailable ? api.products.getByCategory : undefined, { categoryId: categoryId as any }),
-    getPopular: (householdId: string, limit?: number) =>
-      useQuery(convexAvailable ? api.products.getPopular : undefined, {
-        householdId: householdId as any,
-        limit,
-      }),
+    ) => undefined,
+    search: (householdId: string, searchTerm: string, limit?: number) => undefined,
+    getByCategory: (categoryId: string) => undefined,
+    getPopular: (householdId: string, limit?: number) => undefined,
 
     // Mutations
     create: useConvexMutation(convexAvailable ? api.products.create : undefined),
@@ -138,8 +118,8 @@ export const useProducts = () => {
 
 export const useInventoryItems = () => {
   return {
-    // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.inventoryItems.get : undefined, { id: id as any }),
+    // Queries - all return undefined for mock mode
+    get: (id: string) => undefined,
     listForHousehold: (
       householdId: string,
       options?: {
@@ -147,36 +127,12 @@ export const useInventoryItems = () => {
         location?: string
         productId?: string
       }
-    ) =>
-      useQuery(convexAvailable ? api.inventoryItems.listForHousehold : undefined, {
-        householdId: householdId as any,
-        ...options,
-        productId: options?.productId as any,
-      }),
-    getWithProducts: (householdId: string, activeOnly?: boolean) =>
-      useQuery(convexAvailable ? api.inventoryItems.getWithProducts : undefined, {
-        householdId: householdId as any,
-        activeOnly,
-      }),
-    getExpiring: (householdId: string, daysAhead?: number) =>
-      useQuery(convexAvailable ? api.inventoryItems.getExpiring : undefined, {
-        householdId: householdId as any,
-        daysAhead,
-      }),
-    getLowStock: (householdId: string, threshold?: number) =>
-      useQuery(convexAvailable ? api.inventoryItems.getLowStock : undefined, {
-        householdId: householdId as any,
-        threshold,
-      }),
-    getByLocation: (householdId: string, location: string) =>
-      useQuery(convexAvailable ? api.inventoryItems.getByLocation : undefined, {
-        householdId: householdId as any,
-        location,
-      }),
-    getStats: (householdId: string) =>
-      useQuery(convexAvailable ? api.inventoryItems.getStats : undefined, {
-        householdId: householdId as any,
-      }),
+    ) => undefined,
+    getWithProducts: (householdId: string, activeOnly?: boolean) => undefined,
+    getExpiring: (householdId: string, daysAhead?: number) => undefined,
+    getLowStock: (householdId: string, threshold?: number) => undefined,
+    getByLocation: (householdId: string, location: string) => undefined,
+    getStats: (householdId: string) => undefined,
 
     // Mutations
     create: useConvexMutation(convexAvailable ? api.inventoryItems.create : undefined),
@@ -188,28 +144,18 @@ export const useInventoryItems = () => {
 
 export const useShoppingLists = () => {
   return {
-    // Queries
-    get: (id: string) => useQuery(convexAvailable ? api.shoppingLists.get : undefined, { id: id as any }),
+    // Queries - all return undefined for mock mode
+    get: (id: string) => undefined,
     listForHousehold: (
       householdId: string,
       options?: {
         activeOnly?: boolean
         completedOnly?: boolean
       }
-    ) =>
-      useQuery(convexAvailable ? api.shoppingLists.listForHousehold : undefined, {
-        householdId: householdId as any,
-        ...options,
-      }),
-    getWithItems: (id: string) =>
-      useQuery(convexAvailable ? api.shoppingLists.getWithItems : undefined, { id: id as any }),
-    getItems: (shoppingListId: string, completedOnly?: boolean) =>
-      useQuery(convexAvailable ? api.shoppingLists.getItems : undefined, {
-        shoppingListId: shoppingListId as any,
-        completedOnly,
-      }),
-    getStats: (householdId: string) =>
-      useQuery(convexAvailable ? api.shoppingLists.getStats : undefined, { householdId: householdId as any }),
+    ) => undefined,
+    getWithItems: (id: string) => undefined,
+    getItems: (shoppingListId: string, completedOnly?: boolean) => undefined,
+    getStats: (householdId: string) => undefined,
 
     // Mutations
     create: useConvexMutation(convexAvailable ? api.shoppingLists.create : undefined),

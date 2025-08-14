@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -11,6 +11,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 export default function HomePage() {
   const { isSignedIn, isLoaded } = useUser()
   const router = useRouter()
+  const [showFallback, setShowFallback] = useState(process.env.NODE_ENV === 'development')
+  const isDevelopment = process.env.NODE_ENV === 'development'
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
@@ -18,11 +20,48 @@ export default function HomePage() {
     }
   }, [isLoaded, isSignedIn, router])
 
-  // Show loading while checking auth state
-  if (!isLoaded) {
+  // In development, show fallback immediately to bypass Clerk loading
+  useEffect(() => {
+    if (isDevelopment) {
+      setShowFallback(true)
+      return
+    }
+    
+    const timeout = setTimeout(() => {
+      console.log('Clerk loading timeout, showing fallback. isLoaded:', isLoaded)
+      setShowFallback(true)
+    }, 1500) // 1.5s in production
+
+    if (isLoaded) {
+      console.log('Clerk loaded successfully')
+      clearTimeout(timeout)
+    }
+
+    return () => clearTimeout(timeout)
+  }, [isLoaded, isDevelopment])
+  
+  // Debug effect
+  useEffect(() => {
+    console.log('Clerk auth state:', { isLoaded, isSignedIn, showFallback })
+  }, [isLoaded, isSignedIn, showFallback])
+
+  // Show loading while checking auth state (with timeout fallback)
+  if (!isLoaded && !showFallback) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading Kitchentory...</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Initializing authentication... (fallback in {2 - Math.floor((Date.now() % 2000) / 1000)}s)
+          </p>
+          <button 
+            onClick={() => setShowFallback(true)}
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 transition-colors"
+          >
+            Skip to App
+          </button>
+        </div>
       </div>
     )
   }

@@ -1,5 +1,4 @@
 import { useReducer, useCallback, useMemo } from 'react';
-import { useMutation } from 'convex/react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 // Note: Temporary mock API for build-time compatibility

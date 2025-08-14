@@ -32,7 +32,7 @@ export default function SignInPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600">You're already signed in. Redirecting...</p>
+          <p className="mt-4 text-gray-600">You&apos;re already signed in. Redirecting...</p>
         </div>
       </div>
     )
@@ -100,7 +100,7 @@ export default function SignInPage() {
           
           <div className="mt-6 text-center space-y-2">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <a
                 href="/auth/sign-up"
                 className="font-medium text-green-600 hover:text-green-500"

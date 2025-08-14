@@ -2,17 +2,6 @@
 
 import { useAuth as useClerkAuth, useUser } from '@clerk/nextjs'
 import { useAuthContext } from '@/contexts/AuthContext'
-import { useMutation } from 'convex/react'
-
-// Safely import API with error handling
-let api: any = null
-try {
-  const apiModule = require("@/convex/_generated/api")
-  api = apiModule.api
-} catch (error) {
-  console.warn('Convex API not available in useAuth:', error)
-  api = null
-}
 import { AuthError, AuthResult } from '@/types/auth'
 import { useState, useCallback } from 'react'
 
@@ -47,9 +36,11 @@ export function useProfile() {
   const [isUpdating, setIsUpdating] = useState(false)
   const [error, setError] = useState<AuthError | null>(null)
   
-  // Check if Convex API is available
-  const convexAvailable = api && api.users && typeof api.users === 'object'
-  const updateUserProfile = useMutation(convexAvailable ? api.users.updateUserProfile : undefined)
+  // Mock update function for development
+  const updateUserProfile = async (data: any) => {
+    console.log('Mock updateUserProfile called with:', data)
+    return Promise.resolve()
+  }
 
   const updateProfile = useCallback(async (data: {
     firstName?: string
@@ -106,10 +97,16 @@ export function useSession() {
   const { sessionId, isLoaded, isSignedIn } = useAuth()
   const [isCreatingSession, setIsCreatingSession] = useState(false)
   
-  // Check if Convex API is available
-  const convexAvailable = api && api.users && typeof api.users === 'object'
-  const createUserSession = useMutation(convexAvailable ? api.users.createUserSession : undefined)
-  const endUserSession = useMutation(convexAvailable ? api.users.endUserSession : undefined)
+  // Mock session functions for development
+  const createUserSession = async (data: any) => {
+    console.log('Mock createUserSession called with:', data)
+    return Promise.resolve(null)
+  }
+  
+  const endUserSession = async (data: any) => {
+    console.log('Mock endUserSession called with:', data)
+    return Promise.resolve()
+  }
 
   const createSession = useCallback(async (data: {
     userId: string

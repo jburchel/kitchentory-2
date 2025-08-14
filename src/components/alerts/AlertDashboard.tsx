@@ -100,7 +100,7 @@ export function AlertDashboard() {
     }
   }
 
-  const handleUpdatePreferences = async (newPreferences: any) => {
+  const handleUpdatePreferences = async (newPreferences: Partial<AlertPreferencesType>) => {
     try {
       await updatePreferences(newPreferences)
       toast.success('Preferences updated')
@@ -173,7 +173,7 @@ export function AlertDashboard() {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as 'alerts' | 'preferences' | 'history')}
               className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'border-primary text-primary'
@@ -201,7 +201,7 @@ export function AlertDashboard() {
           {loading && alerts.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
                 <p className="text-gray-600">Loading alerts...</p>
               </div>
             </div>

@@ -22,7 +22,18 @@
       "Bash(grep:*)",
       "Bash(touch:*)",
       "Bash(rm:*)",
-      "mcp__sequential-thinking__sequentialthinking"
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(npx convex deployments:*)",
+      "Bash(npx convex deploy:*)",
+      "Bash(curl:*)",
+      "mcp__filesystem__read_multiple_files",
+      "Bash(npm run lint)",
+      "Bash(env)",
+      "Bash(npx convex env:*)",
+      "Bash(npm start)",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__read_text_file",
+      "Bash(timeout 30s npm run build:*)"
     ]
   },
   "enabledMcpjsonServers": [

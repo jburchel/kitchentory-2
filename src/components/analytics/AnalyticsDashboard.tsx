@@ -6,16 +6,13 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { 
   TrendingUp, 
-  TrendingDown, 
-  Minus,
   Package,
   DollarSign,
   RotateCcw,
   Leaf,
   AlertTriangle
 } from 'lucide-react'
-import { AnalyticsData } from '@/services/AnalyticsService'
-import { format } from 'date-fns'
+import type { AnalyticsData } from '@/services/AnalyticsService'
 
 export interface AnalyticsDashboardProps {
   analyticsData: AnalyticsData
@@ -40,8 +37,8 @@ export function AnalyticsDashboard({
             <Card key={i}>
               <CardContent className="p-6">
                 <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="h-6 bg-gray-200 rounded w-3/4" />
                 </div>
               </CardContent>
             </Card>

@@ -16,7 +16,9 @@
     "test:coverage": "jest --coverage",
     "prepare": "husky install || exit 0",
     "prettier": "prettier --write .",
-    "prettier:check": "prettier --check ."
+    "prettier:check": "prettier --check .",
+    "analyze": "ANALYZE=true npm run build",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.29.0",
@@ -72,6 +74,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.6",
     "@testing-library/jest-dom": "^6.4.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.5.0",

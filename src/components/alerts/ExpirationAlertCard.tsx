@@ -1,6 +1,6 @@
 'use client'
 
-import { ExpirationAlert } from '@/types/alerts'
+import type { ExpirationAlert } from '@/types/alerts'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow, format } from 'date-fns'
@@ -144,13 +144,13 @@ export function ExpirationAlertCard({
         {/* Priority indicator */}
         <div className="flex-shrink-0 ml-4">
           {alert.priority === 'high' && (
-            <div className="w-3 h-3 bg-red-500 rounded-full" title="High Priority"></div>
+            <div className="w-3 h-3 bg-red-500 rounded-full" title="High Priority" />
           )}
           {alert.priority === 'medium' && (
-            <div className="w-3 h-3 bg-yellow-500 rounded-full" title="Medium Priority"></div>
+            <div className="w-3 h-3 bg-yellow-500 rounded-full" title="Medium Priority" />
           )}
           {alert.priority === 'low' && (
-            <div className="w-3 h-3 bg-blue-500 rounded-full" title="Low Priority"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full" title="Low Priority" />
           )}
         </div>
       </div>

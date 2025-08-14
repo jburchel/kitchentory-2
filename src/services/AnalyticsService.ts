@@ -1,6 +1,6 @@
-import { InventoryItem } from '@/components/inventory/InventoryGrid'
-import { ShoppingList, ShoppingItem } from '@/types/shopping'
-import { differenceInDays, isAfter, isBefore, addDays, subDays } from 'date-fns'
+import type { InventoryItem } from '@/components/inventory/InventoryGrid'
+import type { ShoppingList } from '@/types/shopping'
+import { differenceInDays, isAfter, isBefore, subDays } from 'date-fns'
 
 export interface ConsumptionPattern {
   itemName: string
@@ -159,7 +159,7 @@ class AnalyticsService {
     inventoryItems.forEach(item => {
       if (item.purchaseDate && isAfter(item.purchaseDate, cutoffDate) && item.cost) {
         totalSpent += item.cost
-        categoryBreakdown[item.category] = (categoryBreakdown[item.category] || 0) + item.cost
+        categoryBreakdown[item.category] = (categoryBreakdown[item.category] ?? 0) + item.cost
       }
     })
     
@@ -168,7 +168,7 @@ class AnalyticsService {
       list.items.forEach(item => {
         if (isAfter(item.addedAt, cutoffDate) && item.estimatedPrice) {
           totalSpent += item.estimatedPrice
-          categoryBreakdown[item.category] = (categoryBreakdown[item.category] || 0) + item.estimatedPrice
+          categoryBreakdown[item.category] = (categoryBreakdown[item.category] ?? 0) + item.estimatedPrice
         }
       })
     })

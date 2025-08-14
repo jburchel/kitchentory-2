@@ -1,0 +1,19 @@
+# Robots.txt for Kitchentory
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://kitchentory.app/sitemap.xml
+
+# Block sensitive areas
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+
+# SEO optimization
+Crawl-delay: 1
+
+# Block specific bots if needed
+# User-agent: BadBot
+# Disallow: /

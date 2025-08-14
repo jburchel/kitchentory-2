@@ -1,7 +1,7 @@
 'use client'
 
-import { InventoryItem } from '@/hooks/useInventory'
-import { ExpirationAlert, AlertPreferences, AlertHistory, AlertStats } from '@/types/alerts'
+import type { InventoryItem } from '@/hooks/useInventory'
+import type { ExpirationAlert, AlertPreferences, AlertHistory, AlertStats } from '@/types/alerts'
 import { differenceInDays, isAfter, isBefore, addDays, format } from 'date-fns'
 
 class ExpirationAlertService {
@@ -345,7 +345,7 @@ class ExpirationAlertService {
     const alert = this.alerts.find(a => a.id === alertId)
     if (!alert) return
 
-    const snoozeHours = hours || this.preferences.snoozeDefaultHours
+    const snoozeHours = hours ?? this.preferences.snoozeDefaultHours
     alert.snoozedUntil = addDays(new Date(), snoozeHours / 24)
     await this.persistAlert(alert)
     

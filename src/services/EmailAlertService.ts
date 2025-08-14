@@ -1,6 +1,6 @@
 'use client'
 
-import { ExpirationAlert } from '@/types/alerts'
+import type { ExpirationAlert } from '@/types/alerts'
 
 interface EmailTemplate {
   subject: string
@@ -13,7 +13,7 @@ class EmailAlertService {
   private apiEndpoint: string
 
   private constructor() {
-    this.apiEndpoint = process.env.NEXT_PUBLIC_EMAIL_API_ENDPOINT || '/api/send-alert-email'
+    this.apiEndpoint = process.env.NEXT_PUBLIC_EMAIL_API_ENDPOINT ?? '/api/send-alert-email'
   }
 
   static getInstance(): EmailAlertService {
@@ -120,7 +120,7 @@ class EmailAlertService {
           ${this.generateAlertSections(alerts)}
           
           <div style="text-align: center; margin-top: 30px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://kitchentory.app'}/alerts" class="cta-button">
+            <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://kitchentory.app'}/alerts" class="cta-button">
               View All Alerts
             </a>
           </div>
@@ -247,7 +247,7 @@ class EmailAlertService {
       content += '\n'
     }
 
-    content += `View all alerts: ${process.env.NEXT_PUBLIC_APP_URL || 'https://kitchentory.app'}/alerts\n\n`
+    content += `View all alerts: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://kitchentory.app'}/alerts\n\n`
     content += 'This email was sent by Kitchentory. You can manage your alert preferences in the app.'
     
     return content

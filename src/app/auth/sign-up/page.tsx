@@ -33,7 +33,7 @@ export default function SignUpPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-gray-600">You're already signed in. Redirecting...</p>
+          <p className="mt-4 text-gray-600">You&apos;re already signed in. Redirecting...</p>
         </div>
       </div>
     )

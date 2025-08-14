@@ -292,3 +292,174 @@
   transform: translateX(-20px);
   transition: opacity 0.3s, transform 0.3s;
 }
+
+/* List Item Animations */
+.list-item-enter {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.list-item-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease-out;
+}
+
+.list-item-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.list-item-exit-active {
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.3s ease-in;
+}
+
+/* Fade Scale Animation */
+.fade-scale-in {
+  animation: fadeScaleIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Smooth Height Transition */
+.smooth-height {
+  transition: height 0.3s ease-out, opacity 0.3s ease-out;
+  overflow: hidden;
+}
+
+/* Tab Switch Animation */
+.tab-content-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.tab-content-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.2s ease-out;
+}
+
+/* Modal/Dialog Animations */
+.modal-backdrop-enter {
+  opacity: 0;
+}
+
+.modal-backdrop-enter-active {
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
+}
+
+.modal-content-enter {
+  opacity: 0;
+  transform: scale(0.95) translateY(10px);
+}
+
+.modal-content-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Notification Slide */
+.notification-enter {
+  transform: translateX(400px);
+  opacity: 0;
+}
+
+.notification-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-exit-active {
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease-in;
+}
+
+/* Accordion/Collapse Animation */
+.collapse-enter {
+  max-height: 0;
+  opacity: 0;
+}
+
+.collapse-enter-active {
+  max-height: 500px;
+  opacity: 1;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.collapse-exit {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.collapse-exit-active {
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease-in, opacity 0.2s ease-in;
+}
+
+/* Floating Action Button */
+.fab-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fab-hover:hover {
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 8px 30px rgba(var(--primary), 0.3);
+}
+
+/* Progress Bar Animation */
+.progress-fill {
+  animation: progressFill 1s ease-out forwards;
+}
+
+@keyframes progressFill {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--progress-width, 100%);
+  }
+}
+
+/* Reduce Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-in,
+  .stagger-children > *,
+  .card-hover,
+  .button-press,
+  .glow,
+  .skeleton,
+  .ripple::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}

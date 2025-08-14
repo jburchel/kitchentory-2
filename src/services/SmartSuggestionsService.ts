@@ -1,7 +1,8 @@
-import { InventoryItem } from '@/components/inventory/InventoryGrid'
-import { ShoppingList, ShoppingListSuggestion } from '@/types/shopping'
-import { differenceInDays, isAfter, isBefore, addDays } from 'date-fns'
-import AnalyticsService, { ConsumptionPattern, WasteAnalysis } from './AnalyticsService'
+import type { InventoryItem } from '@/components/inventory/InventoryGrid'
+import type { ShoppingList, ShoppingListSuggestion } from '@/types/shopping'
+import { isAfter, isBefore, addDays } from 'date-fns'
+import AnalyticsService from './AnalyticsService'
+import type { ConsumptionPattern, WasteAnalysis } from './AnalyticsService'
 
 export interface SmartSuggestion extends ShoppingListSuggestion {
   estimatedQuantity: number
@@ -76,7 +77,6 @@ class SmartSuggestionsService {
     excludeItems: string[]
   ): SmartSuggestion[] {
     const suggestions: SmartSuggestion[] = []
-    const now = new Date()
     
     inventoryItems.forEach(item => {
       // Skip excluded items
@@ -215,7 +215,6 @@ class SmartSuggestionsService {
   }
 
   private getSeasonalSuggestions(excludeItems: string[]): SmartSuggestion[] {
-    const suggestions: SmartSuggestion[] = []
     const currentMonth = new Date().getMonth()
     
     // Simple seasonal suggestions based on month
@@ -264,7 +263,7 @@ class SmartSuggestionsService {
       ]
     }
     
-    const monthSuggestions = seasonalItems[currentMonth] || []
+    const monthSuggestions = seasonalItems[currentMonth] ?? []
     return monthSuggestions.filter(suggestion => 
       !excludeItems.includes(suggestion.itemName.toLowerCase())
     )
@@ -312,7 +311,7 @@ class SmartSuggestionsService {
     }
     
     // Priority score + confidence boost
-    return (priorityScores[suggestion.priority] || 1) + (suggestion.confidence * 2)
+    return (priorityScores[suggestion.priority] ?? 1) + (suggestion.confidence * 2)
   }
 
   private getDefaultUnit(category: string): string {
@@ -327,7 +326,7 @@ class SmartSuggestionsService {
       'household': 'items'
     }
     
-    return unitMap[category] || 'items'
+    return unitMap[category] ?? 'items'
   }
 }
 

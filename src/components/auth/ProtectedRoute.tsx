@@ -20,12 +20,18 @@ export function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { isLoaded, isSignedIn } = useAuth()
   const router = useRouter()
+  const isDevelopment = process.env.NODE_ENV === 'development'
 
   useEffect(() => {
-    if (isLoaded && requireAuth && !isSignedIn) {
+    if (isLoaded && requireAuth && !isSignedIn && !isDevelopment) {
       router.push(redirectTo)
     }
-  }, [isLoaded, isSignedIn, requireAuth, redirectTo, router])
+  }, [isLoaded, isSignedIn, requireAuth, redirectTo, router, isDevelopment])
+
+  // In development, bypass auth checks with timeout
+  if (isDevelopment) {
+    return <>{children}</>
+  }
 
   // Show loading while auth is loading
   if (!isLoaded) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertPreferences as AlertPreferencesType } from '@/types/alerts'
+import type { AlertPreferences as AlertPreferencesType } from '@/types/alerts'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -31,11 +31,11 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
     }
   }
 
-  const handleInputChange = (field: keyof AlertPreferencesType, value: any) => {
+  const handleInputChange = (field: keyof AlertPreferencesType, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleQuietHoursChange = (field: 'enabled' | 'startTime' | 'endTime', value: any) => {
+  const handleQuietHoursChange = (field: 'enabled' | 'startTime' | 'endTime', value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       quietHours: { ...prev.quietHours, [field]: value }
@@ -45,7 +45,7 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     )
   }
@@ -74,7 +74,7 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
                   onChange={(e) => handleInputChange('enabled', e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
               </label>
             </div>
 
@@ -90,7 +90,7 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
                   onChange={(e) => handleInputChange('pushNotifications', e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
               </label>
             </div>
 
@@ -107,7 +107,7 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
                   disabled
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 opacity-50 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-11 h-6 bg-gray-200 opacity-50 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
               </label>
             </div>
           </div>
@@ -180,7 +180,7 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
                   onChange={(e) => handleQuietHoursChange('enabled', e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary" />
               </label>
             </div>
 
@@ -266,7 +266,7 @@ export function AlertPreferences({ preferences, onUpdate, loading = false }: Ale
           >
             {saving ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                 Saving...
               </>
             ) : (

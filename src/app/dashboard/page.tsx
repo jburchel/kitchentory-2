@@ -3,8 +3,7 @@ import { AppLayout } from '@/components/layout/AppLayout'
 import { 
   ProduceIcon, 
   BeveragesIcon, 
-  ProteinIcon,
-  HouseholdIcon
+  ProteinIcon
 } from '@/components/icons/svg'
 import { 
   AlertTriangle,

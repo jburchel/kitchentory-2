@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertHistory as AlertHistoryType, AlertStats } from '@/types/alerts'
+import type { AlertHistory as AlertHistoryType, AlertStats } from '@/types/alerts'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatDistanceToNow, format } from 'date-fns'
@@ -67,7 +67,7 @@ export function AlertHistory({ history, stats, onRefresh, loading = false }: Ale
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     )
   }
@@ -148,7 +148,7 @@ export function AlertHistory({ history, stats, onRefresh, loading = false }: Ale
           </div>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
-            {history.map((entry, index) => (
+            {history.map((entry) => (
               <div key={entry.id} className="flex items-start space-x-3 pb-4 border-b border-gray-100 last:border-b-0">
                 <div className="flex-shrink-0">
                   <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-sm">

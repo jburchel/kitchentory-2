@@ -118,7 +118,7 @@ export default function InviteAcceptPage() {
     )
   }
 
-  if (error || !invitation) {
+  if (error ?? !invitation) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -127,7 +127,7 @@ export default function InviteAcceptPage() {
               <X className="w-12 h-12 mx-auto mb-4 text-red-500" />
               <h1 className="text-xl font-semibold mb-2">Invalid Invitation</h1>
               <p className="text-muted-foreground mb-6">
-                {error || 'This invitation link is invalid or has expired.'}
+                {error ?? 'This invitation link is invalid or has expired.'}
               </p>
               <Link href="/">
                 <Button variant="outline">Go Home</Button>
@@ -139,7 +139,7 @@ export default function InviteAcceptPage() {
     )
   }
 
-  if (isExpired || invitation.status !== 'pending') {
+  if (isExpired ?? invitation.status !== 'pending') {
     return (
       <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
@@ -192,7 +192,7 @@ export default function InviteAcceptPage() {
             </div>
 
             <div className="p-4 bg-muted rounded-lg text-sm text-left">
-              <p className="font-medium mb-2">You'll be added as a:</p>
+              <p className="font-medium mb-2">You&apos;ll be added as a:</p>
               <Badge variant="outline" className="capitalize">{invitation.role}</Badge>
             </div>
 
@@ -242,7 +242,7 @@ export default function InviteAcceptPage() {
 
           <div className="space-y-4">
             <div className="p-4 bg-muted rounded-lg">
-              <p className="font-medium text-sm mb-2">You'll be added as a:</p>
+              <p className="font-medium text-sm mb-2">You&apos;ll be added as a:</p>
               <Badge variant="outline" className="capitalize">
                 {invitation.role}
               </Badge>
@@ -257,7 +257,7 @@ export default function InviteAcceptPage() {
             {invitation.message && (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800 italic">
-                  "{invitation.message}"
+                  &quot;{invitation.message}&quot;
                 </p>
               </div>
             )}

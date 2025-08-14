@@ -1,6 +1,6 @@
-import { User } from '@clerk/nextjs/server'
+import type { User } from '@clerk/nextjs/server'
 // import { Id } from '../convex/_generated/dataModel'
-type Id<T> = string // Temporary type replacement
+type Id<_T> = string // Temporary type replacement
 
 // Clerk User extended with our application data
 export interface AppUser extends Partial<User> {
@@ -110,7 +110,7 @@ export interface AuthResult {
   success: boolean
   error?: AuthError
   message?: string
-  data?: any
+  data?: unknown
 }
 
 // Session data
@@ -138,7 +138,7 @@ export type ClerkWebhookEvent =
 export interface ClerkWebhookPayload {
   type: ClerkWebhookEvent
   object: string
-  data: any
+  data: unknown
   event_attributes?: {
     http_request: {
       client_ip: string

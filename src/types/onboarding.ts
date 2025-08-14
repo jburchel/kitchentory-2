@@ -1,4 +1,4 @@
-import { Id } from "../../convex/_generated/dataModel";
+import type { Id } from "../../convex/_generated/dataModel";
 
 /**
  * Types for the onboarding flow and household creation
@@ -77,7 +77,7 @@ export interface OnboardingFormData {
 }
 
 // Step-specific form states
-export interface StepFormState<T = any> {
+export interface StepFormState<T = unknown> {
   data: T;
   validation: FormValidationState;
   operation: AsyncOperationState;

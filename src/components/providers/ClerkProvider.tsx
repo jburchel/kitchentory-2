@@ -50,8 +50,7 @@ export function ClerkProvider({ children }: ClerkProviderProps) {
       }}
       signInUrl="/auth/sign-in"
       signUpUrl="/auth/sign-up"
-      afterSignInUrl="/dashboard"
-      afterSignUpUrl="/onboarding"
+      fallbackRedirectUrl="/dashboard"
     >
       {children}
     </ClerkAuthProvider>
