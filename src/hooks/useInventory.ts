@@ -1,18 +1,6 @@
 import { useState, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { addDays, isBefore, isAfter } from 'date-fns'
-import { useConvex, useMutation, useQuery } from 'convex/react'
-
-// Safely import API with error handling
-let api: any = null
-try {
-  const apiModule = require('../../convex/_generated/api')
-  api = apiModule.api
-} catch (error) {
-  console.warn('Convex API not available in useInventory:', error)
-  api = null
-}
-import { Id } from '../../convex/_generated/dataModel'
 
 export interface InventoryItem {
   id: string
@@ -130,130 +118,16 @@ const mockItems: InventoryItem[] = [
 ]
 
 export function useInventory(householdId?: string): UseInventoryReturn {
-  const [items, setItems] = useState<InventoryItem[]>([])
+  const [items, setItems] = useState<InventoryItem[]>(mockItems)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Check if Convex API is available - add safety checks
-  const convexAvailable = api && api.inventoryItems && typeof api.inventoryItems === 'object'
-  
-  // Convex mutations - always call hooks unconditionally (React rule)
-  const createInventoryItem = useMutation(convexAvailable ? api.inventoryItems.createInventoryItem : undefined)
-  const updateInventoryItemMutation = useMutation(convexAvailable ? api.inventoryItems.updateInventoryItem : undefined)
-  const deleteInventoryItemMutation = useMutation(convexAvailable ? api.inventoryItems.deleteInventoryItem : undefined)
-  const updateItemQuantityMutation = useMutation(convexAvailable ? api.inventoryItems.updateItemQuantity : undefined)
-  
-  // Only use Convex queries if we have a valid Convex ID format and API is available
-  const isValidConvexId = householdId && /^[a-z][a-z0-9]*$/.test(householdId) && convexAvailable
-  
-  // Always call hooks unconditionally, but pass undefined to skip execution
-  const getInventoryItemsQuery = useQuery(
-    (isValidConvexId && convexAvailable) ? api.inventoryItems.getInventoryItems : undefined,
-    isValidConvexId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : undefined
-  )
-  const getInventoryStatsQuery = useQuery(
-    (isValidConvexId && convexAvailable) ? api.inventoryItems.getInventoryStats : undefined,
-    isValidConvexId ? { householdId: householdId as Id<'households'>, userId: 'current-user' } : undefined
-  )
-
-  // Use Convex data when available, fallback to mock data for development
-  const convexItems = getInventoryItemsQuery
-  const convexStats = getInventoryStatsQuery
-  const isConvexLoading = isValidConvexId && getInventoryItemsQuery === undefined
-  
-  // Transform Convex data to match our interface
-  const transformedItems = useMemo(() => {
-    if (convexItems) {
-      return convexItems.map((item: any): InventoryItem => ({
-        id: item._id,
-        name: item.customName || 'Unknown Item',
-        category: item.customCategory || 'other',
-        quantity: item.quantity,
-        unit: item.unit,
-        expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
-        purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
-        cost: item.cost,
-        barcode: item.barcode,
-        notes: item.notes,
-        location: item.storageLocation?.name,
-        brand: item.customBrand,
-        householdId: item.householdId,
-        createdAt: new Date(item.createdAt),
-        updatedAt: new Date(item.updatedAt)
-      }))
-    }
-    return items || mockItems // Fallback to mock data during development
-  }, [convexItems, items])
-
-  // Calculate inventory statistics - use Convex stats when available
+  // Calculate inventory statistics from mock data
   const stats = useMemo((): InventoryStats => {
-    if (convexStats) {
-      return {
-        totalItems: convexStats.totalItems,
-        totalValue: convexStats.totalValue,
-        expiredCount: convexStats.expiredCount,
-        expiringSoonCount: convexStats.expiringSoonCount,
-        lowStockCount: convexStats.lowStockCount,
-        categoryCounts: convexStats.categoryBreakdown,
-        expiredItems: convexStats.expiredItems?.map((item: any): InventoryItem => ({
-          id: item._id,
-          name: item.customName || 'Unknown Item',
-          category: item.customCategory || 'other',
-          quantity: item.quantity,
-          unit: item.unit,
-          expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
-          purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
-          cost: item.cost,
-          barcode: item.barcode,
-          notes: item.notes,
-          location: item.storageLocation?.name,
-          brand: item.customBrand,
-          householdId: item.householdId,
-          createdAt: new Date(item.createdAt),
-          updatedAt: new Date(item.updatedAt)
-        })) || [],
-        expiringSoonItems: convexStats.expiringSoonItems?.map((item: any): InventoryItem => ({
-          id: item._id,
-          name: item.customName || 'Unknown Item',
-          category: item.customCategory || 'other',
-          quantity: item.quantity,
-          unit: item.unit,
-          expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
-          purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
-          cost: item.cost,
-          barcode: item.barcode,
-          notes: item.notes,
-          location: item.storageLocation?.name,
-          brand: item.customBrand,
-          householdId: item.householdId,
-          createdAt: new Date(item.createdAt),
-          updatedAt: new Date(item.updatedAt)
-        })) || [],
-        lowStockItems: convexStats.lowStockItems?.map((item: any): InventoryItem => ({
-          id: item._id,
-          name: item.customName || 'Unknown Item',
-          category: item.customCategory || 'other',
-          quantity: item.quantity,
-          unit: item.unit,
-          expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
-          purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
-          cost: item.cost,
-          barcode: item.barcode,
-          notes: item.notes,
-          location: item.storageLocation?.name,
-          brand: item.customBrand,
-          householdId: item.householdId,
-          createdAt: new Date(item.createdAt),
-          updatedAt: new Date(item.updatedAt)
-        })) || []
-      }
-    }
-    
-    // Fallback to calculating from local data
     const now = new Date()
     const threeDaysFromNow = addDays(now, 3)
     
-    const currentItems = transformedItems
+    const currentItems = items
     const totalItems = currentItems.length
     const totalValue = currentItems.reduce((sum, item) => sum + (item.cost || 0), 0)
     
@@ -285,36 +159,16 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       expiringSoonItems,
       lowStockItems
     }
-  }, [convexStats, transformedItems])
+  }, [items])
 
   const createItem = useCallback(async (householdId: string, data: CreateItemData): Promise<InventoryItem> => {
     try {
       setLoading(true)
       setError(null)
 
-      let itemId: string
-      if (createInventoryItem) {
-        itemId = await createInventoryItem({
-          householdId: householdId as Id<'households'>,
-          customName: data.name,
-          customBrand: data.brand,
-          customCategory: data.category,
-          quantity: data.quantity,
-          unit: data.unit,
-          expirationDate: data.expirationDate ? new Date(data.expirationDate).getTime() : undefined,
-          purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).getTime() : undefined,
-          cost: data.cost,
-          notes: data.notes,
-          addedBy: 'current-user'
-        })
-      } else {
-        // Fallback for SSR/build time
-        itemId = Math.random().toString(36).substr(2, 9)
-      }
-
       // Create a temporary item structure for immediate UI feedback
       const newItem: InventoryItem = {
-        id: itemId,
+        id: Math.random().toString(36).substr(2, 9),
         ...data,
         expirationDate: data.expirationDate ? new Date(data.expirationDate) : undefined,
         purchaseDate: data.purchaseDate ? new Date(data.purchaseDate) : undefined,
@@ -323,40 +177,24 @@ export function useInventory(householdId?: string): UseInventoryReturn {
         updatedAt: new Date()
       }
       
+      setItems(prev => [...prev, newItem])
+      toast.success('Item added successfully')
       return newItem
     } catch (err) {
       const errorMessage = 'Failed to create item'
       setError(errorMessage)
+      toast.error(errorMessage)
       throw new Error(errorMessage)
     } finally {
       setLoading(false)
     }
-  }, [createInventoryItem])
+  }, [])
 
   const updateItem = useCallback(async (data: UpdateItemData): Promise<InventoryItem> => {
     try {
       setLoading(true)
       setError(null)
 
-      if (updateInventoryItemMutation) {
-        await updateInventoryItemMutation({
-          itemId: data.id as Id<'inventoryItems'>,
-          userId: 'current-user',
-          updates: {
-            customName: data.name,
-            customBrand: data.brand,
-            customCategory: data.category,
-            quantity: data.quantity,
-            unit: data.unit,
-            expirationDate: data.expirationDate ? new Date(data.expirationDate).getTime() : undefined,
-            purchaseDate: data.purchaseDate ? new Date(data.purchaseDate).getTime() : undefined,
-            cost: data.cost,
-            notes: data.notes
-          }
-        })
-      }
-
-      // Return a temporary updated item structure
       const existingItem = items.find(item => item.id === data.id)
       if (!existingItem) {
         throw new Error('Item not found')
@@ -370,35 +208,35 @@ export function useInventory(householdId?: string): UseInventoryReturn {
         updatedAt: new Date()
       }
       
+      setItems(prev => prev.map(item => item.id === data.id ? updatedItem : item))
+      toast.success('Item updated successfully')
       return updatedItem
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update item'
       setError(errorMessage)
+      toast.error(errorMessage)
       throw new Error(errorMessage)
     } finally {
       setLoading(false)
     }
-  }, [items, updateInventoryItemMutation])
+  }, [items])
 
   const deleteItem = useCallback(async (itemId: string): Promise<void> => {
     try {
       setLoading(true)
       setError(null)
 
-      if (deleteInventoryItemMutation) {
-        await deleteInventoryItemMutation({
-          itemId: itemId as Id<'inventoryItems'>,
-          userId: 'current-user'
-        })
-      }
+      setItems(prev => prev.filter(item => item.id !== itemId))
+      toast.success('Item deleted successfully')
     } catch (err) {
       const errorMessage = 'Failed to delete item'
       setError(errorMessage)
+      toast.error(errorMessage)
       throw new Error(errorMessage)
     } finally {
       setLoading(false)
     }
-  }, [deleteInventoryItemMutation])
+  }, [])
 
   const updateQuantity = useCallback(async (itemId: string, quantity: number): Promise<void> => {
     try {
@@ -411,34 +249,29 @@ export function useInventory(householdId?: string): UseInventoryReturn {
         throw new Error('Item not found')
       }
 
-      const quantityChange = quantity - existingItem.quantity
-
-      if (updateItemQuantityMutation) {
-        await updateItemQuantityMutation({
-          itemId: itemId as Id<'inventoryItems'>,
-          userId: 'current-user',
-          quantityChange,
-          consumed: quantityChange < 0
-        })
-      }
+      setItems(prev => prev.map(item => 
+        item.id === itemId ? { ...item, quantity, updatedAt: new Date() } : item
+      ))
+      toast.success('Quantity updated successfully')
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update quantity'
       setError(errorMessage)
+      toast.error(errorMessage)
       throw new Error(errorMessage)
     }
-  }, [items, updateItemQuantityMutation])
+  }, [items])
 
   const searchItems = useCallback((query: string): InventoryItem[] => {
-    if (!query.trim()) return transformedItems
+    if (!query.trim()) return items
 
     const lowerQuery = query.toLowerCase()
-    return transformedItems.filter(item =>
+    return items.filter(item =>
       item.name.toLowerCase().includes(lowerQuery) ||
       item.brand?.toLowerCase().includes(lowerQuery) ||
       item.category.toLowerCase().includes(lowerQuery) ||
       item.location?.toLowerCase().includes(lowerQuery)
     )
-  }, [transformedItems])
+  }, [items])
 
   const filterItems = useCallback((filter: 'all' | 'expiring' | 'expired' | 'low-stock'): InventoryItem[] => {
     switch (filter) {
@@ -449,32 +282,31 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       case 'low-stock':
         return stats.lowStockItems
       default:
-        return transformedItems
+        return items
     }
-  }, [transformedItems, stats])
+  }, [items, stats])
 
   const refreshItems = useCallback(async (householdId: string): Promise<void> => {
-    // Convex queries are automatically reactive, so we don't need manual refresh
-    // This is kept for API compatibility
+    // No-op for mock implementation
     return Promise.resolve()
   }, [])
 
   const getItemsByCategory = useCallback((category: string): InventoryItem[] => {
-    return transformedItems.filter(item => item.category === category)
-  }, [transformedItems])
+    return items.filter(item => item.category === category)
+  }, [items])
 
   const getItemsExpiringBefore = useCallback((date: Date): InventoryItem[] => {
-    return transformedItems.filter(item => 
+    return items.filter(item => 
       item.expirationDate && isBefore(item.expirationDate, date)
     )
-  }, [transformedItems])
+  }, [items])
 
   const getLowStockItems = useCallback((threshold = 2): InventoryItem[] => {
-    return transformedItems.filter(item => item.quantity <= threshold)
-  }, [transformedItems])
+    return items.filter(item => item.quantity <= threshold)
+  }, [items])
 
   const sortItems = useCallback((sortBy: 'name' | 'category' | 'expiration' | 'quantity' | 'cost' | 'createdAt'): InventoryItem[] => {
-    return [...transformedItems].sort((a, b) => {
+    return [...items].sort((a, b) => {
       switch (sortBy) {
         case 'name':
           return a.name.localeCompare(b.name)
@@ -494,12 +326,12 @@ export function useInventory(householdId?: string): UseInventoryReturn {
           return a.createdAt.getTime() - b.createdAt.getTime()
       }
     })
-  }, [transformedItems])
+  }, [items])
 
   return {
-    items: transformedItems,
+    items,
     stats,
-    loading: loading || isConvexLoading,
+    loading,
     error,
     createItem,
     updateItem,

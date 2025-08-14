@@ -1,9 +1,6 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import '@/styles/themes.css'
-import '@/styles/accessibility.css'
-import '@/styles/animations.css'
 import { ClerkProvider } from '@/components/providers/ClerkProvider'
 import { ConvexProvider } from '@/components/providers/ConvexProvider'
 import { AuthProvider } from '@/contexts/AuthContext'
@@ -11,6 +8,8 @@ import { PWAProvider } from '@/components/providers/PWAProvider'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { InstallPrompt } from '@/components/ui/InstallPrompt'
 import { Toaster } from '@/components/ui/sonner'
+import { ErrorBoundaryWrapper } from '@/components/error/ErrorBoundary'
+import { MonitoringProvider } from '@/components/providers/MonitoringProvider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -41,14 +40,15 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: 'cover'
-  },
+  }
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#10b981' },
     { media: '(prefers-color-scheme: dark)', color: '#059669' }
@@ -88,21 +88,25 @@ export default function RootLayout({
         <a href="#main-content" className="skip-to-content">
           Skip to main content
         </a>
-        <ThemeProvider>
-          <ClerkProvider>
-            <ConvexProvider>
-              <AuthProvider>
-                <PWAProvider>
-                  <div id="root">
-                    <main id="main-content">{children}</main>
-                  </div>
-                  <InstallPrompt />
-                  <Toaster position="top-right" />
-                </PWAProvider>
-              </AuthProvider>
-            </ConvexProvider>
-          </ClerkProvider>
-        </ThemeProvider>
+        <ErrorBoundaryWrapper>
+          <ThemeProvider>
+            <ClerkProvider>
+              <ConvexProvider>
+                <AuthProvider>
+                  <MonitoringProvider>
+                    <PWAProvider>
+                      <div id="root">
+                        <main id="main-content">{children}</main>
+                      </div>
+                      <InstallPrompt />
+                      <Toaster position="top-right" />
+                    </PWAProvider>
+                  </MonitoringProvider>
+                </AuthProvider>
+              </ConvexProvider>
+            </ClerkProvider>
+          </ThemeProvider>
+        </ErrorBoundaryWrapper>
       </body>
     </html>
   )
