@@ -9,6 +9,7 @@ import { AlertHistory } from './AlertHistory'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { AlertPreferences as AlertPreferencesType } from '@/types/alerts'
 
 export function AlertDashboard() {
   const [activeTab, setActiveTab] = useState<'alerts' | 'preferences' | 'history'>('alerts')
