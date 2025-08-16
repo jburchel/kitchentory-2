@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Package, Home, Search, Plus, User, Bell, Settings } from "lucide-react"
+import { Package, Home, Search, Plus, User, Bell, Settings, Store } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 const navigation = [
   { name: "Home", href: "/", icon: Home },
   { name: "Inventory", href: "/inventory", icon: Package },
+  { name: "Stores", href: "/stores", icon: Store },
   { name: "Add Item", href: "/add", icon: Plus },
   { name: "Search", href: "/search", icon: Search },
 ]

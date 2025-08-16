@@ -12,7 +12,7 @@ import {
   StoreAPIResponse,
   StoreAPIError,
   UserStoreConnection
-} from '@/types/stores'
+} from '../types/stores'
 
 export interface IStoreAPI {
   providerId: string

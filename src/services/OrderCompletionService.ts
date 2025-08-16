@@ -1,4 +1,4 @@
-import { StoreOrder, StoreOrderItem, UserStoreConnection } from '@/types/stores'
+import { StoreOrder, StoreOrderItem, UserStoreConnection } from '../types/stores'
 
 export interface OrderWebhookPayload {
   orderId: string

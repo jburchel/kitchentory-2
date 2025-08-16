@@ -1,4 +1,4 @@
-import { ReceiptItem, OrderReceipt } from '@/types/stores'
+import { ReceiptItem, OrderReceipt } from '../types/stores'
 
 export interface OCRProvider {
   id: string

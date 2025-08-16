@@ -24,11 +24,11 @@ import {
   Star,
   Navigation
 } from 'lucide-react'
-import { StoreProvider, Store, UserStoreConnection } from '@/types/stores'
-import { StoreAPIManager } from '@/services/StoreAPIManager'
-import { InstacartAPI } from '@/services/stores/InstacartAPI'
-import { KrogerAPI } from '@/services/stores/KrogerAPI'
-import { WalmartAPI } from '@/services/stores/WalmartAPI'
+import { StoreProvider, Store, UserStoreConnection } from '../../types/stores'
+import { StoreAPIManager } from '../../services/StoreAPIManager'
+import { InstacartAPI } from '../../services/stores/InstacartAPI'
+import { KrogerAPI } from '../../services/stores/KrogerAPI'
+import { WalmartAPI } from '../../services/stores/WalmartAPI'
 import { toast } from 'sonner'
 
 export interface StoreSelectionDashboardProps {

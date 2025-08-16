@@ -28,9 +28,9 @@ import {
   PriceComparison,
   UserStoreConnection,
   Store 
-} from '@/types/stores'
-import { ShoppingItem } from '@/types/shopping'
-import { StoreAPIManager } from '@/services/StoreAPIManager'
+} from '../../types/stores'
+import { ShoppingItem } from '../../types/shopping'
+import { StoreAPIManager } from '../../services/StoreAPIManager'
 import { toast } from 'sonner'
 
 export interface ShoppingCartSyncProps {

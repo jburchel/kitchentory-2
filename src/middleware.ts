@@ -23,6 +23,9 @@ const isPublicRoute = createRouteMatcher([
     '/alerts(.*)',
     '/meal-planning(.*)',
     '/onboarding(.*)',
+    '/stores(.*)',
+    '/recipes(.*)',
+    '/debug(.*)',
   ] : [])
 ])
 

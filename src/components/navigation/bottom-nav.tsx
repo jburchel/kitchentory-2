@@ -3,15 +3,15 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Package, Plus, Search, User } from "lucide-react"
+import { Home, Package, Plus, Search, User, Store } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
 const navigation = [
   { name: "Home", href: "/", icon: Home, badge: null },
   { name: "Inventory", href: "/inventory", icon: Package, badge: "12" },
+  { name: "Stores", href: "/stores", icon: Store, badge: null },
   { name: "Add", href: "/add", icon: Plus, badge: null },
-  { name: "Search", href: "/search", icon: Search, badge: null },
   { name: "Profile", href: "/profile", icon: User, badge: null },
 ]
 

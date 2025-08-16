@@ -1,5 +1,4 @@
 import { 
-  IStoreAPI,
   Store, 
   StoreProduct, 
   StoreCart, 
@@ -8,7 +7,8 @@ import {
   StoreSearchResult,
   StoreAPIResponse,
   UserStoreConnection
-} from '@/types/stores'
+} from '../../types/stores'
+import { IStoreAPI } from '../StoreAPIManager'
 
 export class InstacartAPI implements IStoreAPI {
   public readonly providerId = 'instacart'

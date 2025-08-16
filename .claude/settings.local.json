@@ -34,7 +34,8 @@
       "mcp__filesystem__list_directory",
       "mcp__filesystem__read_text_file",
       "Bash(timeout 30s npm run build:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git commit:*)"
     ]
   },
   "enabledMcpjsonServers": [
