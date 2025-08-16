@@ -56,6 +56,7 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
   // Auto-search on first load
   useEffect(() => {
     if (inventoryItems.length > 0 && recipes.length === 0 && !loading) {
+      console.log('Auto-searching recipes with inventory items:', inventoryItems.slice(0, 5).map(i => i.name))
       searchByInventory()
     }
   }, [inventoryItems, recipes.length, loading, searchByInventory])

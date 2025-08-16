@@ -74,10 +74,19 @@ class RecipeService {
     try {
       // Try Spoonacular first if API key is available
       if (this.SPOONACULAR_API_KEY && this.SPOONACULAR_API_KEY !== 'demo') {
-        return await this.searchSpoonacular(params)
+        console.log('Attempting to use Spoonacular API...')
+        try {
+          const results = await this.searchSpoonacular(params)
+          console.log('Spoonacular API success, got', results.length, 'recipes')
+          return results
+        } catch (spoonError) {
+          console.warn('Spoonacular API failed, falling back to demo data:', spoonError)
+          // Fall through to demo data
+        }
       }
       
-      // Fallback to demo data or TheMealDB
+      // Fallback to demo data
+      console.log('Using demo recipe data with Unsplash images')
       return await this.searchWithDemoData(params)
     } catch (error) {
       console.error('Error searching recipes:', error)
