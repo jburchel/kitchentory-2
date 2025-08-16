@@ -1,7 +1,9 @@
 /**
  * Recipe Service using free recipe APIs
  * Primary: Spoonacular API (free tier: 150 points/day)
- * Fallback: TheMealDB API (completely free)
+ * To use real API: Sign up at https://spoonacular.com/food-api
+ * Add your API key as NEXT_PUBLIC_SPOONACULAR_API_KEY in .env.local
+ * Fallback: Demo recipes with Unsplash images (completely free)
  */
 
 import { getRecipeImage, getRandomRecipeImage } from './RecipeImages'
@@ -107,7 +109,9 @@ class RecipeService {
     return data.map((recipe: any) => ({
       id: recipe.id.toString(),
       title: recipe.title,
-      image: recipe.image,
+      // Spoonacular provides images at https://spoonacular.com/recipeImages/{id}-{size}.{extension}
+      // We'll use the image they provide or generate one based on the recipe ID
+      image: recipe.image || `https://spoonacular.com/recipeImages/${recipe.id}-636x393.jpg`,
       usedIngredients: recipe.usedIngredients,
       missedIngredients: recipe.missedIngredients,
       unusedIngredients: recipe.unusedIngredients,
@@ -151,7 +155,8 @@ class RecipeService {
     return {
       id: data.id.toString(),
       title: data.title,
-      image: data.image,
+      // Ensure we have an image URL
+      image: data.image || `https://spoonacular.com/recipeImages/${data.id}-636x393.jpg`,
       readyInMinutes: data.readyInMinutes,
       servings: data.servings,
       sourceUrl: data.sourceUrl,

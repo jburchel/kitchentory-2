@@ -28,6 +28,7 @@ const nextConfig = {
       'img.clerk.com', 
       'images.clerk.dev',
       'images.unsplash.com',
+      'source.unsplash.com',
       'spoonacular.com',
       'img.spoonacular.com',
       'via.placeholder.com',

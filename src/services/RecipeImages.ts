@@ -4,31 +4,31 @@
  */
 
 export const RECIPE_IMAGES = {
-  // Using Pexels (free stock photos) - Direct hotlinking allowed
-  chickenStirFry: 'https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg?auto=compress&cs=tinysrgb&w=600',
-  pastaCarbonara: 'https://images.pexels.com/photos/4518844/pexels-photo-4518844.jpeg?auto=compress&cs=tinysrgb&w=600',
-  gardenSalad: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600',
-  vegetableSoup: 'https://images.pexels.com/photos/1731535/pexels-photo-1731535.jpeg?auto=compress&cs=tinysrgb&w=600',
-  grilledCheese: 'https://images.pexels.com/photos/1885578/pexels-photo-1885578.jpeg?auto=compress&cs=tinysrgb&w=600',
+  // Using Unsplash Source API - provides direct image URLs
+  chickenStirFry: 'https://source.unsplash.com/600x400/?chicken,stir-fry',
+  pastaCarbonara: 'https://source.unsplash.com/600x400/?pasta,carbonara',
+  gardenSalad: 'https://source.unsplash.com/600x400/?salad,fresh',
+  vegetableSoup: 'https://source.unsplash.com/600x400/?soup,vegetable',
+  grilledCheese: 'https://source.unsplash.com/600x400/?grilled-cheese,sandwich',
   
   // Additional recipe images
-  tacos: 'https://images.pexels.com/photos/7613568/pexels-photo-7613568.jpeg?auto=compress&cs=tinysrgb&w=600',
-  pizza: 'https://images.pexels.com/photos/1653877/pexels-photo-1653877.jpeg?auto=compress&cs=tinysrgb&w=600',
-  burger: 'https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=600',
-  sushi: 'https://images.pexels.com/photos/3147493/pexels-photo-3147493.jpeg?auto=compress&cs=tinysrgb&w=600',
-  pancakes: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600',
-  smoothie: 'https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=600',
-  omelette: 'https://images.pexels.com/photos/6294361/pexels-photo-6294361.jpeg?auto=compress&cs=tinysrgb&w=600',
+  tacos: 'https://source.unsplash.com/600x400/?tacos,mexican-food',
+  pizza: 'https://source.unsplash.com/600x400/?pizza,italian',
+  burger: 'https://source.unsplash.com/600x400/?burger,hamburger',
+  sushi: 'https://source.unsplash.com/600x400/?sushi,japanese',
+  pancakes: 'https://source.unsplash.com/600x400/?pancakes,breakfast',
+  smoothie: 'https://source.unsplash.com/600x400/?smoothie,healthy',
+  omelette: 'https://source.unsplash.com/600x400/?omelette,eggs',
   
   // Category placeholders
-  breakfast: 'https://images.pexels.com/photos/103124/pexels-photo-103124.jpeg?auto=compress&cs=tinysrgb&w=600',
-  lunch: 'https://images.pexels.com/photos/1640775/pexels-photo-1640775.jpeg?auto=compress&cs=tinysrgb&w=600',
-  dinner: 'https://images.pexels.com/photos/769289/pexels-photo-769289.jpeg?auto=compress&cs=tinysrgb&w=600',
-  dessert: 'https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600',
-  snack: 'https://images.pexels.com/photos/566566/pexels-photo-566566.jpeg?auto=compress&cs=tinysrgb&w=600',
+  breakfast: 'https://source.unsplash.com/600x400/?breakfast,food',
+  lunch: 'https://source.unsplash.com/600x400/?lunch,meal',
+  dinner: 'https://source.unsplash.com/600x400/?dinner,food',
+  dessert: 'https://source.unsplash.com/600x400/?dessert,cake',
+  snack: 'https://source.unsplash.com/600x400/?snack,food',
   
   // Default fallback
-  defaultFood: 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=600'
+  defaultFood: 'https://source.unsplash.com/600x400/?food,cooking'
 }
 
 /**
