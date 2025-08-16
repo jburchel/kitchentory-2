@@ -1,6 +1,13 @@
 'use client'
 
+import React from 'react'
+import { StoreSelectionDashboard } from '../../components/stores/StoreSelectionDashboard'
+import { ShoppingCartSync } from '../../components/stores/ShoppingCartSync'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
+
 export default function StoresPage() {
+  const householdId = 'household-1' // Mock household ID
+
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8">
       <div className="space-y-6">
@@ -10,26 +17,29 @@ export default function StoresPage() {
             Connect your favorite grocery stores for automated shopping and inventory management
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 border rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Instacart</h3>
-            <p className="text-muted-foreground mb-4">Multi-store delivery platform</p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">Connect</button>
-          </div>
-          
-          <div className="p-6 border rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Kroger</h3>
-            <p className="text-muted-foreground mb-4">Kroger family stores</p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">Connect</button>
-          </div>
-          
-          <div className="p-6 border rounded-lg">
-            <h3 className="text-xl font-semibold mb-2">Walmart</h3>
-            <p className="text-muted-foreground mb-4">Walmart grocery delivery</p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">Connect</button>
-          </div>
-        </div>
+
+        <Tabs defaultValue="connections" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="connections">Store Connections</TabsTrigger>
+            <TabsTrigger value="sync">Shopping Cart Sync</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="connections" className="space-y-4">
+            <StoreSelectionDashboard 
+              householdId={householdId}
+              onStoreConnected={(connection) => {
+                console.log('Store connected:', connection)
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="sync" className="space-y-4">
+            <ShoppingCartSync 
+              shoppingListId="list-1"
+              householdId={householdId}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
