@@ -499,6 +499,51 @@ export function useInventory(householdId?: string): UseInventoryReturn {
     }
   }, [])
 
+  // Helper function to add item to shopping list when depleted
+  const addToShoppingListIfNeeded = useCallback(async (item: InventoryItem, newQuantity: number) => {
+    if (newQuantity === 0 && autoAddToShoppingList) {
+      try {
+        // Find the default shopping list (first active list) or use the first list
+        const targetList = shoppingLists.find(list => list.status === 'active') || shoppingLists[0]
+        
+        if (targetList) {
+          // Check if item already exists in shopping list
+          const existingItem = targetList.items.find(shoppingItem => 
+            shoppingItem.name.toLowerCase() === item.name.toLowerCase()
+          )
+          
+          if (!existingItem) {
+            await addItemToList(targetList.id, {
+              name: item.name,
+              quantity: item.quantity || 1, // Use original quantity as suggestion
+              unit: item.unit,
+              category: item.category,
+              priority: 'medium',
+              addedBy: 'system-auto',
+              estimatedPrice: item.cost,
+              notes: `Auto-added when ${item.name} was depleted from inventory`
+            })
+            
+            toast.success(`✓ ${item.name} added to shopping list`, {
+              description: `Added to "${targetList.name}" shopping list`
+            })
+          } else {
+            toast.info(`${item.name} already on shopping list`, {
+              description: `Found in "${targetList.name}" shopping list`
+            })
+          }
+        } else {
+          toast.warning(`${item.name} depleted but no shopping list found`, {
+            description: 'Create a shopping list to enable auto-add'
+          })
+        }
+      } catch (error) {
+        console.error('Failed to add to shopping list:', error)
+        toast.error(`Failed to add ${item.name} to shopping list`)
+      }
+    }
+  }, [autoAddToShoppingList, shoppingLists, addItemToList])
+
   const updateQuantity = useCallback(async (itemId: string, quantity: number): Promise<void> => {
     try {
       if (quantity < 0) {
@@ -596,51 +641,6 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       }
     })
   }, [items])
-
-  // Helper function to add item to shopping list when depleted
-  const addToShoppingListIfNeeded = useCallback(async (item: InventoryItem, newQuantity: number) => {
-    if (newQuantity === 0 && autoAddToShoppingList) {
-      try {
-        // Find the default shopping list (first active list) or use the first list
-        const targetList = shoppingLists.find(list => list.status === 'active') || shoppingLists[0]
-        
-        if (targetList) {
-          // Check if item already exists in shopping list
-          const existingItem = targetList.items.find(shoppingItem => 
-            shoppingItem.name.toLowerCase() === item.name.toLowerCase()
-          )
-          
-          if (!existingItem) {
-            await addItemToList(targetList.id, {
-              name: item.name,
-              quantity: item.quantity || 1, // Use original quantity as suggestion
-              unit: item.unit,
-              category: item.category,
-              priority: 'medium',
-              addedBy: 'system-auto',
-              estimatedPrice: item.cost,
-              notes: `Auto-added when ${item.name} was depleted from inventory`
-            })
-            
-            toast.success(`✓ ${item.name} added to shopping list`, {
-              description: `Added to "${targetList.name}" shopping list`
-            })
-          } else {
-            toast.info(`${item.name} already on shopping list`, {
-              description: `Found in "${targetList.name}" shopping list`
-            })
-          }
-        } else {
-          toast.warning(`${item.name} depleted but no shopping list found`, {
-            description: 'Create a shopping list to enable auto-add'
-          })
-        }
-      } catch (error) {
-        console.error('Failed to add to shopping list:', error)
-        toast.error(`Failed to add ${item.name} to shopping list`)
-      }
-    }
-  }, [autoAddToShoppingList, shoppingLists, addItemToList])
 
   // Consume ingredients from inventory (automatic depletion)
   const consumeIngredients = useCallback(async (ingredients: { itemId: string; quantity: number }[]): Promise<void> => {
