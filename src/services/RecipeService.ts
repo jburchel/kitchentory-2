@@ -4,6 +4,8 @@
  * Fallback: TheMealDB API (completely free)
  */
 
+import { getRecipeImage, getRandomRecipeImage } from './RecipeImages'
+
 export interface Recipe {
   id: string
   title: string
@@ -179,7 +181,7 @@ class RecipeService {
       {
         id: '1',
         title: 'Quick Chicken Stir Fry',
-        image: 'https://images.unsplash.com/photo-1609501676725-7186f017a4b7?w=400',
+        image: getRecipeImage('Quick Chicken Stir Fry'),
         readyInMinutes: 25,
         servings: 4,
         summary: 'A healthy and quick chicken stir fry with vegetables.',
@@ -197,7 +199,7 @@ class RecipeService {
       {
         id: '2',
         title: 'Pasta Carbonara',
-        image: 'https://images.unsplash.com/photo-1588013273468-315fd88ea34c?w=400',
+        image: getRecipeImage('Pasta Carbonara'),
         readyInMinutes: 20,
         servings: 2,
         summary: 'Classic Italian pasta carbonara with eggs and bacon.',
@@ -216,7 +218,7 @@ class RecipeService {
       {
         id: '3',
         title: 'Fresh Garden Salad',
-        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
+        image: getRecipeImage('Fresh Garden Salad'),
         readyInMinutes: 15,
         servings: 2,
         summary: 'A refreshing salad with mixed greens and vegetables.',
@@ -233,7 +235,7 @@ class RecipeService {
       {
         id: '4',
         title: 'Vegetable Soup',
-        image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400',
+        image: getRecipeImage('Vegetable Soup'),
         readyInMinutes: 30,
         servings: 4,
         summary: 'Hearty vegetable soup perfect for cold days.',
@@ -252,7 +254,7 @@ class RecipeService {
       {
         id: '5',
         title: 'Grilled Cheese Sandwich',
-        image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400',
+        image: getRecipeImage('Grilled Cheese Sandwich'),
         readyInMinutes: 10,
         servings: 1,
         summary: 'Classic comfort food - crispy grilled cheese sandwich.',
@@ -264,6 +266,103 @@ class RecipeService {
         missedIngredients: [],
         healthScore: 40,
         dishTypes: ['lunch', 'snack'],
+        cuisines: ['American']
+      },
+      {
+        id: '6',
+        title: 'Classic Beef Tacos',
+        image: getRecipeImage('tacos'),
+        readyInMinutes: 20,
+        servings: 4,
+        summary: 'Delicious beef tacos with fresh toppings.',
+        usedIngredients: [
+          { id: 18, name: 'ground beef', amount: 500, unit: 'g' },
+          { id: 19, name: 'taco shells', amount: 8, unit: '' },
+          { id: 20, name: 'lettuce', amount: 100, unit: 'g' }
+        ],
+        missedIngredients: [
+          { id: 21, name: 'sour cream', amount: 100, unit: 'ml' },
+          { id: 22, name: 'salsa', amount: 150, unit: 'ml' }
+        ],
+        healthScore: 70,
+        dishTypes: ['dinner', 'main course'],
+        cuisines: ['Mexican']
+      },
+      {
+        id: '7',
+        title: 'Homemade Pizza Margherita',
+        image: getRecipeImage('pizza'),
+        readyInMinutes: 35,
+        servings: 4,
+        summary: 'Classic Italian pizza with fresh mozzarella and basil.',
+        usedIngredients: [
+          { id: 23, name: 'pizza dough', amount: 400, unit: 'g' },
+          { id: 24, name: 'tomato sauce', amount: 200, unit: 'ml' },
+          { id: 25, name: 'mozzarella', amount: 200, unit: 'g' }
+        ],
+        missedIngredients: [
+          { id: 26, name: 'fresh basil', amount: 10, unit: 'leaves' }
+        ],
+        healthScore: 60,
+        dishTypes: ['dinner', 'main course'],
+        cuisines: ['Italian']
+      },
+      {
+        id: '8',
+        title: 'Fluffy Pancakes',
+        image: getRecipeImage('pancakes'),
+        readyInMinutes: 15,
+        servings: 2,
+        summary: 'Light and fluffy pancakes perfect for breakfast.',
+        usedIngredients: [
+          { id: 27, name: 'flour', amount: 200, unit: 'g' },
+          { id: 28, name: 'eggs', amount: 2, unit: '' },
+          { id: 29, name: 'milk', amount: 250, unit: 'ml' }
+        ],
+        missedIngredients: [
+          { id: 30, name: 'maple syrup', amount: 50, unit: 'ml' }
+        ],
+        healthScore: 45,
+        dishTypes: ['breakfast'],
+        cuisines: ['American']
+      },
+      {
+        id: '9',
+        title: 'Berry Smoothie Bowl',
+        image: getRecipeImage('smoothie'),
+        readyInMinutes: 10,
+        servings: 1,
+        summary: 'Healthy and refreshing smoothie bowl with mixed berries.',
+        usedIngredients: [
+          { id: 31, name: 'mixed berries', amount: 200, unit: 'g' },
+          { id: 32, name: 'banana', amount: 1, unit: '' },
+          { id: 33, name: 'yogurt', amount: 150, unit: 'ml' }
+        ],
+        missedIngredients: [
+          { id: 34, name: 'granola', amount: 30, unit: 'g' }
+        ],
+        healthScore: 92,
+        dishTypes: ['breakfast', 'snack'],
+        cuisines: ['American']
+      },
+      {
+        id: '10',
+        title: 'Classic Burger',
+        image: getRecipeImage('burger'),
+        readyInMinutes: 20,
+        servings: 2,
+        summary: 'Juicy homemade burger with all the fixings.',
+        usedIngredients: [
+          { id: 35, name: 'ground beef', amount: 300, unit: 'g' },
+          { id: 36, name: 'burger buns', amount: 2, unit: '' },
+          { id: 37, name: 'lettuce', amount: 50, unit: 'g' }
+        ],
+        missedIngredients: [
+          { id: 38, name: 'pickles', amount: 4, unit: 'slices' },
+          { id: 39, name: 'ketchup', amount: 30, unit: 'ml' }
+        ],
+        healthScore: 55,
+        dishTypes: ['lunch', 'dinner'],
         cuisines: ['American']
       }
     ]
