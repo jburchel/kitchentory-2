@@ -7,7 +7,8 @@ import { ProduceIcon, BeveragesIcon, HouseholdIcon } from '@/components/icons/sv
 import { 
   Bell, 
   BarChart3, 
-  Utensils 
+  Utensils,
+  ChefHat 
 } from 'lucide-react'
 import { HeaderInstallButton } from '@/components/ui/InstallPrompt'
 import { ConnectionStatus, MobileConnectionStatus } from '@/components/ui/ConnectionStatus'
@@ -40,6 +41,12 @@ export function AppLayout({ children }: AppLayoutProps) {
       label: 'Shopping Lists',
       icon: BeveragesIcon,
       active: pathname.startsWith('/shopping-lists')
+    },
+    {
+      href: '/recipes',
+      label: 'Recipes',
+      icon: ChefHat,
+      active: pathname.startsWith('/recipes')
     },
     {
       href: '/alerts',
