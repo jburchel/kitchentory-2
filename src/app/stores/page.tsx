@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { AppLayout } from '@/components/layout/AppLayout'
 import { StoreSelectionDashboard } from '../../components/stores/StoreSelectionDashboard'
 import { ShoppingCartSync } from '../../components/stores/ShoppingCartSync'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs'
@@ -9,7 +10,8 @@ export default function StoresPage() {
   const householdId = 'household-1' // Mock household ID
 
   return (
-    <div className="container max-w-6xl mx-auto px-4 py-8">
+    <AppLayout>
+      <div className="container max-w-6xl mx-auto px-4 py-8">
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Store Integrations</h1>
@@ -40,7 +42,8 @@ export default function StoresPage() {
             />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </AppLayout>
   )
 }
