@@ -20,12 +20,14 @@ import {
   Filter,
   X,
   ExternalLink,
-  AlertCircle
+  AlertCircle,
+  Utensils
 } from 'lucide-react'
 import { useRecipes } from '@/hooks/useRecipes'
 import { useInventory } from '@/hooks/useInventory'
 import { Recipe } from '@/services/RecipeService'
 import { toast } from 'sonner'
+import { ConsumptionTracker } from '@/components/inventory/ConsumptionTracker'
 
 export interface RecipeDashboardProps {
   householdId: string
@@ -46,11 +48,12 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
     savedRecipes
   } = useRecipes(householdId)
   
-  const { items: inventoryItems } = useInventory(householdId)
+  const { items: inventoryItems, consumeIngredients } = useInventory(householdId)
   
   const [searchIngredients, setSearchIngredients] = useState('')
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([])
   const [showRecipeDetails, setShowRecipeDetails] = useState(false)
+  const [showConsumptionTracker, setShowConsumptionTracker] = useState(false)
   const [activeTab, setActiveTab] = useState<'search' | 'inventory' | 'saved'>('inventory')
 
   // Auto-search on first load
@@ -94,6 +97,51 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
     saveRecipe(recipe)
   }
 
+  const handleCookRecipe = async (recipe: Recipe) => {
+    if (!recipe.usedIngredients || recipe.usedIngredients.length === 0) {
+      toast.error('No ingredients to consume for this recipe')
+      return
+    }
+
+    try {
+      // Map recipe ingredients to inventory items
+      const ingredientsToConsume = recipe.usedIngredients
+        .map(ingredient => {
+          const inventoryItem = inventoryItems.find(item => 
+            item.name.toLowerCase().includes(ingredient.name.toLowerCase())
+          )
+          if (inventoryItem) {
+            return {
+              itemId: inventoryItem.id,
+              quantity: Math.min(ingredient.amount || 1, inventoryItem.quantity)
+            }
+          }
+          return null
+        })
+        .filter(Boolean) as { itemId: string; quantity: number }[]
+
+      if (ingredientsToConsume.length === 0) {
+        toast.error('No matching ingredients found in inventory')
+        return
+      }
+
+      await consumeIngredients(ingredientsToConsume)
+      toast.success(`Cooked ${recipe.title}! Ingredients consumed from inventory.`)
+      setShowRecipeDetails(false)
+      
+    } catch (error) {
+      toast.error('Failed to consume ingredients')
+    }
+  }
+
+  const handleManualCookRecipe = (recipe: Recipe) => {
+    if (!recipe.usedIngredients || recipe.usedIngredients.length === 0) {
+      toast.error('No ingredients to track for this recipe')
+      return
+    }
+    setShowConsumptionTracker(true)
+  }
+
   const isRecipeSaved = (recipeId: string) => {
     return savedRecipes.some(r => r.id === recipeId)
   }
@@ -109,13 +157,25 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
             src={recipe.image} 
             alt={recipe.title}
             className="w-full h-48 object-cover rounded-t-lg"
+            onError={(e) => {
+              console.log('Image failed to load:', recipe.image)
+              // Hide the broken image and show fallback
+              e.currentTarget.style.display = 'none'
+              const fallback = e.currentTarget.nextElementSibling as HTMLElement
+              if (fallback) fallback.style.display = 'flex'
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully:', recipe.image)
+            }}
           />
         )}
-        {!recipe.image && (
-          <div className="w-full h-48 bg-gradient-to-br from-orange-100 to-red-100 rounded-t-lg flex items-center justify-center">
-            <ChefHat className="w-16 h-16 text-orange-400" />
-          </div>
-        )}
+        {/* Fallback div for when image fails to load */}
+        <div 
+          className="w-full h-48 bg-gradient-to-br from-orange-100 to-red-100 rounded-t-lg flex items-center justify-center" 
+          style={{ display: recipe.image ? 'none' : 'flex' }}
+        >
+          <ChefHat className="w-16 h-16 text-orange-400" />
+        </div>
         <Button
           size="sm"
           variant={isRecipeSaved(recipe.id) ? "default" : "outline"}
@@ -440,6 +500,13 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
                     src={selectedRecipe.image} 
                     alt={selectedRecipe.title}
                     className="w-full h-64 object-cover rounded-lg"
+                    onError={(e) => {
+                      console.log('Dialog image failed to load:', selectedRecipe.image)
+                      e.currentTarget.style.display = 'none'
+                    }}
+                    onLoad={() => {
+                      console.log('Dialog image loaded successfully:', selectedRecipe.image)
+                    }}
                   />
                 )}
 
@@ -509,7 +576,25 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-4">
+                <div className="flex flex-wrap gap-2 pt-4">
+                  <Button
+                    onClick={() => handleCookRecipe(selectedRecipe)}
+                    variant="default"
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <ChefHat className="w-4 h-4 mr-2" />
+                    Auto Cook
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleManualCookRecipe(selectedRecipe)}
+                    variant="outline"
+                    className="border-green-600 text-green-600 hover:bg-green-50"
+                  >
+                    <Utensils className="w-4 h-4 mr-2" />
+                    Manual Track
+                  </Button>
+                  
                   <Button
                     onClick={() => handleSaveRecipe(selectedRecipe)}
                     variant={isRecipeSaved(selectedRecipe.id) ? "default" : "outline"}
@@ -533,6 +618,27 @@ export function RecipeDashboard({ householdId }: RecipeDashboardProps) {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Manual Consumption Tracker */}
+      {showConsumptionTracker && selectedRecipe && (
+        <ConsumptionTracker
+          householdId={householdId}
+          recipeName={selectedRecipe.title}
+          ingredients={selectedRecipe.usedIngredients?.map(ing => ({
+            itemId: inventoryItems.find(item => 
+              item.name.toLowerCase().includes(ing.name.toLowerCase())
+            )?.id,
+            name: ing.name,
+            quantity: ing.amount || 1,
+            unit: ing.unit || 'pieces'
+          })) || []}
+          onClose={() => setShowConsumptionTracker(false)}
+          onComplete={() => {
+            setShowConsumptionTracker(false)
+            setShowRecipeDetails(false)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -45,6 +45,12 @@ export const CSP_DIRECTIVES = {
     'https://*.clerk.accounts.dev',
     'https://img.clerk.com',
     'https://images.clerk.dev',
+    'https://www.themealdb.com',
+    'https://images.unsplash.com',
+    'https://source.unsplash.com',
+    'https://via.placeholder.com',
+    'https://img.spoonacular.com',
+    'https://spoonacular.com',
   ],
   'connect-src': isDevelopment ? [
     "'self'",
@@ -62,6 +68,8 @@ export const CSP_DIRECTIVES = {
     'wss://*.convex.cloud',
     'https://clerk.accounts.dev',
     'https://*.clerk.accounts.dev',
+    'https://www.themealdb.com',
+    'https://api.spoonacular.com',
   ],
   'frame-src': [
     "'self'",

@@ -33,7 +33,8 @@
       "Bash(npm start)",
       "mcp__filesystem__list_directory",
       "mcp__filesystem__read_text_file",
-      "Bash(timeout 30s npm run build:*)"
+      "Bash(timeout 30s npm run build:*)",
+      "WebSearch"
     ]
   },
   "enabledMcpjsonServers": [

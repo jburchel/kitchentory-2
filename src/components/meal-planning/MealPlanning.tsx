@@ -19,6 +19,8 @@ import {
 import { format, addDays, isToday, isTomorrow } from 'date-fns'
 import { useInventory } from '@/hooks/useInventory'
 import { InventoryItem } from '@/components/inventory/InventoryGrid'
+import { toast } from 'sonner'
+import { ConsumptionTracker } from '@/components/inventory/ConsumptionTracker'
 
 export interface MealPlan {
   id: string
@@ -49,12 +51,14 @@ const MEAL_TYPES = [
 ]
 
 export function MealPlanning({ householdId, className }: MealPlanningProps) {
-  const { items: inventoryItems, loading: inventoryLoading } = useInventory(householdId)
+  const { items: inventoryItems, loading: inventoryLoading, consumeIngredients } = useInventory(householdId)
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([])
   const [showAddForm, setShowAddForm] = useState(false)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMealType, setSelectedMealType] = useState<string>('')
+  const [showConsumptionTracker, setShowConsumptionTracker] = useState(false)
+  const [selectedMealPlan, setSelectedMealPlan] = useState<MealPlan | null>(null)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -138,6 +142,44 @@ export function MealPlanning({ householdId, className }: MealPlanningProps) {
       )
       return !inInventory
     })
+  }
+
+  // Cook meal plan - consume ingredients from inventory
+  const handleCookMealPlan = async (mealPlan: MealPlan) => {
+    try {
+      // Map meal plan ingredients to inventory items
+      const ingredientsToConsume = mealPlan.ingredients
+        .map(ingredient => {
+          const inventoryItem = inventoryItems.find(item => 
+            item.name.toLowerCase() === ingredient.name.toLowerCase()
+          )
+          if (inventoryItem && inventoryItem.quantity >= ingredient.quantity) {
+            return {
+              itemId: inventoryItem.id,
+              quantity: ingredient.quantity
+            }
+          }
+          return null
+        })
+        .filter(Boolean) as { itemId: string; quantity: number }[]
+
+      if (ingredientsToConsume.length === 0) {
+        toast.error('No matching ingredients found in inventory')
+        return
+      }
+
+      await consumeIngredients(ingredientsToConsume)
+      toast.success(`Cooked ${mealPlan.name}! Ingredients consumed from inventory.`)
+      
+    } catch (error) {
+      toast.error('Failed to consume ingredients')
+    }
+  }
+
+  // Manual cook meal plan - open consumption tracker
+  const handleManualCookMealPlan = (mealPlan: MealPlan) => {
+    setSelectedMealPlan(mealPlan)
+    setShowConsumptionTracker(true)
   }
 
   if (inventoryLoading) {
@@ -291,6 +333,25 @@ export function MealPlanning({ householdId, className }: MealPlanningProps) {
                         <span className="text-sm">{mealPlan.prepTime} min prep</span>
                       </div>
                     )}
+
+                    <div className="pt-2 border-t space-y-2">
+                      <Button 
+                        onClick={() => handleCookMealPlan(mealPlan)}
+                        className="w-full bg-green-600 hover:bg-green-700"
+                        disabled={getMissingIngredients(mealPlan).length > 0}
+                      >
+                        <ChefHat className="w-4 h-4 mr-2" />
+                        Auto Cook
+                      </Button>
+                      <Button 
+                        onClick={() => handleManualCookMealPlan(mealPlan)}
+                        variant="outline"
+                        className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                      >
+                        <Utensils className="w-4 h-4 mr-2" />
+                        Manual Track
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -482,6 +543,28 @@ export function MealPlanning({ householdId, className }: MealPlanningProps) {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Manual Consumption Tracker */}
+      {showConsumptionTracker && selectedMealPlan && (
+        <ConsumptionTracker
+          householdId={householdId}
+          recipeName={selectedMealPlan.name}
+          ingredients={selectedMealPlan.ingredients.map(ing => ({
+            itemId: ing.itemId,
+            name: ing.name,
+            quantity: ing.quantity,
+            unit: ing.unit
+          }))}
+          onClose={() => {
+            setShowConsumptionTracker(false)
+            setSelectedMealPlan(null)
+          }}
+          onComplete={() => {
+            setShowConsumptionTracker(false)
+            setSelectedMealPlan(null)
+          }}
+        />
       )}
     </div>
   )

@@ -4,31 +4,31 @@
  */
 
 export const RECIPE_IMAGES = {
-  // Using Unsplash Source API - provides direct image URLs
-  chickenStirFry: 'https://source.unsplash.com/600x400/?chicken,stir-fry',
-  pastaCarbonara: 'https://source.unsplash.com/600x400/?pasta,carbonara',
-  gardenSalad: 'https://source.unsplash.com/600x400/?salad,fresh',
-  vegetableSoup: 'https://source.unsplash.com/600x400/?soup,vegetable',
-  grilledCheese: 'https://source.unsplash.com/600x400/?grilled-cheese,sandwich',
+  // Using reliable placeholder images that work everywhere
+  chickenStirFry: 'https://via.placeholder.com/600x400/FF6B35/FFFFFF?text=Chicken+Stir+Fry',
+  pastaCarbonara: 'https://via.placeholder.com/600x400/42A5F5/FFFFFF?text=Pasta+Carbonara',
+  gardenSalad: 'https://via.placeholder.com/600x400/66BB6A/FFFFFF?text=Garden+Salad',
+  vegetableSoup: 'https://via.placeholder.com/600x400/FFA726/FFFFFF?text=Vegetable+Soup',
+  grilledCheese: 'https://via.placeholder.com/600x400/FFB74D/FFFFFF?text=Grilled+Cheese',
   
   // Additional recipe images
-  tacos: 'https://source.unsplash.com/600x400/?tacos,mexican-food',
-  pizza: 'https://source.unsplash.com/600x400/?pizza,italian',
-  burger: 'https://source.unsplash.com/600x400/?burger,hamburger',
-  sushi: 'https://source.unsplash.com/600x400/?sushi,japanese',
-  pancakes: 'https://source.unsplash.com/600x400/?pancakes,breakfast',
-  smoothie: 'https://source.unsplash.com/600x400/?smoothie,healthy',
-  omelette: 'https://source.unsplash.com/600x400/?omelette,eggs',
+  tacos: 'https://via.placeholder.com/600x400/EF5350/FFFFFF?text=Tacos',
+  pizza: 'https://via.placeholder.com/600x400/AB47BC/FFFFFF?text=Pizza',
+  burger: 'https://via.placeholder.com/600x400/8D6E63/FFFFFF?text=Burger',
+  sushi: 'https://via.placeholder.com/600x400/26A69A/FFFFFF?text=Sushi',
+  pancakes: 'https://via.placeholder.com/600x400/FFCC02/FFFFFF?text=Pancakes',
+  smoothie: 'https://via.placeholder.com/600x400/9C27B0/FFFFFF?text=Smoothie',
+  omelette: 'https://via.placeholder.com/600x400/FF9800/FFFFFF?text=Omelette',
   
   // Category placeholders
-  breakfast: 'https://source.unsplash.com/600x400/?breakfast,food',
-  lunch: 'https://source.unsplash.com/600x400/?lunch,meal',
-  dinner: 'https://source.unsplash.com/600x400/?dinner,food',
-  dessert: 'https://source.unsplash.com/600x400/?dessert,cake',
-  snack: 'https://source.unsplash.com/600x400/?snack,food',
+  breakfast: 'https://via.placeholder.com/600x400/FFC107/FFFFFF?text=Breakfast',
+  lunch: 'https://via.placeholder.com/600x400/4CAF50/FFFFFF?text=Lunch',
+  dinner: 'https://via.placeholder.com/600x400/2196F3/FFFFFF?text=Dinner',
+  dessert: 'https://via.placeholder.com/600x400/E91E63/FFFFFF?text=Dessert',
+  snack: 'https://via.placeholder.com/600x400/607D8B/FFFFFF?text=Snack',
   
   // Default fallback
-  defaultFood: 'https://source.unsplash.com/600x400/?food,cooking'
+  defaultFood: 'https://via.placeholder.com/600x400/795548/FFFFFF?text=Recipe'
 }
 
 /**

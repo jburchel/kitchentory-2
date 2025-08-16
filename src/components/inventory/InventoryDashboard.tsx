@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import { AddItemForm } from './AddItemForm'
 import { InventoryGrid, type InventoryItem } from './InventoryGrid'
+import { InventorySettings } from './InventorySettings'
 import { FOOD_CATEGORIES } from './AddItemForm'
 import { formatDistanceToNow, isAfter, isBefore, addDays } from 'date-fns'
 import { toast } from 'sonner'
@@ -242,6 +243,7 @@ export function InventoryDashboard({ householdId, className }: InventoryDashboar
             )}
           </TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="inventory">
@@ -276,6 +278,10 @@ export function InventoryDashboard({ householdId, className }: InventoryDashboar
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <InventorySettings householdId={householdId} />
         </TabsContent>
       </Tabs>
 

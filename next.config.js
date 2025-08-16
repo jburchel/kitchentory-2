@@ -32,7 +32,9 @@ const nextConfig = {
       'spoonacular.com',
       'img.spoonacular.com',
       'via.placeholder.com',
-      'images.pexels.com'
+      'images.pexels.com',
+      'placeholder.com',
+      'www.themealdb.com'
     ],
     remotePatterns: [
       {
@@ -52,6 +54,18 @@ const nextConfig = {
         hostname: 'img.spoonacular.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'via.placeholder.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.themealdb.com',
+        port: '',
+        pathname: '/images/**',
       },
     ],
     formats: ['image/webp', 'image/avif'],

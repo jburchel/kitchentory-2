@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { addDays, isBefore, isAfter } from 'date-fns'
+import { useShopping } from '@/hooks/useShopping'
 
 export interface InventoryItem {
   id: string
@@ -59,6 +60,8 @@ export interface UseInventoryReturn {
   updateItem: (data: UpdateItemData) => Promise<InventoryItem>
   deleteItem: (itemId: string) => Promise<void>
   updateQuantity: (itemId: string, quantity: number) => Promise<void>
+  consumeIngredients: (ingredients: { itemId: string; quantity: number }[]) => Promise<void>
+  reserveIngredients: (ingredients: { itemId: string; quantity: number }[]) => Promise<void>
   searchItems: (query: string) => InventoryItem[]
   filterItems: (filter: 'all' | 'expiring' | 'expired' | 'low-stock') => InventoryItem[]
   refreshItems: (householdId: string) => Promise<void>
@@ -66,54 +69,309 @@ export interface UseInventoryReturn {
   getItemsExpiringBefore: (date: Date) => InventoryItem[]
   getLowStockItems: (threshold?: number) => InventoryItem[]
   sortItems: (sortBy: 'name' | 'category' | 'expiration' | 'quantity' | 'cost' | 'createdAt') => InventoryItem[]
+  autoAddToShoppingList: boolean
+  setAutoAddToShoppingList: (enabled: boolean) => void
 }
 
-// Mock data for development
+// Mock data for development - Full kitchen inventory after grocery shopping
 const mockItems: InventoryItem[] = [
+  // Proteins - TheMealDB compatible
   {
     id: '1',
-    name: 'Organic Bananas',
-    category: 'produce',
-    quantity: 6,
-    unit: 'pieces',
-    expirationDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-    purchaseDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    cost: 3.99,
-    brand: 'Fresh Market',
-    location: 'Counter',
+    name: 'Chicken Breast',
+    category: 'meat',
+    quantity: 3,
+    unit: 'lbs',
+    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 12.99,
+    brand: 'Farm Fresh',
+    location: 'Fridge',
     householdId: 'household-1',
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
     updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
   },
   {
     id: '2',
+    name: 'Ground Beef',
+    category: 'meat',
+    quantity: 2,
+    unit: 'lbs',
+    expirationDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 9.99,
+    brand: 'Premium Beef',
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '3',
+    name: 'Salmon Fillets',
+    category: 'meat',
+    quantity: 4,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 18.99,
+    brand: 'Ocean Fresh',
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '4',
+    name: 'Pork Chops',
+    category: 'meat',
+    quantity: 6,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 14.99,
+    brand: 'Local Farm',
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  
+  // Vegetables - TheMealDB compatible
+  {
+    id: '5',
+    name: 'Onions',
+    category: 'produce',
+    quantity: 5,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 2.99,
+    location: 'Pantry',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '6',
+    name: 'Tomatoes',
+    category: 'produce',
+    quantity: 8,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 4.99,
+    location: 'Counter',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '7',
+    name: 'Potatoes',
+    category: 'produce',
+    quantity: 10,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 3.99,
+    location: 'Pantry',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '8',
+    name: 'Carrots',
+    category: 'produce',
+    quantity: 12,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 2.49,
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '9',
+    name: 'Bell Peppers',
+    category: 'produce',
+    quantity: 6,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 5.99,
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '10',
+    name: 'Mushrooms',
+    category: 'produce',
+    quantity: 2,
+    unit: 'lbs',
+    expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 4.99,
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '11',
+    name: 'Garlic',
+    category: 'produce',
+    quantity: 3,
+    unit: 'bulbs',
+    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 1.99,
+    location: 'Pantry',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '12',
+    name: 'Spinach',
+    category: 'produce',
+    quantity: 2,
+    unit: 'bags',
+    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 3.99,
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '13',
+    name: 'Lettuce',
+    category: 'produce',
+    quantity: 2,
+    unit: 'heads',
+    expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 2.99,
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+
+  // Dairy & Eggs
+  {
+    id: '14',
     name: 'Whole Milk',
     category: 'dairy',
     quantity: 1,
     unit: 'gallon',
-    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    purchaseDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
     cost: 4.29,
     brand: 'Local Dairy',
     location: 'Fridge',
     householdId: 'household-1',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
   },
   {
-    id: '3',
-    name: 'Ground Turkey',
-    category: 'meat',
-    quantity: 2,
-    unit: 'lbs',
-    expirationDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    purchaseDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    cost: 8.99,
-    brand: 'Premium Meat Co',
+    id: '15',
+    name: 'Eggs',
+    category: 'dairy',
+    quantity: 18,
+    unit: 'pieces',
+    expirationDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 3.99,
+    brand: 'Farm Fresh',
     location: 'Fridge',
     householdId: 'household-1',
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '16',
+    name: 'Cheddar Cheese',
+    category: 'dairy',
+    quantity: 1,
+    unit: 'block',
+    expirationDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 5.99,
+    brand: 'Sharp & Creamy',
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '17',
+    name: 'Butter',
+    category: 'dairy',
+    quantity: 2,
+    unit: 'sticks',
+    expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 4.49,
+    brand: 'Creamy Gold',
+    location: 'Fridge',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+
+  // Pantry Staples
+  {
+    id: '18',
+    name: 'Rice',
+    category: 'grains',
+    quantity: 5,
+    unit: 'lbs',
+    expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 6.99,
+    brand: 'Premium Rice',
+    location: 'Pantry',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '19',
+    name: 'Pasta',
+    category: 'grains',
+    quantity: 4,
+    unit: 'boxes',
+    expirationDate: new Date(Date.now() + 730 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 8.99,
+    brand: 'Italian Style',
+    location: 'Pantry',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '20',
+    name: 'Bread',
+    category: 'grains',
+    quantity: 2,
+    unit: 'loaves',
+    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    purchaseDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    cost: 4.99,
+    brand: 'Artisan Bakery',
+    location: 'Counter',
+    householdId: 'household-1',
+    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+    updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
   }
 ]
 
@@ -121,6 +379,9 @@ export function useInventory(householdId?: string): UseInventoryReturn {
   const [items, setItems] = useState<InventoryItem[]>(mockItems)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [autoAddToShoppingList, setAutoAddToShoppingList] = useState(true)
+  
+  const { shoppingLists, addItemToList } = useShopping(householdId)
 
   // Calculate inventory statistics from mock data
   const stats = useMemo((): InventoryStats => {
@@ -249,9 +510,17 @@ export function useInventory(householdId?: string): UseInventoryReturn {
         throw new Error('Item not found')
       }
 
+      const oldQuantity = existingItem.quantity
+      
       setItems(prev => prev.map(item => 
         item.id === itemId ? { ...item, quantity, updatedAt: new Date() } : item
       ))
+      
+      // Check if item was depleted and auto-add to shopping list
+      if (oldQuantity > 0 && quantity === 0) {
+        await addToShoppingListIfNeeded(existingItem, quantity)
+      }
+      
       toast.success('Quantity updated successfully')
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update quantity'
@@ -259,7 +528,7 @@ export function useInventory(householdId?: string): UseInventoryReturn {
       toast.error(errorMessage)
       throw new Error(errorMessage)
     }
-  }, [items])
+  }, [items, addToShoppingListIfNeeded])
 
   const searchItems = useCallback((query: string): InventoryItem[] => {
     if (!query.trim()) return items
@@ -328,6 +597,114 @@ export function useInventory(householdId?: string): UseInventoryReturn {
     })
   }, [items])
 
+  // Helper function to add item to shopping list when depleted
+  const addToShoppingListIfNeeded = useCallback(async (item: InventoryItem, newQuantity: number) => {
+    if (newQuantity === 0 && autoAddToShoppingList) {
+      try {
+        // Find the default shopping list (first active list) or use the first list
+        const targetList = shoppingLists.find(list => list.status === 'active') || shoppingLists[0]
+        
+        if (targetList) {
+          // Check if item already exists in shopping list
+          const existingItem = targetList.items.find(shoppingItem => 
+            shoppingItem.name.toLowerCase() === item.name.toLowerCase()
+          )
+          
+          if (!existingItem) {
+            await addItemToList(targetList.id, {
+              name: item.name,
+              quantity: item.quantity || 1, // Use original quantity as suggestion
+              unit: item.unit,
+              category: item.category,
+              priority: 'medium',
+              addedBy: 'system-auto',
+              estimatedPrice: item.cost,
+              notes: `Auto-added when ${item.name} was depleted from inventory`
+            })
+            
+            toast.success(`✓ ${item.name} added to shopping list`, {
+              description: `Added to "${targetList.name}" shopping list`
+            })
+          } else {
+            toast.info(`${item.name} already on shopping list`, {
+              description: `Found in "${targetList.name}" shopping list`
+            })
+          }
+        } else {
+          toast.warning(`${item.name} depleted but no shopping list found`, {
+            description: 'Create a shopping list to enable auto-add'
+          })
+        }
+      } catch (error) {
+        console.error('Failed to add to shopping list:', error)
+        toast.error(`Failed to add ${item.name} to shopping list`)
+      }
+    }
+  }, [autoAddToShoppingList, shoppingLists, addItemToList])
+
+  // Consume ingredients from inventory (automatic depletion)
+  const consumeIngredients = useCallback(async (ingredients: { itemId: string; quantity: number }[]): Promise<void> => {
+    try {
+      setLoading(true)
+      
+      for (const ingredient of ingredients) {
+        const item = items.find(i => i.id === ingredient.itemId)
+        if (item) {
+          const newQuantity = Math.max(0, item.quantity - ingredient.quantity)
+          
+          setItems(prev => prev.map(i => 
+            i.id === ingredient.itemId 
+              ? { ...i, quantity: newQuantity, updatedAt: new Date() }
+              : i
+          ))
+          
+          if (newQuantity === 0) {
+            toast.success(`${item.name} has been consumed and removed from inventory`)
+            // Auto-add to shopping list if enabled
+            await addToShoppingListIfNeeded(item, newQuantity)
+          } else {
+            toast.success(`Consumed ${ingredient.quantity} ${item.unit} of ${item.name}`)
+          }
+        }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to consume ingredients'
+      setError(errorMessage)
+      toast.error(errorMessage)
+    } finally {
+      setLoading(false)
+    }
+  }, [items, addToShoppingListIfNeeded])
+
+  // Reserve ingredients for meal planning (marks as reserved, doesn't deplete yet)
+  const reserveIngredients = useCallback(async (ingredients: { itemId: string; quantity: number }[]): Promise<void> => {
+    try {
+      setLoading(true)
+      
+      // Check if we have enough inventory
+      for (const ingredient of ingredients) {
+        const item = items.find(i => i.id === ingredient.itemId)
+        if (!item) {
+          throw new Error(`Ingredient ${ingredient.itemId} not found in inventory`)
+        }
+        if (item.quantity < ingredient.quantity) {
+          throw new Error(`Not enough ${item.name} - have ${item.quantity} ${item.unit}, need ${ingredient.quantity} ${item.unit}`)
+        }
+      }
+      
+      // If we get here, we have enough of everything
+      toast.success(`Reserved ${ingredients.length} ingredients for meal planning`)
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reserve ingredients'
+      setError(errorMessage)
+      toast.error(errorMessage)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }, [items])
+
   return {
     items,
     stats,
@@ -337,12 +714,16 @@ export function useInventory(householdId?: string): UseInventoryReturn {
     updateItem,
     deleteItem,
     updateQuantity,
+    consumeIngredients,
+    reserveIngredients,
     searchItems,
     filterItems,
     refreshItems,
     getItemsByCategory,
     getItemsExpiringBefore,
     getLowStockItems,
-    sortItems
+    sortItems,
+    autoAddToShoppingList,
+    setAutoAddToShoppingList
   }
 }

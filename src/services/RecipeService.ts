@@ -55,7 +55,7 @@ class RecipeService {
   private readonly SPOONACULAR_API_KEY = process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY || 'demo'
   private readonly SPOONACULAR_BASE_URL = 'https://api.spoonacular.com'
   
-  // TheMealDB API (no key required)
+  // TheMealDB API (no key required) - completely free with real images!
   private readonly MEALDB_BASE_URL = 'https://www.themealdb.com/api/json/v1/1'
 
   private constructor() {}
@@ -72,7 +72,19 @@ class RecipeService {
    */
   async searchRecipesByIngredients(params: RecipeSearchParams): Promise<Recipe[]> {
     try {
-      // Try Spoonacular first if API key is available
+      // Try TheMealDB first (completely free with real images!)
+      console.log('Attempting to use TheMealDB API...')
+      try {
+        const results = await this.searchTheMealDB(params)
+        if (results.length > 0) {
+          console.log('TheMealDB API success, got', results.length, 'recipes')
+          return results
+        }
+      } catch (mealError) {
+        console.warn('TheMealDB API failed, trying Spoonacular:', mealError)
+      }
+
+      // Try Spoonacular as backup if API key is available
       if (this.SPOONACULAR_API_KEY && this.SPOONACULAR_API_KEY !== 'demo') {
         console.log('Attempting to use Spoonacular API...')
         try {
@@ -81,18 +93,111 @@ class RecipeService {
           return results
         } catch (spoonError) {
           console.warn('Spoonacular API failed, falling back to demo data:', spoonError)
-          // Fall through to demo data
         }
       }
       
       // Fallback to demo data
-      console.log('Using demo recipe data with Unsplash images')
+      console.log('Using demo recipe data with placeholder images')
       return await this.searchWithDemoData(params)
     } catch (error) {
       console.error('Error searching recipes:', error)
       // Return demo data on error
       return this.getDemoRecipes(params.ingredients)
     }
+  }
+
+  private async searchTheMealDB(params: RecipeSearchParams): Promise<Recipe[]> {
+    const recipes: Recipe[] = []
+    
+    // Map common inventory items to TheMealDB ingredient names
+    const ingredientMap: Record<string, string> = {
+      'chicken': 'chicken',
+      'beef': 'beef',
+      'pork': 'pork',
+      'fish': 'salmon',
+      'tomatoes': 'tomato',
+      'tomato': 'tomato',
+      'onions': 'onion',
+      'onion': 'onion',
+      'potatoes': 'potato',
+      'potato': 'potato',
+      'carrots': 'carrot',
+      'carrot': 'carrot',
+      'cheese': 'cheese',
+      'eggs': 'egg',
+      'egg': 'egg',
+      'milk': 'milk',
+      'butter': 'butter',
+      'rice': 'rice',
+      'pasta': 'pasta',
+      'bread': 'bread',
+      'garlic': 'garlic',
+      'mushrooms': 'mushroom',
+      'mushroom': 'mushroom',
+      'peppers': 'pepper',
+      'pepper': 'pepper',
+      'lettuce': 'lettuce',
+      'spinach': 'spinach'
+    }
+    
+    // Also try some common ingredients that work well with TheMealDB
+    const commonIngredients = ['chicken', 'beef', 'salmon', 'tomato', 'onion', 'potato', 'cheese', 'egg']
+    const searchIngredients = [...params.ingredients.slice(0, 2)]
+    
+    // Add mapped ingredients
+    for (const ingredient of params.ingredients.slice(0, 3)) {
+      const mapped = ingredientMap[ingredient.toLowerCase()]
+      if (mapped && !searchIngredients.includes(mapped)) {
+        searchIngredients.push(mapped)
+      }
+    }
+    
+    // If we don't have good matches, try some common ingredients
+    if (searchIngredients.length === 0) {
+      searchIngredients.push(...commonIngredients.slice(0, 3))
+    }
+    
+    console.log('TheMealDB searching for ingredients:', searchIngredients)
+    
+    // TheMealDB searches by single ingredient, so we'll try each ingredient
+    for (const ingredient of searchIngredients.slice(0, 3)) {
+      try {
+        const response = await fetch(
+          `${this.MEALDB_BASE_URL}/filter.php?i=${encodeURIComponent(ingredient.toLowerCase())}`
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          console.log(`TheMealDB response for ${ingredient}:`, data)
+          if (data.meals) {
+            const mealRecipes = data.meals.slice(0, 8).map((meal: any) => ({
+              id: meal.idMeal,
+              title: meal.strMeal,
+              image: meal.strMealThumb, // TheMealDB provides high-quality images!
+              sourceUrl: `https://www.themealdb.com/meal/${meal.idMeal}`,
+              usedIngredients: [{ id: 1, name: ingredient, amount: 1, unit: '' }],
+              missedIngredients: [],
+              cuisines: meal.strArea ? [meal.strArea] : [],
+              dishTypes: meal.strCategory ? [meal.strCategory] : []
+            }))
+            recipes.push(...mealRecipes)
+            console.log(`Found ${mealRecipes.length} recipes for ${ingredient}`)
+          } else {
+            console.log(`No meals found for ingredient: ${ingredient}`)
+          }
+        }
+      } catch (error) {
+        console.warn(`Failed to search TheMealDB for ingredient: ${ingredient}`, error)
+      }
+    }
+
+    // Remove duplicates and limit results
+    const uniqueRecipes = recipes.filter((recipe, index, self) => 
+      index === self.findIndex(r => r.id === recipe.id)
+    )
+    
+    console.log(`TheMealDB total unique recipes found: ${uniqueRecipes.length}`)
+    return uniqueRecipes.slice(0, params.number || 10)
   }
 
   private async searchSpoonacular(params: RecipeSearchParams): Promise<Recipe[]> {
@@ -133,6 +238,20 @@ class RecipeService {
    */
   async getRecipeDetails(recipeId: string): Promise<Recipe | null> {
     try {
+      // Try TheMealDB first (works for TheMealDB recipe IDs)
+      if (recipeId.length >= 5 && !isNaN(Number(recipeId))) {
+        try {
+          const details = await this.getTheMealDBDetails(recipeId)
+          if (details) {
+            console.log('TheMealDB details retrieved for recipe:', recipeId)
+            return details
+          }
+        } catch (mealError) {
+          console.warn('TheMealDB details failed, trying Spoonacular:', mealError)
+        }
+      }
+
+      // Try Spoonacular if API key available
       if (this.SPOONACULAR_API_KEY && this.SPOONACULAR_API_KEY !== 'demo') {
         return await this.getSpoonacularDetails(recipeId)
       }
@@ -142,6 +261,52 @@ class RecipeService {
     } catch (error) {
       console.error('Error fetching recipe details:', error)
       return null
+    }
+  }
+
+  private async getTheMealDBDetails(recipeId: string): Promise<Recipe | null> {
+    const response = await fetch(`${this.MEALDB_BASE_URL}/lookup.php?i=${recipeId}`)
+    
+    if (!response.ok) {
+      throw new Error(`TheMealDB API error: ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    if (!data.meals || data.meals.length === 0) {
+      return null
+    }
+
+    const meal = data.meals[0]
+    
+    // Parse ingredients from TheMealDB format
+    const ingredients: Ingredient[] = []
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = meal[`strIngredient${i}`]
+      const measure = meal[`strMeasure${i}`]
+      if (ingredient && ingredient.trim()) {
+        ingredients.push({
+          id: i,
+          name: ingredient.trim(),
+          amount: 1,
+          unit: measure ? measure.trim() : '',
+          original: measure ? `${measure.trim()} ${ingredient.trim()}` : ingredient.trim()
+        })
+      }
+    }
+
+    return {
+      id: meal.idMeal,
+      title: meal.strMeal,
+      image: meal.strMealThumb,
+      sourceUrl: meal.strSource || `https://www.themealdb.com/meal/${meal.idMeal}`,
+      summary: `${meal.strMeal} is a delicious ${meal.strCategory} dish from ${meal.strArea} cuisine.`,
+      instructions: meal.strInstructions,
+      usedIngredients: ingredients,
+      missedIngredients: [],
+      readyInMinutes: 45, // TheMealDB doesn't provide cook time
+      servings: 4, // Default serving size
+      cuisines: meal.strArea ? [meal.strArea] : [],
+      dishTypes: meal.strCategory ? [meal.strCategory] : []
     }
   }
 
@@ -420,6 +585,41 @@ class RecipeService {
    */
   async getRandomRecipes(count: number = 5): Promise<Recipe[]> {
     try {
+      // Try TheMealDB random recipes first
+      console.log('Fetching random recipes from TheMealDB...')
+      const recipes: Recipe[] = []
+      
+      for (let i = 0; i < count; i++) {
+        try {
+          const response = await fetch(`${this.MEALDB_BASE_URL}/random.php`)
+          if (response.ok) {
+            const data = await response.json()
+            if (data.meals && data.meals[0]) {
+              const meal = data.meals[0]
+              recipes.push({
+                id: meal.idMeal,
+                title: meal.strMeal,
+                image: meal.strMealThumb,
+                sourceUrl: `https://www.themealdb.com/meal/${meal.idMeal}`,
+                summary: `${meal.strMeal} is a delicious ${meal.strCategory} dish from ${meal.strArea} cuisine.`,
+                readyInMinutes: 45,
+                servings: 4,
+                cuisines: meal.strArea ? [meal.strArea] : [],
+                dishTypes: meal.strCategory ? [meal.strCategory] : []
+              })
+            }
+          }
+        } catch (randomError) {
+          console.warn('Failed to get random recipe from TheMealDB:', randomError)
+        }
+      }
+
+      if (recipes.length > 0) {
+        console.log('TheMealDB random recipes success, got', recipes.length, 'recipes')
+        return recipes
+      }
+
+      // Fallback to Spoonacular if available
       if (this.SPOONACULAR_API_KEY && this.SPOONACULAR_API_KEY !== 'demo') {
         const queryParams = new URLSearchParams({
           apiKey: this.SPOONACULAR_API_KEY,
@@ -445,6 +645,7 @@ class RecipeService {
       }
       
       // Return random demo recipes
+      console.log('Using demo recipes for random selection')
       return this.getDemoRecipes([]).slice(0, count)
     } catch (error) {
       console.error('Error fetching random recipes:', error)
